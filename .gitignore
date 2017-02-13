@@ -1,0 +1,14 @@
+*.aux
+*.bbl
+*.blg
+*.log
+.*.swp
+.*.swo
+*~
+.*.kate-swp
+*.out
+*.kilepr
+neutrinos.pdf
+*.backup
+*.synctex.gz
+hyb_neu.pdf

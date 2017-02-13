@@ -1,0 +1,218 @@
+%For arxiv submission
+\documentclass[useAMS, usenatbib]{mnras}
+\usepackage{graphicx,amsmath,color,amssymb}
+%\voffset=-0.8in
+%MNRAS
+%\documentclass[useAMS, usenatbib, usegraphicx, twocolumn]{mnras}
+
+\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}]{hyperref}
+% \newcommand{\eprint}[1]{\href{http://arxiv.org/abs/#1}{#1}}
+% \newcommand{\adsurl}[1]{\href{#1}{ADS}}
+
+\topmargin -1.5cm
+\bibliographystyle{mnras}
+
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\barr}{\begin{eqnarray}}
+\newcommand{\earr}{\end{eqnarray}}
+
+\newcommand{\rme}{\textrm{e}}
+\newcommand{\rmH}{\textrm{H}}
+\newcommand{\Ly}{\textrm{Ly}}
+\newcommand{\pabn}{p_{\textrm{ab}}^n}
+\newcommand{\pscn}{p_{\textrm{sc}}^n}
+\newcommand{\rmd}{\textrm{d}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\nuc}{\nu_{\rm c}}
+\newcommand{\Tm}{T_{\rm m}}
+\newcommand{\Tr}{T_{\rm r}}
+\newcommand{\nh}{n_{\rm H}}
+\newcommand{\bfA}{\boldsymbol{A}}
+\newcommand{\bfr}{\boldsymbol{r}}
+\newcommand{\bfV}{\boldsymbol{V}}
+\newcommand{\bs}{\mathbf}
+\newcommand{\mH}{\mathcal{H}}
+
+\newcommand{\natu}{Nature (London)}
+\newcommand{\aas}{Bull. Am. Astron. Soc.}
+\newcommand{\gadget}{{\small GADGET\,}}
+
+\newcommand{\spb}[1]{{\textsc{\textcolor{red}{[{\bf SPB}: #1]}}}}
+\newcommand{\yah}[1]{{\textcolor{blue}{[{\bf YAH}: #1]}}}
+
+
+
+\newcommand{\Mpch}{\,\mathrm{Mpc} \,h^{-1}}
+\newcommand{\hMpc}{h^{-1}\,\mathrm{Mpc}}
+\newcommand{\Lya}{Lyman-$\alpha\;$}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{A Hybrid Particle-Analytic Method for Non-LInear Neutrino Structure}
+\author[ S. Bird and Y. Ali-Ha\"{\i}moud]{
+  Simeon Bird\thanks{E-mail: spb@ias.edu} and Yacine Ali-Ha\"{\i}moud\thanks{E-mail: yacine@ias.edu}\vspace{1.5mm}\\
+No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey 08540}
+
+\begin{document}
+
+\date{\today}
+
+\pagerange{\pageref{firstpage}--\pageref{lastpage}} \pubyear{2012}
+\pagenumbering{arabic}
+\label{firstpage}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\begin{keywords}
+        neutrinos - cosmology: large-scale structure of Universe - cosmology: dark matter
+\end{keywords}
+
+\section{Introduction}
+
+Our paper is the greatest paper in the world. Blah de blah.
+This paper is organised as follows. In Section \ref{sec:methods},
+we describe our simulations methods. We describe our
+results and compare them against other methods
+in Section \ref{sec:results}. We conclude in Section \ref{sec:conclusion}.
+Appendix \ref{sec:manual} is a users manual for our neutrino module.
+\cite{AHB}
+
+\section{Methods}
+\label{sec:methods}
+
+
+\subsection{Hybrid Neutrino}
+\label{sec:hybrid}
+
+Describe the method for implementing hybrid neutrinos:
+particles that start as tracers, un-clustered. They sample
+the Fermi-Dirac distribution with all velocities below some
+initial slow value. Initially the analytic code follow the full evolution,
+but then at some redshift the neutrino particles start to gravitate.
+
+After the neutrino particles start to gravitate we modify the
+analytic module so that neutrino perturbations are included only above a
+minimum momentum corresponding to the initial slow value sampled by the
+particle velocity distribution. In other words (insert YAH analytics here).
+
+We attempted to include neutrinos dynamically at a late time, but
+accurately modelling the non-linear distortions to the analytic
+Fermi-Dirac function proved overly complex. As the extra particles
+do not gravitate initially, their addition at early times does
+not significantly alter the efficiency of the code.
+
+\subsection{Initial Conditions}
+\label{sec:initcond}
+Describe improvements to the IC generation since the last paper.
+These are: we solve the growth function analytically, rather than
+using the $\Omega_m^{0.6}$ approximation, and include radiation
+and neutrinos in the derived growth function.
+We account for radiation and neutrinos in the Hubble function
+that appears as a factor between the displacements and velocities
+in the Zel'dovich approximation. We added the ability to account for
+separate transfer functions with a separate collisionless fluid,
+which has initial conditions set by the baryonic transfer function.
+
+
+\subsection{Code improvements}
+\label{sec:code}
+
+We have altered our neutrino integrator to be a stand-alone module, largely
+independent of the underlying N-body code. It should thus be easy to include
+into codes other than Gadget. We have also provided a script to integrate into the
+public version of Gadget-2, as well as the highly scalable public MP-Gadget
+used for the BlueTides simulation. Our code is publically downloadable from.
+We have added comprehensive unit tests and documentation.
+
+\subsection{Simulations}
+\label{sec:simulations}
+
+All our simulations were run with MP-Gadget, using the scripts available
+and the initial condition generator S-GenIC.
+
+Simulations:
+Mnu = 0  (512, 512), (200, 512), (200, 1024).
+[OmegaFakeBaryon vs combined CDM+baryon with Mnu = 0.]
+
+Mnu = 0.1: analytic.
+(512, 512), (200, 512)
+Mnu = 0.2: analytic, particle, hybrid.
+(512, 512), (200, 512).
+Mnu = 0.4: analytic, particle, hybrid.
+(512, 512), (200, 512), (200,512,1024 *neutrinos*), (200, 2x1024).
+
+Checks (all Mnu=0.4 (?), hybrid, (200,512)):
+Varying vcrit from 500 to 300
+Varying NuPartTime from 0.333 to 0.5
+(run these first)
+
+
+\section{Results}
+\label{sec:results}
+
+\begin{figure}
+  \caption{Projected density plot of CDM and neutrinos from the hybrid simulation (compared with the particle?)}
+  \label{fig:density_plot}
+\end{figure}
+
+\begin{figure}
+  \caption{Plot showing the matter power spectrum ratios between analytic and hybrid. }
+  \label{fig:matter_power}
+\end{figure}
+
+\begin{figure}
+  \caption{Plot showing the neutrino power spectrum ratios between particle, analytic and hybrid.
+  MONEY PLOT.}
+  \label{fig:neutrino_power}
+\end{figure}
+
+\begin{figure}
+  \caption{Plot showing the cross-correlation coefficient between neutrinos
+  and DM in particle and hybrid code, checking approximation made in analytic method.}
+  \label{fig:cross-corr}
+\end{figure}
+
+Perhaps follow this with a plot showing the cross-correlation coefficient between neutrinos+DM
+in different simulations, to show that the structure is really the same in all of them.
+
+\subsection{Numerical Checks}
+\begin{figure}
+  \caption{Plot showing the power spectrum for analytic compared to linear theory,
+  showing that we reproduce (ie, our ICs are very very good). }
+  \label{fig:linear_power}
+\end{figure}
+
+\begin{figure}
+  \caption{Plot showing the difference in the neutrino power spectrum from changing NuPartTime is small. }
+  \label{fig:nuparttime}
+\end{figure}
+
+\begin{figure}
+  \caption{Plot showing the difference in the neutrino power spectrum from changing vcrit is small. }
+  \label{fig:vcrit}
+\end{figure}
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+This problem is comprehensively solved.
+
+\section*{Acknowledgements}
+
+\appendix
+
+\section{Kspace Neutrino Manual}
+\label{sec:manual}
+
+Here describe the parameters of the kspace neutrinos,
+as well as the installation procedure for Gadget 2.
+
+\label{lastpage}
+
+\bibliography{neutrinos}
+
+\end{document}
