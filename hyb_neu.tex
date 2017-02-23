@@ -105,18 +105,6 @@ Fermi-Dirac function proved overly complex. As the extra particles
 do not gravitate initially, their addition at early times does
 not significantly alter the efficiency of the code.
 
-\subsection{Initial Conditions}
-\label{sec:initcond}
-Describe improvements to the IC generation since the last paper.
-These are: we solve the growth function analytically, rather than
-using the $\Omega_m^{0.6}$ approximation, and include radiation
-and neutrinos in the derived growth function.
-We account for radiation and neutrinos in the Hubble function
-that appears as a factor between the displacements and velocities
-in the Zel'dovich approximation. We added the ability to account for
-separate transfer functions with a separate collisionless fluid,
-which has initial conditions set by the baryonic transfer function.
-
 
 \subsection{Code improvements}
 \label{sec:code}
@@ -134,11 +122,30 @@ We have added comprehensive unit tests and documentation.
 All our simulations were run with MP-Gadget, using the scripts available
 and the initial condition generator S-GenIC.
 
-Simulations:
-Mnu = 0  (512, 512), (200, 512), (200, 1024).
 [OmegaFakeBaryon vs combined CDM+baryon with Mnu = 0.]
 
-Mnu = 0.1: analytic.
+
+Simulations:
+%TABLE OF SIMULATIONS.
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|l|}
+\hline
+Name & Neutrino mass (eV) & Neutrino method & Box (Mpc/h) & Particles & Notes \\
+\hline
+    &       0             &    -            & 512         & 512       &       \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Table of simulation parameters. The AGN column shows whether AGN feedback is enabled. $\kappa_\mathrm{w}$ sets the wind velocity.
+$50\%$ of the wind energy in the WARM simulation is deposited as thermal energy, as explained in the text.
+}
+\label{tab:simulations}
+\end{table}
+
+Mnu = 0  (512, 512), (200, 512), (200, 1024).
+
+Mnu = 0.06: analytic (hybrid?) (particle to show it doesn't work?):.
 (512, 512), (200, 512)
 Mnu = 0.2: analytic, particle, hybrid.
 (512, 512), (200, 512).
@@ -155,7 +162,7 @@ Varying NuPartTime from 0.333 to 0.5
 \label{sec:results}
 
 \begin{figure}
-  \caption{Projected density plot of CDM and neutrinos from the hybrid simulation (compared with the particle?)}
+  \caption{Projected density plot of CDM (just one plot) and neutrinos from hybrid (split into fast and slow) vs particle simulation (with shot noise)}
   \label{fig:density_plot}
 \end{figure}
 
@@ -179,12 +186,8 @@ Varying NuPartTime from 0.333 to 0.5
 Perhaps follow this with a plot showing the cross-correlation coefficient between neutrinos+DM
 in different simulations, to show that the structure is really the same in all of them.
 
+
 \subsection{Numerical Checks}
-\begin{figure}
-  \caption{Plot showing the power spectrum for analytic compared to linear theory,
-  showing that we reproduce (ie, our ICs are very very good). }
-  \label{fig:linear_power}
-\end{figure}
 
 \begin{figure}
   \caption{Plot showing the difference in the neutrino power spectrum from changing NuPartTime is small. }
@@ -196,10 +199,23 @@ in different simulations, to show that the structure is really the same in all o
   \label{fig:vcrit}
 \end{figure}
 
+\begin{figure}
+  \caption{Plot showing CDM simulation with test particle neutrinos with fixed not FD) single velocity.
+  Neutrino power spectrum, neutrino-CDM cross-correlation. Compared to analytic $P_{CDM}$.}
+  \label{fig:testpart}
+\end{figure}
+
+
 \section{Conclusions}
 \label{sec:conclusion}
 
 This problem is comprehensively solved.
+
+Comparison with Neal's method:
+computationally efficient and easy to implement.
+Hybrid allows some naturally large dynamic range of N-body simulations while little shot noise.
+
+Future work with voids, neutrino bispectrum.
 
 \section*{Acknowledgements}
 
@@ -210,6 +226,30 @@ This problem is comprehensively solved.
 
 Here describe the parameters of the kspace neutrinos,
 as well as the installation procedure for Gadget 2.
+
+\section{Initial Conditions}
+\label{sec:initcond}
+
+Appendix showing how great our initial conditions are.
+
+Describe improvements to the IC generation since the last paper.
+These are: we solve the growth function analytically, rather than
+using the $\Omega_m^{0.6}$ approximation, and include radiation
+and neutrinos in the derived growth function.
+We account for radiation and neutrinos in the Hubble function
+that appears as a factor between the displacements and velocities
+in the Zel'dovich approximation. We added the ability to account for
+separate transfer functions with a separate collisionless fluid,
+which has initial conditions set by the baryonic transfer function.
+
+\begin{figure}
+\includegraphics{}
+  \caption{Plot showing the power spectrum for analytic compared to linear theory,
+  showing that we reproduce (ie, our ICs are very very good). }
+  \label{fig:linear_power}
+\end{figure}
+
+
 
 \label{lastpage}
 
