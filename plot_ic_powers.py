@@ -8,7 +8,7 @@ matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 
 datadir = os.path.expanduser("~/data/rescale_ICtest")
-savedir = "plots/"
+savedir = "icplots/"
 sims = ["double_norescale","single_norescale","rescale"]
 lss = {"double_norescale":"-.", "single_norescale":"--", "rescale":"-"}
 
