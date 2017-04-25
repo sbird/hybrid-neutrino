@@ -133,30 +133,26 @@ Name & Neutrino mass (eV) & Neutrino method & Box (Mpc/h) & Particles & Notes \\
     &       0             &    -          & 512         & 512       &       \\
     &       0             &    -          & 300         & 512       &       \\
     &     0.4             &   Analytic    & 300         & 512       &       \\
-    
+    &     0.4             &   Particle    & 300         & 512       &       \\
+
 \hline
 \end{tabular}
 \end{center}
-\caption{Table of simulation parameters. 
+\caption{Table of simulation parameters.
 }
 \label{tab:simulations}
 \end{table}
 
-Mnu = 0  (512, 512), (300, 512), (300, 1024).
+% Mnu = 0  (300, 512)
 
-Mnu = 0.06: analytic & particle to show it doesn't work.
-(512,512) (300, 1024)
-(Do we need this?)
-Mnu = 0.2: analytic, particle, hybrid.
-(300, 512).
-Mnu = 0.4: analytic, particle, hybrid.
-(512, 512), (300, 512), (300,512,1024 *neutrinos*), (300, 2x1024).
-
-Checks (all Mnu=0.4 (?), hybrid, (300,512)):
-Varying vcrit from 500 to 300
-Varying NuPartTime from 0.333 to 0.5
-(run these first)
-
+% Mnu = 0.06: analytic (300, 1024)
+% Mnu = 0.4: analytic, particle, hybrid. (300, 512),
+% (300,512,1024 *neutrinos*)
+%
+% Checks (all Mnu=0.4 (?), hybrid, (300,512)):
+% Varying vcrit from 500 to 300
+% Varying NuPartTime from 0.333 to 0.5
+% (run these first)
 
 \section{Results}
 \label{sec:results}
@@ -231,96 +227,96 @@ as well as the installation procedure for Gadget 2.
 \label{sec:initcond}
 
 \begin{figure*}
-\includegraphics[width=0.45\textwidth]{plots/pks_rel-100.pdf}
-\includegraphics[width=0.45\textwidth]{plots/pks_camb-100.pdf}
-  \caption{(Left) The $z=0$ power spectrum from three simulations. 
-  These are initialised respectively with the $z=99$ transfer function, 
-  the scaled $z=0$ transfer function, and the $z=0$ transfer function 
-  scaled and evolved neglecting radiation density. 
+\includegraphics[width=0.45\textwidth]{icplots/pks_rel-1.pdf}
+\includegraphics[width=0.45\textwidth]{icplots/pks_camb-1.pdf}
+  \caption{(Left) The $z=0$ power spectrum from three simulations.
+  These are initialised respectively with the $z=99$ transfer function,
+  the scaled $z=0$ transfer function, and the $z=0$ transfer function
+  scaled and evolved neglecting radiation density.
   Curves are normalised to the simulation using the scaled $z=0$ transfer function.
-  (Right) The same three simulations normalised to the linear matter 
+  (Right) The same three simulations normalised to the linear matter
   power spectrum from CAMB at $z=0$.}
   \label{fig:rescaling}
 \end{figure*}
 
-Since \cite{AHB}, we have improved our initial conditions, generated 
-using our freely available initial conditions code 
+Since \cite{AHB}, we have improved our initial conditions, generated
+using our freely available initial conditions code
 S-GenIC \url{https://github.com/sbird/S-GenIC}. These improvements concern
 the relationship between velocities and displacements in Lagrangian perturbation theory.
-\citep{Zeldovich:1969, Scoccimarro:1997}. In linear Lagrangian perturbation theory, 
+\citep{Zeldovich_1970, Scoccimarro_1998}. In linear Lagrangian perturbation theory,
 velocities and displacements are related by a scale-independent factor
 
 \begin{equation}
-v(k) = a H(a) \frac{d \log D(a)}{d \log a} \delta(k) 
+v(k) = a H(a) \frac{d \log D(a)}{d \log a} \delta(k)
 \label{eq:vel_prefac}
 \end{equation}
-where $D(a)$ is the linear growth function and $H = \dot{a}/a$, the Hubble function. 
-In \cite{AHB}, the Hubble function used in Eq.~\ref{eq:vel_prefac} 
+where $D(a)$ is the linear growth function and $H = \dot{a}/a$, the Hubble function.
+In \cite{AHB}, the Hubble function used in Eq.~\ref{eq:vel_prefac}
 neglected radiation density, leading to a small error.
 
-Furthermore, in matter domination, the derivative of the linear growth function, 
-$\frac{d \log D(a)}{d \log a}$, was approximated by \citep{Bouchet:1969}
+Furthermore, in matter domination, the derivative of the linear growth function,
+$\frac{d \log D(a)}{d \log a}$, was approximated by \citep{Bouchet:1995}
 \begin{equation}
 \frac{d \log D(a)}{d \log a} \approx \left(\frac{\Omega_M a^{-3}}{\Omega_M  a^{-3} + \Omega_L}\right)^{0.6}\,.
 \end{equation}
-However, this approximation neglects the radiation density, which becomes 
-non-negligible at $z > 50$. This is important particularly when considering 
-massive neutrinos, because at high redshift neutrinos are slightly relativistic, 
+However, this approximation neglects the radiation density, which becomes
+non-negligible at $z > 50$. This is important particularly when considering
+massive neutrinos, because at high redshift neutrinos are slightly relativistic,
 and thus the background density depends slightly on the neutrino mass.
 
-In practice these two approximations partially cancelled, leading 
-to results that were correct to a couple of percent. However, we 
-have now removed them both and use both the full Hubble function 
+In practice these two approximations partially cancelled, leading
+to results that were correct to a couple of percent. However, we
+have now removed them both and use both the full Hubble function
 and obtain $\frac{d \log D(a)}{d \log a}$ by numerically solving
-the linear growth equation \citep{Peebles:1990}: 
+the linear growth equation \citep{Peebles:1993}:
 \begin{equation}
 \frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{a \Omega_M}{H(a)} D(a) = 0
 \end{equation}
-subject to initial conditions at $z \gg 100$ corresponding 
+subject to initial conditions at $z \gg 100$ corresponding
 to the exact growing mode in a matter-radiation universe \citep{Groth:1975}
 \begin{equation}
   D(a_i) = \Omega_r + \frac{3}{2} \Omega_M a_i\,.
 \end{equation}
 
-In the presence of baryon or neutrino fluids, the scale-independence 
-of the growth function is itself an approximation. For neutrinos, this 
-is because the free-streaming scale is redshift dependent. For baryons 
+In the presence of baryon or neutrino fluids, the scale-independence
+of the growth function is itself an approximation. For neutrinos, this
+is because the free-streaming scale is redshift dependent. For baryons
 it is because the baryons initially couple to the photons, suppressing
-their power on scales which are sub-horizon at $z \sim 1100$. However, 
+their power on scales which are sub-horizon at $z \sim 1100$. However,
 by $z=99$ the baryons have already fallen into
-the potential wells generated by the CDM, 
+the potential wells generated by the CDM,
 and $\delta_\mathrm{b} \approx 0.7 \delta_\mathrm{CDM}$.
-\cite{Zennaro:2016} showed this effect to induce only 
+\cite{Zennaro_2017} showed this effect to induce only
 a sub-percent error for our scales of interest and hence we neglect it.
 
-We choose to generate our initial conditions using the CAMB total matter transfer 
-function at $z=99$. An alternative is to generate initial conditions 
-using the $z=0$ transfer function, scaled by $D(99)/D(0)$. This can 
+We choose to generate our initial conditions using the CAMB total matter transfer
+function at $z=99$. An alternative is to generate initial conditions
+using the $z=0$ transfer function, scaled by $D(99)/D(0)$. This can
 be used to account for background radiation density, if radiation is not included
-in the background evolution. Even if radiation is included, it can account 
-for radiation perturbations and other relativistic effects on the scale 
-of the horizon at $z=99$ \citep{Zennaro:2016}. It also naturally accounts 
-for the fact that our single fluid simulations are unable to accunt for 
+in the background evolution. Even if radiation is included, it can account
+for radiation perturbations and other relativistic effects on the scale
+of the horizon at $z=99$ \citep{Zennaro_2017}. It also naturally accounts
+for the fact that our single fluid simulations are unable to accunt for
 the different growth rates experienced by baryons and CDM.
 
-In Figure \ref{fig:rescaling} we show the differences between the $z=0$ 
-power spectra produced using the $z=99$ transfer function, the 
-scaled $z=0$ transfer function, and the $z=0$ transfer function 
-scaled and evolved neglecting radiation density. 
-For our scales of interest, these differences are slight, 
+In Figure \ref{fig:rescaling} we show the differences between the $z=0$
+power spectra produced using the $z=99$ transfer function, the
+scaled $z=0$ transfer function, and the $z=0$ transfer function
+scaled and evolved neglecting radiation density.
+For our scales of interest, these differences are slight,
 especially compared to the variance induced by our finite box size.
-Thus we use the $z=99$ transfer function as it is practically and conceptually simple, 
+Thus we use the $z=99$ transfer function as it is practically and conceptually simple,
 whereas the linear scaling becomes complex in the presence of massive neutrinos.
 
-Note the differences on small scales between the simulations which 
+Note the differences on small scales between the simulations which
 include radiation in the background and the simulations which do not.
-This is due to the linear growth being underestimated 
+This is due to the linear growth being underestimated
 at $z > 10$ in the simulations without radiation. On scales which are
 already non-linear at these redshifts, non-linear growth will be inaccurately
 computed. Although this effect is small, we nevertheless suggest that simulations
 which use scaled $z=0$ transfer functions still include radiation in the background.
-Note also that simulations with boxes $\gtrsim 2$ Gpc should somehow account 
-for radiation and relativistic effects. 
+Note also that simulations with boxes $\gtrsim 2$ Gpc should somehow account
+for radiation and relativistic effects.
 
 \label{lastpage}
 

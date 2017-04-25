@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 datadir = os.path.expanduser("~/data/rescale_ICtest")
 savedir = "icplots/"
-sims = ["double_norescale","single_norescale","rescale"]
-lss = {"double_norescale":"-.", "single_norescale":"--", "rescale":"-"}
+sims = ["rescale_omegab","single_norescale","rescale"]
+lss = {"rescale_omegab":"-.", "single_norescale":"--", "rescale":"-"}
 
 def get_camb_power(matpow):
     """Plot the power spectrum from CAMB
@@ -56,7 +56,7 @@ def plot_single_redshift_rel_camb(scale):
         (k_camb, pk_camb) = get_camb_power(camb)
         rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
         plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
-    plt.ylim(0.8,1.4)
+    plt.ylim(0.85,1.3)
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_camb-"+str(scale)+".pdf"))
     plt.clf()
@@ -69,7 +69,7 @@ def plot_single_redshift_rel_one(scale, divisor=1):
         if np.size(k) == 0:
             continue
         plt.semilogx(k, pk/pk_div,ls=lss[ss], label=ss)
-    plt.ylim(0.8,1.4)
+    plt.ylim(0.995,1.01)
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_rel-"+str(scale)+".pdf"))
     plt.clf()
