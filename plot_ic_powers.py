@@ -23,7 +23,7 @@ def get_camb_power(matpow):
 def _get_pk(scale, ss):
     """Get the matter power spectrum"""
     sdir = os.path.join(os.path.join(datadir, ss),"output")
-    matpow = glob.glob(os.path.join(sdir,"powerspectrum-"+str(scale)+"*.txt"))
+    matpow = sorted(glob.glob(os.path.join(sdir,"powerspectrum-"+str(scale)+"*.txt")))
     if np.size(matpow) == 0:
         return ([],[])
     matpow = matpow[0]
@@ -69,13 +69,13 @@ def plot_single_redshift_rel_one(scale, divisor=1):
         if np.size(k) == 0:
             continue
         plt.semilogx(k, pk/pk_div,ls=lss[ss], label=ss)
-    plt.ylim(0.995,1.01)
+    plt.ylim(0.99,1.01)
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_rel-"+str(scale)+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":
-    for sc in (0.3, 1):
+    for sc in (0.1, 0.333, 1):
         plot_single_redshift_rel_one(sc)
         plot_single_redshift_rel_camb(sc)
         plot_single_redshift(sc)
