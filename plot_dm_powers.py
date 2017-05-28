@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4p","b300p512nu0.4a"]
+sims = ["b300p512nu0.4p","b300p512nu0.4a","b300p512nu0.4hyb"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":":"}
 
 def load_genpk(path,box):
     """Load a GenPk format power spectum, plotting the DM and the neutrinos (if present)
