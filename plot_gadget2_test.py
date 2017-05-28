@@ -135,8 +135,8 @@ def plot_single_redshift_rel_camb(snap,zz, sim):
     sdir = os.path.join(os.path.join(datadir, sim),"output")
     matpow = os.path.join(sdir,"powerspec_tot_"+snap+".txt")
     (k, pk_nu) = get_camb_power(matpow)
-    plt.semilogx(k*1e3, pk_nu/1e9/rebinned(k*1e3),ls="-")
-    plt.ylim(0.9,1.1)
+    plt.semilogx(k*1e3, pk_nu/1e9/rebinned(k*1e3),ls="-",label=sim)
+    plt.ylim(0.98,1.02)
 #     plt.legend(loc=0)
 #     plt.savefig(os.path.join(savedir, "pks_r_camb-"+snap+".pdf"))
 #     plt.clf()
@@ -157,7 +157,7 @@ def plot_single_redshift_rel_camb(snap,zz, sim):
 #     plt.savefig(os.path.join(savedir, "pks_camb-"+str(scale)+".pdf"))
 #     plt.clf()
 #
-def plot_single_redshift_rel_one(snap='009',zz='0',ymin=0.7,ymax=1.0):
+def plot_single_redshift_rel_one(snap='009',zz='0',ymin=0.8,ymax=1.0):
     """Plot all the simulations at a single redshift"""
 #     (k_div, pk_div) = _get_pk(scale, zerosim)
     try:
@@ -210,14 +210,18 @@ def get_genpk_total2(zero, snap,zz):
 if __name__ == "__main__":
     plot_single_redshift_rel_camb('000','99',sims)
     plot_single_redshift_rel_camb('000','99',zerosim)
+    plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_r_camb-000.pdf"))
     plt.clf()
     plot_single_redshift_rel_camb('001','49',sims)
     plot_single_redshift_rel_camb('001','49',zerosim)
+    plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_r_camb-001.pdf"))
     plt.clf()
     plot_single_redshift_rel_camb('002','9',sims)
     plot_single_redshift_rel_camb('002','9',zerosim)
+    plt.legend(loc=0)
+    plt.ylim(0.85,1.1)
     plt.savefig(os.path.join(savedir, "pks_r_camb-002.pdf"))
     plt.clf()
     plot_single_redshift_rel_camb('009','0',sims)

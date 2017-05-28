@@ -86,7 +86,7 @@ def plot_single_redshift(scale):
 
 def plot_nu_single_redshift(scale):
     """Plot all the neutrino power in simulations at a single redshift"""
-    snap = {0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
+    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
@@ -113,7 +113,7 @@ def plot_nu_single_redshift(scale):
 
 def plot_nu_single_redshift_rel_camb(scale):
     """Plot all neutrino powers relative to CAMB"""
-    snap = {0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
+    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
     for ss in sims:
         cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
         cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
@@ -146,7 +146,7 @@ def plot_single_redshift_rel_camb(scale):
         (k_camb, pk_camb) = get_camb_power(camb)
         rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
         plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
-    plt.ylim(0.9,1.2)
+    plt.ylim(0.94,1.06)
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_camb-"+str(scale)+".pdf"))
     plt.clf()
@@ -175,9 +175,9 @@ def plot_single_redshift_rel_one(scale, sims=sims, zerosim=zerosim, ymin=0.5,yma
     plt.clf()
 
 if __name__ == "__main__":
-    for sc in (0.200, 0.333, 0.500, 1):
+    for sc in (0.02, 0.200, 0.333, 0.500, 1):
         plot_nu_single_redshift(sc)
-        plot_single_redshift_rel_one(sc)
+        plot_single_redshift_rel_one(sc,ymin=0.7,ymax=1.)
         plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
