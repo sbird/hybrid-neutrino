@@ -65,17 +65,21 @@ def _get_pk(scale, ss):
     if np.size(matpow) == 0:
         return ([],[])
     matpow = matpow[0]
-    print(matpow)
+#     print(matpow)
     return get_camb_power(matpow)
 
-def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.11):
+def munge_scale(scale):
+    """Make the scale param be a string suitable for printing"""
+    return re.sub("\.","_",str(scale))
+
+def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     (k_sl, pk_sl) = get_nu_power(nu_filename)
     ii = np.where(k_sl != 0.)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
-    shot=(512/512)**3/(2*math.pi**2)*np.ones(np.size(pk_part_r))
+    shot=(512/npart)**3/(2*math.pi**2)*np.ones(np.size(pk_part_r))
     pk = (part_prop*np.sqrt(pk_part_r-shot)+(1-part_prop)*np.sqrt(pk_sl[ii]))**2
     return (k_sl[ii], pk)
 
@@ -92,7 +96,7 @@ def plot_single_redshift(scale):
     rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks-"+str(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_nu_single_redshift(scale):
@@ -101,11 +105,15 @@ def plot_nu_single_redshift(scale):
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
+        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+snap[scale])
         try:
-            (k, pk_nu) = get_nu_power(matpow[0])
+            try:
+                (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=0.11, npart=256)
+            except FileNotFoundError:
+                (k, pk_nu) = get_nu_power(matpow[0])
         except IndexError:
             try:
-                (k, pk_nu) = load_genpk(os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+snap[scale]),300)
+                (k, pk_nu) = load_genpk(genpk_neutrino,300)
                 #Shot noise
                 shot=(300/512.)**3*np.ones_like(pk_nu)
                 pk_nu -=shot
@@ -118,8 +126,9 @@ def plot_nu_single_redshift(scale):
     (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
     rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
+    plt.ylim(ymin=1e-5)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks-nu-"+str(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks-nu-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_nu_single_redshift_rel_camb(scale):
@@ -143,7 +152,7 @@ def plot_nu_single_redshift_rel_camb(scale):
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(0.9,1.2)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_nu_camb-"+str(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_nu_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_single_redshift_rel_camb(scale):
@@ -159,7 +168,7 @@ def plot_single_redshift_rel_camb(scale):
         plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(0.94,1.06)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_camb-"+str(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_single_redshift_rel_one(scale, sims=sims, zerosim=zerosim, ymin=0.5,ymax=1.1,camb=True):
@@ -182,14 +191,15 @@ def plot_single_redshift_rel_one(scale, sims=sims, zerosim=zerosim, ymin=0.5,yma
     plt.ylim(ymin,ymax)
     plt.xlim(1e-2,20)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_rel-"+str(scale)+str(zerosim[-1])+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_rel-"+munge_scale(scale)+str(zerosim[-1])+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":
     for sc in (0.02, 0.200, 0.333, 0.500, 1):
         plot_nu_single_redshift(sc)
-        plot_single_redshift_rel_one(sc,ymin=0.7,ymax=1.)
+        plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+        plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[2],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
         plot_single_redshift(sc)
