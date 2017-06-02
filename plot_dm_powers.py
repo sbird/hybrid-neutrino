@@ -2,9 +2,9 @@
 import os.path
 import glob
 import math
+import re
 import numpy as np
 import scipy.interpolate
-import re
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
@@ -74,7 +74,7 @@ def modecount_rebin(kk, pk, modes,minmodes=20, ndesired=200):
             count=0
     return (np.array(k_list), np.array(pk_list))
 
-def get_camb_power(matpow):
+def get_camb_power(matpow, rebin=False):
     """Plot the power spectrum from CAMB
     (or anything else where no changes are needed)"""
     data = np.loadtxt(matpow)
@@ -83,11 +83,13 @@ def get_camb_power(matpow):
     #Rebin power so that there are enough modes in each bin
     kk = kk[ii]
     pk = data[:,1][ii]
-    try:
-        modes = data[:,2][ii]
-    except IndexError:
-        modes = (6+np.arange(np.size(pk))**2)
-    return modecount_rebin(kk, pk, modes,minmodes=60,ndesired=150)
+    if rebin:
+        try:
+            modes = data[:,2][ii]
+        except IndexError:
+            modes = (6+np.arange(np.size(pk))**2)
+        return modecount_rebin(kk, pk, modes,minmodes=60,ndesired=150)
+    return (kk,pk)
 
 def _get_pk(scale, ss):
     """Get the matter power spectrum"""
@@ -97,11 +99,11 @@ def _get_pk(scale, ss):
         return ([],[])
     matpow = matpow[0]
 #     print(matpow)
-    return get_camb_power(matpow)
+    return get_camb_power(matpow, rebin=True)
 
 def munge_scale(scale):
     """Make the scale param be a string suitable for printing"""
-    return re.sub("\.","_",str(scale))
+    return re.sub(r"\.","_",str(scale))
 
 #vcrit = 300:
 #0.0328786
@@ -134,6 +136,22 @@ def plot_single_redshift(scale):
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks-"+munge_scale(scale)+".pdf"))
+    plt.clf()
+
+def plot_crosscorr(scale):
+    """Plot the crosscorrelation coefficient as a function of k for neutrinos and DM."""
+    cc_sims = ["b300p512nu0.4p","b300p512nu0.4hyb"]
+    for ss in cc_sims:
+        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
+        (_, pk_nu) = load_genpk(genpk_neutrino,300)
+        genpk_dm = os.path.join(os.path.join(datadir,ss),"output/PK-DM-PART_00"+scale_to_snap[scale])
+        (_, pk_dm) = load_genpk(genpk_dm,300)
+        genpk_cross = os.path.join(os.path.join(datadir,ss),"output/PK-DMxnu-PART_00"+scale_to_snap[scale])
+        (k_cross, pk_cross) = load_genpk(genpk_cross,300)
+        corr_coeff = pk_cross / np.sqrt(pk_dm* pk_nu)
+        plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=ss)
+    plt.legend(loc=0)
+    plt.savefig(os.path.join(savedir, "corr_coeff-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_nu_single_redshift(scale):
@@ -206,35 +224,37 @@ def plot_single_redshift_rel_camb(scale):
     plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_single_redshift_rel_one(scale, sims=sims, zerosim=zerosim, ymin=0.5,ymax=1.1,camb=True):
+def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True):
     """Plot all the simulations at a single redshift"""
-    (k_div, pk_div) = _get_pk(scale, zerosim)
+    (k_div, pk_div) = _get_pk(scale, pzerosim)
     if camb:
-        zerocambdir = os.path.join(os.path.join(datadir, zerosim),"camb_linear")
+        zerocambdir = os.path.join(os.path.join(datadir, pzerosim),"camb_linear")
         camb = os.path.join(zerocambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
         (zero_k, zero_pk_c) = get_camb_power(camb)
         zero_reb=scipy.interpolate.interpolate.interp1d(zero_k,zero_pk_c)
-        cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
+        cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
         cambpath = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
         (k_c, pk_c) = get_camb_power(cambpath)
         plt.semilogx(k_c, pk_c/zero_reb(k_c),ls=":", label="CAMB")
-    for ss in sims:
+    for ss in psims:
         (k, pk) = _get_pk(scale, ss)
+        assert np.all(np.abs(k/k_div-1)< 1e-4)
         if np.size(k) == 0:
             continue
         plt.semilogx(k, pk/pk_div,ls=lss[ss], label=ss)
     plt.ylim(ymin,ymax)
     plt.xlim(1e-2,20)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_rel-"+munge_scale(scale)+str(zerosim[-1])+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_rel-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":
     for sc in (0.02, 0.200, 0.333, 0.500, 0.8333, 1):
         plot_nu_single_redshift(sc)
+        plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
-        plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
-        plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[2],ymin=0.98,ymax=1.02,camb=False)
+        plot_single_redshift_rel_one(sc,psims=[sims[1],],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+        plot_single_redshift_rel_one(sc,psims=[sims[1],],pzerosim=sims[2],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
         plot_single_redshift(sc)
