@@ -49,7 +49,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\title{A Hybrid Particle-Analytic Method for Non-LInear Neutrino Structure}
+\title{A Hybrid Particle-Analytic Method for Non-Linear Neutrino Structure}
 \author[ S. Bird and Y. Ali-Ha\"{\i}moud]{
   Simeon Bird\thanks{E-mail: spb@ias.edu} and Yacine Ali-Ha\"{\i}moud\thanks{E-mail: yacine@ias.edu}\vspace{1.5mm}\\
 No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey 08540}
@@ -128,12 +128,13 @@ Simulations:
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|l|}
 \hline
-Name & Neutrino mass (eV) & Neutrino method & Box (Mpc/h) & Particles & Notes \\
+Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
 \hline
     &       0             &    -          & 512         & 512       &       \\
     &       0             &    -          & 300         & 512       &       \\
     &     0.4             &   Analytic    & 300         & 512       &       \\
     &     0.4             &   Particle    & 300         & 512       &       \\
+    &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
 
 \hline
 \end{tabular}
@@ -145,14 +146,16 @@ Name & Neutrino mass (eV) & Neutrino method & Box (Mpc/h) & Particles & Notes \\
 
 % Mnu = 0  (300, 512)
 
-% Mnu = 0.06: analytic (300, 1024)
-% Mnu = 0.4: analytic, particle, hybrid. (300, 512),
-% (300,512,1024 *neutrinos*)
+% Mnu = 0.06: analytic (300, 512)
+% Mnu = 0.4: analytic, particle, hybrid. (300, 512)
 %
-% Checks (all Mnu=0.4 (?), hybrid, (300,512)):
+% Checks (all Mnu=0.4, hybrid, (300,512)):
 % Varying vcrit from 500 to 300
 % Varying NuPartTime from 0.333 to 0.5
+% Number of hybrid particles from 256 to 512.
 % (run these first)
+
+%, (300,512,1024 *neutrinos* for hybrid?)
 
 \section{Results}
 \label{sec:results}
@@ -162,16 +165,22 @@ Name & Neutrino mass (eV) & Neutrino method & Box (Mpc/h) & Particles & Notes \\
   \label{fig:density_plot}
 \end{figure}
 
-\begin{figure}
-  \caption{Plot showing the matter power spectrum ratios between analytic and hybrid. }
+\begin{figure*}
+\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
+\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-0_3330.pdf}
+  \caption{Plot showing the matter power spectrum ratios between analytic, particle and hybrid methods at $z=0$. Note the slightly reduced power in the particle method - this is a consequence of the inability to correctly treat the time-varying mass of neutrinos.
+  }
   \label{fig:matter_power}
-\end{figure}
+\end{figure*}
 
-\begin{figure}
+\begin{figure*}
+\includegraphics[width=0.45\textwidth]{nuplots/pks-nu-1.pdf}
+\includegraphics[width=0.45\textwidth]{nuplots/pks-nu-0_333.pdf}
   \caption{Plot showing the neutrino power spectrum ratios between particle, analytic and hybrid.
+  (Left) At $z=0$. (Right) At $z=2$.
   MONEY PLOT.}
   \label{fig:neutrino_power}
-\end{figure}
+\end{figure*}
 
 \begin{figure}
   \caption{Plot showing the cross-correlation coefficient between neutrinos
@@ -236,7 +245,7 @@ as well as the installation procedure for Gadget 2.
   Curves are normalised to the simulation using the scaled $z=0$ transfer function.
   (Right) The same three simulations normalised to the linear matter
   power spectrum from CAMB at $z=0$.}
-  \label{fig:rescaling}
+  \label{fig:rescaling0}
 \end{figure*}
 
 \begin{figure*}
@@ -249,7 +258,7 @@ as well as the installation procedure for Gadget 2.
   Curves are normalised to the simulation using the scaled $z=0$ transfer function.
   (Right) The same three simulations normalised to the linear matter
   power spectrum from CAMB at $z=0$.}
-  \label{fig:rescaling}
+  \label{fig:rescaling10}
 \end{figure*}
 
 %Show higher redshift?
@@ -314,7 +323,7 @@ of the horizon at $z=99$ \citep{Zennaro_2017}. It also naturally accounts
 for the fact that our single fluid simulations are unable to accunt for
 the different growth rates experienced by baryons and CDM.
 
-In Figure \ref{fig:rescaling} we show the differences between the $z=0$
+In Figure \ref{fig:rescaling0} we show the differences between the $z=0$
 power spectra produced using the $z=99$ transfer function, the
 scaled $z=0$ transfer function, and the $z=0$ transfer function
 scaled and evolved neglecting radiation density.
