@@ -14,6 +14,7 @@ savedir = "nuplots/"
 sims = ["b300p512nu0.4p","b300p512nu0.4a","b300p512nu0.4hyb"]
 zerosim = "b300p512nu0"
 lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":":"}
+scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 
 def load_genpk(path,box):
     """Load a GenPk format power spectum, plotting the DM and the neutrinos (if present)
@@ -50,13 +51,43 @@ def get_camb_nu_power(matpow, transfer):
     tnufac = (trans[:,5]/trans[:,6])**2
     return matter[:,0], matter[:,1]*tnufac
 
+def modecount_rebin(kk, pk, modes,minmodes=20, ndesired=200):
+    """Rebins a power spectrum so that there are sufficient modes in each bin"""
+    assert np.all(kk) > 0
+    logkk=np.log10(kk)
+    mdlogk = (np.max(logkk) - np.min(logkk))/ndesired
+    istart=iend=1
+    count=0
+    k_list=[kk[0]]
+    pk_list=[pk[0]]
+    targetlogk=mdlogk+logkk[istart]
+    while iend < np.size(logkk)-1:
+        count+=modes[iend]
+        iend+=1
+        if count >= minmodes and logkk[iend-1] >= targetlogk:
+            pk1 = np.sum(modes[istart:iend]*pk[istart:iend])/count
+            kk1 = np.sum(modes[istart:iend]*kk[istart:iend])/count
+            k_list.append(kk1)
+            pk_list.append(pk1)
+            istart=iend
+            targetlogk=mdlogk+logkk[istart]
+            count=0
+    return (np.array(k_list), np.array(pk_list))
+
 def get_camb_power(matpow):
     """Plot the power spectrum from CAMB
     (or anything else where no changes are needed)"""
     data = np.loadtxt(matpow)
     kk = data[:,0]
     ii = np.where(kk > 0.)
-    return (kk[ii], data[:,1][ii])
+    #Rebin power so that there are enough modes in each bin
+    kk = kk[ii]
+    pk = data[:,1][ii]
+    try:
+        modes = data[:,2][ii]
+    except IndexError:
+        modes = (6+np.arange(np.size(pk))**2)
+    return modecount_rebin(kk, pk, modes,minmodes=60,ndesired=150)
 
 def _get_pk(scale, ss):
     """Get the matter power spectrum"""
@@ -76,11 +107,13 @@ def munge_scale(scale):
 #0.0328786
 #vcrit = 500:
 #0.116826
-def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512):
+def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1.):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
-    (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     (k_sl, pk_sl) = get_nu_power(nu_filename)
     ii = np.where(k_sl != 0.)
+    if scale <= nu_part_time:
+        return k_sl[ii], pk_sl[ii]
+    (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
     shot=(512/npart)**3/(2*math.pi**2)*np.ones(np.size(pk_part_r))
@@ -105,14 +138,13 @@ def plot_single_redshift(scale):
 
 def plot_nu_single_redshift(scale):
     """Plot all the neutrino power in simulations at a single redshift"""
-    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'8'}
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+snap[scale])
+        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
         try:
             try:
-                (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=0.11, npart=256)
+                (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=0.11, npart=256, scale=scale)
             except FileNotFoundError:
                 (k, pk_nu) = get_nu_power(matpow[0])
         except IndexError:
@@ -137,7 +169,6 @@ def plot_nu_single_redshift(scale):
 
 def plot_nu_single_redshift_rel_camb(scale):
     """Plot all neutrino powers relative to CAMB"""
-    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'8'}
     for ss in sims:
         cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
         cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
@@ -150,7 +181,7 @@ def plot_nu_single_redshift_rel_camb(scale):
             (k, pk_nu) = get_nu_power(matpow[0])
         except IndexError:
             try:
-                (k, pk_nu) = load_genpk(os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+snap[scale]),300)
+                (k, pk_nu) = load_genpk(os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale]),300)
             except FileNotFoundError:
                 continue
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
@@ -199,7 +230,7 @@ def plot_single_redshift_rel_one(scale, sims=sims, zerosim=zerosim, ymin=0.5,yma
     plt.clf()
 
 if __name__ == "__main__":
-    for sc in (0.02, 0.200, 0.333, 0.500, 1):
+    for sc in (0.02, 0.200, 0.333, 0.500, 0.8333, 1):
         plot_nu_single_redshift(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_single_redshift_rel_one(sc,sims=[sims[1],],zerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
