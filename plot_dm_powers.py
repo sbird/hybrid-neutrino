@@ -72,6 +72,10 @@ def munge_scale(scale):
     """Make the scale param be a string suitable for printing"""
     return re.sub("\.","_",str(scale))
 
+#vcrit = 300:
+#0.0328786
+#vcrit = 500:
+#0.116826
 def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_part,pk_part)=load_genpk(genpk_neutrino,box)
