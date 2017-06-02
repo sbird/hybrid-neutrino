@@ -97,7 +97,7 @@ def plot_single_redshift(scale):
 
 def plot_nu_single_redshift(scale):
     """Plot all the neutrino power in simulations at a single redshift"""
-    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
+    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'8'}
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
@@ -124,7 +124,7 @@ def plot_nu_single_redshift(scale):
 
 def plot_nu_single_redshift_rel_camb(scale):
     """Plot all neutrino powers relative to CAMB"""
-    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'9'}
+    snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'6', 1:'8'}
     for ss in sims:
         cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
         cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
