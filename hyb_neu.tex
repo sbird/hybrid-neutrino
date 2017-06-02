@@ -155,6 +155,7 @@ Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
 % Number of hybrid particles from 256 to 512.
 % (run these first)
 
+
 %, (300,512,1024 *neutrinos* for hybrid?)
 
 \section{Results}
@@ -167,24 +168,26 @@ Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
 
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
-\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-0_3330.pdf}
-  \caption{Plot showing the matter power spectrum ratios between analytic, particle and hybrid methods at $z=0$. Note the slightly reduced power in the particle method - this is a consequence of the inability to correctly treat the time-varying mass of neutrinos.
+\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-0_83330.pdf}
+  \caption{Plot showing the matter power spectrum ratios between analytic, particle and hybrid methods at (Left) $z=0$ and (Right) $z=0.2$. Note the slightly reduced power in the particle method - this is a consequence of the inability to correctly treat the time-varying mass of neutrinos.
   }
   \label{fig:matter_power}
 \end{figure*}
 
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-1.pdf}
-\includegraphics[width=0.45\textwidth]{nuplots/pks-nu-0_333.pdf}
+\includegraphics[width=0.45\textwidth]{nuplots/pks-nu-0_8333.pdf}
   \caption{Plot showing the neutrino power spectrum ratios between particle, analytic and hybrid.
-  (Left) At $z=0$. (Right) At $z=2$.
+  (Left) At $z=0$. (Right) At $z=0.2$.
   MONEY PLOT.}
   \label{fig:neutrino_power}
 \end{figure*}
 
 \begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
   \caption{Plot showing the cross-correlation coefficient between neutrinos
-  and DM in particle and hybrid code, checking approximation made in analytic method.}
+  and DM in particle and hybrid code, checking approximation made in analytic method.
+  }
   \label{fig:cross-corr}
 \end{figure}
 
