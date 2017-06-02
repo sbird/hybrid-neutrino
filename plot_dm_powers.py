@@ -68,6 +68,17 @@ def _get_pk(scale, ss):
     print(matpow)
     return get_camb_power(matpow)
 
+def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.11):
+    """Get the total matter power spectrum when some of it is in particles, some analytic."""
+    (k_part,pk_part)=load_genpk(genpk_neutrino,box)
+    (k_sl, pk_sl) = get_nu_power(nu_filename)
+    ii = np.where(k_sl != 0.)
+    rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
+    pk_part_r = rebinned(k_sl[ii])
+    shot=(512/512)**3/(2*math.pi**2)*np.ones(np.size(pk_part_r))
+    pk = (part_prop*np.sqrt(pk_part_r-shot)+(1-part_prop)*np.sqrt(pk_sl[ii]))**2
+    return (k_sl[ii], pk)
+
 def plot_single_redshift(scale):
     """Plot all the simulations at a single redshift"""
     for ss in sims:
