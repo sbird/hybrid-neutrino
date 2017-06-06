@@ -268,7 +268,7 @@ if __name__ == "__main__":
     for sc in (0.02, 0.200, 0.333, 0.500, 0.8333, 1):
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
-#         plot_crosscorr(sc)
+        plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc)
         plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel")
