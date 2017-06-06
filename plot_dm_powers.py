@@ -12,8 +12,9 @@ import matplotlib.pyplot as plt
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
 sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
+checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":":"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 
 def load_genpk(path,box):
@@ -155,27 +156,37 @@ def plot_crosscorr(scale):
     plt.savefig(os.path.join(savedir, "corr_coeff-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_nu_single_redshift(scale):
-    """Plot all the neutrino power in simulations at a single redshift"""
-    for ss in sims:
-        sdir = os.path.join(os.path.join(datadir, ss),"output")
-        matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
+def select_nu_power(scale, ss):
+    """Get the neutrino power spectrum that is wanted"""
+    sdir = os.path.join(os.path.join(datadir, ss),"output")
+    matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
+    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
+    try:
         try:
-            try:
-                (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=0.11, npart=256, scale=scale)
-            except FileNotFoundError:
-                (k, pk_nu) = get_nu_power(matpow[0])
-        except IndexError:
-            try:
-                (k, pk_nu) = load_genpk(genpk_neutrino,300)
-                #Shot noise
-                shot=(300/512.)**3*np.ones_like(pk_nu)
-                pk_nu -=shot
-            except FileNotFoundError:
-                continue
+            npart = 512
+            if re.search("single",ss):
+                npart = 256
+            #vcrit = 500
+            part_prop = 0.116826
+            if re.search("vcrit",ss):
+                #vcrit = 300
+                part_prop = 0.0328786
+            (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, scale=scale)
+        except FileNotFoundError:
+            (k, pk_nu) = get_nu_power(matpow[0])
+    except IndexError:
+        (k, pk_nu) = load_genpk(genpk_neutrino,300)
+        #Shot noise
+        shot=(300/512.)**3*np.ones_like(pk_nu)
+        pk_nu -=shot
+    return (k, pk_nu)
+
+def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
+    """Plot all the neutrino power in simulations at a single redshift"""
+    for ss in psims:
+        (k, pk_nu) = select_nu_power(scale, ss)
         plt.loglog(k, pk_nu,ls=lss[ss], label=ss)
-    cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
+    cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
     cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
     cambtrans = os.path.join(cambdir,"ics_transfer_"+str(int(1/scale-1))+".dat")
     (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
@@ -183,7 +194,7 @@ def plot_nu_single_redshift(scale):
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
     plt.ylim(ymin=1e-5)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks-nu-"+munge_scale(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_nu_single_redshift_rel_camb(scale):
@@ -194,45 +205,23 @@ def plot_nu_single_redshift_rel_camb(scale):
         cambtrans = os.path.join(cambdir,"ics_transfer_"+str(int(1/scale-1))+".dat")
         (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
         rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
-        sdir = os.path.join(os.path.join(datadir, ss),"output")
-        matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-        try:
-            (k, pk_nu) = get_nu_power(matpow[0])
-        except IndexError:
-            try:
-                (k, pk_nu) = load_genpk(os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale]),300)
-            except FileNotFoundError:
-                continue
+        (k, pk_nu) = select_nu_power(scale, ss)
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(0.9,1.2)
     plt.legend(loc=0)
     plt.savefig(os.path.join(savedir, "pks_nu_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_nu_single_redshift_rel_one(scale):
+def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymin=0.8,ymax=1.2,fn="rel"):
     """Plot all neutrino powers relative to one simulation"""
-    sdir = os.path.join(os.path.join(datadir, sims[0]),"output")
-    matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-    (k_div, pk_div) = get_nu_power(matpow[0])
+    (k_div, pk_div) = select_nu_power(scale, pzerosim)
     rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div)
-    for ss in sims[1:]:
-        sdir = os.path.join(os.path.join(datadir, ss),"output")
-        matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
-        try:
-            try:
-                (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=0.11, npart=256, scale=scale)
-            except FileNotFoundError:
-                (k, pk_nu) = get_nu_power(matpow[0])
-        except IndexError:
-            try:
-                (k, pk_nu) = load_genpk(os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale]),300)
-            except FileNotFoundError:
-                continue
+    for ss in psims:
+        (k, pk_nu) = select_nu_power(scale, ss)
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
-    plt.ylim(0.8,1.3)
+    plt.ylim(ymin,ymax)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_nu_rel-"+munge_scale(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_nu_"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_single_redshift_rel_camb(scale):
@@ -278,10 +267,13 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
 if __name__ == "__main__":
     for sc in (0.02, 0.200, 0.333, 0.500, 0.8333, 1):
         plot_nu_single_redshift(sc)
-        plot_crosscorr(sc)
+        plot_nu_single_redshift(sc,checksims,fn="cknu")
+#         plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc)
+        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel")
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+#         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=sims[2],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
         plot_single_redshift(sc)
