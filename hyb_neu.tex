@@ -126,27 +126,40 @@ Simulations:
 %TABLE OF SIMULATIONS.
 \begin{table}
 \begin{center}
-\begin{tabular}{|l|c|c|c|c|l|}
+\begin{tabular}{|l|c|c|c|l|}
 \hline
-Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
+% Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
+% \hline
+%     &       0             &    -          & 512         & 512       &       \\
+%     &       0             &    -          & 300         & 512       &       \\
+%     &     0.4             &   Analytic    & 300         & 512       &       \\
+%     &     0.4             &   Particle    & 300         & 512       &       \\
+%     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
+%     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
+%     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
+%     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
+%     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
+    Name & $M_\nu$ (eV) & Method & $N_\mathrm{nu}^{1/3}$ & Notes \\
 \hline
-    &       0             &    -          & 512         & 512       &       \\
-    &       0             &    -          & 300         & 512       &       \\
-    &     0.4             &   Analytic    & 300         & 512       &       \\
-    &     0.4             &   Particle    & 300         & 512       &       \\
-    &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
-
+    &       0             &    -          & 0         &    \\
+    &     0.4             &   Analytic    & 0         &    \\
+    &     0.4             &   Particle    & 512       &    \\
+    &     0.4             &   Hybrid      & 512       &    \\
+    &     0.4             &   Hybrid      & 256       &    \\
+    &     0.4             &   Hybrid      & 512       &    \\
+    &     0.4             &   Hybrid      & 512       &  $v_\mathrm{crit}=300$  \\
+    &     0.4             &   Hybrid      & 512       &  $z_\nu = 2$  \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Table of simulation parameters.
+\caption{Table of simulation parameters. All simulations have a box of $300$ Mpc/h
+and $512^3$ cold dark matter particles.
 }
 \label{tab:simulations}
 \end{table}
 
 % Mnu = 0  (300, 512)
 
-% Mnu = 0.06: analytic (300, 512)
 % Mnu = 0.4: analytic, particle, hybrid. (300, 512)
 %
 % Checks (all Mnu=0.4, hybrid, (300,512)):
@@ -155,8 +168,9 @@ Name & $M_\nu$ (eV) & Method & Box (Mpc/h) & $N_\mathrm{part}^{1/3}$ & Notes \\
 % Number of hybrid particles from 256 to 512.
 % (run these first)
 
-
-%, (300,512,1024 *neutrinos* for hybrid?)
+%Todo:
+% Mnu = 0.06: analytic (300, 512)
+%(300,512,1024 *neutrinos* for hybrid?)
 
 \section{Results}
 \label{sec:results}
