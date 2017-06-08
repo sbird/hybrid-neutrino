@@ -84,8 +84,26 @@ Appendix \ref{sec:manual} is a users manual for our neutrino module.
 \section{Methods}
 \label{sec:methods}
 
+\subsection{Analytic Neutrinos}
+\label{sec:analytic}
 
-\subsection{Hybrid Neutrino}
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
+\caption{Plot showing the matter power spectrum ratio at $z=0$ between massless neutrinos and minimal neutrino mass; one massive neutrino with a mass of $0.06$ eV.
+}
+  \label{fig:minimal_mass}
+\end{figure}
+
+Describe briefly the analytic particle method from the last paper.
+Explain that it is extremely accurate for the pure dark matter distribution - to less than a percent.
+
+\subsection{Particle Neutrinos}
+\label{sec:particle}
+
+Describe briefly particle method. Note that for best accuracy we are using the neutrino tree here,
+and that we rebuild it every timestep to avoid the high neutrino velocities causing numerical problems.
+
+\subsection{Hybrid Neutrinos}
 \label{sec:hybrid}
 
 Describe the method for implementing hybrid neutrinos:
@@ -98,6 +116,15 @@ After the neutrino particles start to gravitate we modify the
 analytic module so that neutrino perturbations are included only above a
 minimum momentum corresponding to the initial slow value sampled by the
 particle velocity distribution. In other words (insert YAH analytics here).
+
+We use the following asymptotic expansion for the integral:
+\begin{align}
+ \int^\infty_{q_\mathrm{c}} \frac{j_0(qX) q^2}{e^q + 1} q^2 dq &= - \Sigma^{\infty}_{n=1} (-1)^n \frac{\exp^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X) \;,\\
+ I_n(q_\mathrm{c},X) &= (n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2) \frac{\sin(q_\mathrm{c} X)}{X} \\
+ &+ (2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2) \cos(q_\mathrm{c} X)\;,\\
+\end{align}
+which we have confirmed, using mathematica, to be accurate to $0.1\%$.
+
 
 We attempted to include neutrinos dynamically at a late time, but
 accurately modelling the non-linear distortions to the analytic
@@ -142,12 +169,14 @@ Simulations:
     Name & $M_\nu$ (eV) & Method & $N_\mathrm{nu}^{1/3}$ & Notes \\
 \hline
     &       0             &    -          & 0         &    \\
+    &     0.06            &   Analytic    & 0         &  Full hierarchy  \\
     &     0.4             &   Analytic    & 0         &    \\
     &     0.4             &   Particle    & 512       &    \\
     &     0.4             &   Hybrid      & 512       &    \\
     &     0.4             &   Hybrid      & 256       &    \\
     &     0.4             &   Hybrid      & 512       &    \\
     &     0.4             &   Hybrid      & 512       &  $v_\mathrm{crit}=300$  \\
+    &     0.4             &   Hybrid      & 512       &  $v_\mathrm{crit}=5000$  \\
     &     0.4             &   Hybrid      & 512       &  $z_\nu = 2$  \\
 \hline
 \end{tabular}
@@ -158,18 +187,17 @@ and $512^3$ cold dark matter particles.
 \label{tab:simulations}
 \end{table}
 
-% Mnu = 0  (300, 512)
+% Mnu = 0  (300)
 
-% Mnu = 0.4: analytic, particle, hybrid. (300, 512)
+% Mnu = 0.4: analytic, particle, hybrid. (300)
 %
-% Checks (all Mnu=0.4, hybrid, (300,512)):
+% Checks (all Mnu=0.4, hybrid, (300)):
 % Varying vcrit from 500 to 300
 % Varying NuPartTime from 0.333 to 0.5
 % Number of hybrid particles from 256 to 512.
-% (run these first)
+% Mnu = 0.06: analytic (300, 512)
 
 %Todo:
-% Mnu = 0.06: analytic (300, 512)
 %(300,512,1024 *neutrinos* for hybrid?)
 
 \section{Results}
@@ -197,36 +225,40 @@ and $512^3$ cold dark matter particles.
   \label{fig:neutrino_power}
 \end{figure*}
 
+There is good agreement between all methods for the total matter power.
+The particle method has a slightly reduced power, which is due to our inability to
+treat variable neutrino mass in the particle method.
+
+\subsection{Numerical Checks}
+
+\begin{figure*}
+  \includegraphics[width=0.45\textwidth]{nuplots/pks-cknu-1.pdf}
+  \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel-1.pdf}
+  \caption{Plot showing the difference in the neutrino power spectrum from changing NuPartTime and vcrit is small. Also shown is changing the neutrino particle number. We have subtracted the neutrino shot noise.}
+  \label{fig:vcrit}
+\end{figure*}
+
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
   \caption{Plot showing the cross-correlation coefficient between neutrinos
   and DM in particle and hybrid code, checking approximation made in analytic method.
+  The cross-correlation is unity for scales where the neutrino power is not dominated by shot noise.
+  \spb{Add vertical line marking this scale}
   }
   \label{fig:cross-corr}
 \end{figure}
 
-Perhaps follow this with a plot showing the cross-correlation coefficient between neutrinos+DM
-in different simulations, to show that the structure is really the same in all of them.
-
-
-\subsection{Numerical Checks}
-
-\begin{figure}
-  \caption{Plot showing the difference in the neutrino power spectrum from changing NuPartTime is small. }
-  \label{fig:nuparttime}
-\end{figure}
-
-\begin{figure}
-  \caption{Plot showing the difference in the neutrino power spectrum from changing vcrit is small. }
-  \label{fig:vcrit}
-\end{figure}
 
 \begin{figure}
     \caption{Plot showing CDM simulation with test particle neutrinos with fixed (not FD) single velocity.
-  Neutrino power spectrum, neutrino-CDM cross-correlation. Compared to analytic $P_{CDM}$.}
+  Neutrino power spectrum, compared to analytic $P_{CDM}$.}
   \label{fig:testpart}
 \end{figure}
 
+We have checked that our results are insensitive to the time at which the hybrid neutrinos switch on,
+as well as small variations in the fraction of neutrinos followed by particles or analytically. We further show that as long as we are on scales sufficiently large to avoid shot noise, our simulations are converged with respect to neutrino particle number.
+
+Figure \ref{fig:cross-corr} shows the cross-correlation between (particle) neutrinos and CDM particles. Our analytic method implicitly assumes that this cross-correlation is unity. Figure \ref{fig:cross-corr} verifies this assumption for scales where the particle neutrino power is not dominated by shot noise. \spb{or which are larger than the neutrino free-streaming length?}
 
 \section{Conclusions}
 \label{sec:conclusion}
