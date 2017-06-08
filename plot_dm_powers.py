@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
-checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime"]
+sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb-all"]
+checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 
 def load_genpk(path,box):
@@ -115,7 +115,7 @@ def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
     ii = np.where(k_sl != 0.)
-    if scale <= nu_part_time:
+    if scale < nu_part_time:
         return k_sl[ii], pk_sl[ii]
     (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
@@ -171,6 +171,9 @@ def select_nu_power(scale, ss):
             if re.search("vcrit",ss):
                 #vcrit = 300
                 part_prop = 0.0328786
+            if re.search("all",ss):
+                #vcrit = 5000
+                part_prop = 1.
             (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, scale=scale)
         except FileNotFoundError:
             (k, pk_nu) = get_nu_power(matpow[0])
@@ -240,7 +243,7 @@ def plot_single_redshift_rel_camb(scale):
     plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True):
+def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True,fn="rel"):
     """Plot all the simulations at a single redshift"""
     (k_div, pk_div) = _get_pk(scale, pzerosim)
     if camb:
@@ -261,7 +264,7 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
     plt.ylim(ymin,ymax)
     plt.xlim(1e-2,20)
     plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_rel-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_"+fn+"-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":
@@ -273,6 +276,7 @@ if __name__ == "__main__":
         plot_nu_single_redshift_rel_one(sc)
         plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel")
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+        plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
         plot_single_redshift(sc)
