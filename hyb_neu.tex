@@ -203,9 +203,17 @@ and $512^3$ cold dark matter particles.
 \section{Results}
 \label{sec:results}
 
+\begin{figure*}
+\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt2.pdf}
+\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4pt2.pdf}
+  \caption{Projected density plot of neutrino particles from hybrid vs particle simulation (with shot noise). Note how the hybrid particles cluster more.}
+  \label{fig:nu_density_plot}
+\end{figure*}
+
 \begin{figure}
-  \caption{Projected density plot of CDM (just one plot) and neutrinos from hybrid (split into fast and slow) vs particle simulation (with shot noise)}
-  \label{fig:density_plot}
+\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt1.pdf}
+  \caption{Projected density plot of CDM from the hybrid simulation}
+  \label{fig:cdm_density_plot}
 \end{figure}
 
 \begin{figure*}
@@ -251,8 +259,8 @@ treat variable neutrino mass in the particle method.
 
 \begin{figure}
     \includegraphics[width=0.45\textwidth]{nuplots/P_nu_M500_z0.pdf}
-    \caption{Plot showing CDM simulation with test particle neutrinos with fixed (not FD) single velocity of $500$ km/s at $z=0$. Neutrino power spectrum, compared to analytic $P_{CDM}$.\spb{I can't find the analytic estimates anymore...need to reproduce them}}
-  \label{fig:testpart}
+    \caption{Plot showing CDM simulation with test particle neutrinos with fixed (not FD) single velocity of $500$ km/s at $z=0$. Neutrino power spectrum, compared to analytic $P_{CDM}$.\spb{I can't find the analytic estimates anymore...need to reproduce them. Also not sure I trust these specific simulations: I found some gadget bugs along the way. They should be re-run or possibly removed.}}
+   \label{fig:testpart}
 \end{figure}
 
 We have checked that our results are insensitive to the time at which the hybrid neutrinos switch on,

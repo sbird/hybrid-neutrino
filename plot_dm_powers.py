@@ -8,14 +8,25 @@ import scipy.interpolate
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
+from nbodykit.lab import BigFileCatalog
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb-all"]
+sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
 checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
+
+def plot_image(sim,snap, dataset=1):
+    """Make a pretty picture of the mass distribution."""
+    pp = os.path.join(os.path.join(datadir, sim), "output/PART_00"+str(snap))
+    cat = BigFileCatalog(pp, dataset=str(dataset), header='Header')
+    mesh = cat.to_mesh(Nmesh=512)
+    plt.clf()
+    plt.imshow(np.log10(mesh.preview(axes=(0, 1))))
+    plt.savefig(os.path.join(savedir, "dens-plt-"+munge_scale(sim)+"t"+str(dataset)+".pdf"))
+    plt.clf()
 
 def load_genpk(path,box):
     """Load a GenPk format power spectum, plotting the DM and the neutrinos (if present)
@@ -136,7 +147,7 @@ def plot_single_redshift(scale):
     (k_camb, pk_camb) = get_camb_power(camb)
     rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -152,7 +163,7 @@ def plot_crosscorr(scale):
         (k_cross, pk_cross) = load_genpk(genpk_cross,300)
         corr_coeff = pk_cross / np.sqrt(pk_dm* pk_nu)
         plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=ss)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "corr_coeff-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -176,6 +187,8 @@ def select_nu_power(scale, ss):
                 part_prop = 1.
             (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, scale=scale)
         except FileNotFoundError:
+            if not re.search("a$",ss):
+                print("Problem",genpk_neutrino)
             (k, pk_nu) = get_nu_power(matpow[0])
     except IndexError:
         (k, pk_nu) = load_genpk(genpk_neutrino,300)
@@ -196,7 +209,7 @@ def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
     plt.ylim(ymin=1e-5)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -211,7 +224,7 @@ def plot_nu_single_redshift_rel_camb(scale):
         (k, pk_nu) = select_nu_power(scale, ss)
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(0.9,1.2)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_nu_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -223,7 +236,7 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
         (k, pk_nu) = select_nu_power(scale, ss)
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(ymin,ymax)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_nu_"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -239,13 +252,14 @@ def plot_single_redshift_rel_camb(scale):
         rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
         plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(0.94,1.06)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True,fn="rel"):
     """Plot all the simulations at a single redshift"""
     (k_div, pk_div) = _get_pk(scale, pzerosim)
+    rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value="extrapolate")
     if camb:
         zerocambdir = os.path.join(os.path.join(datadir, pzerosim),"camb_linear")
         camb = os.path.join(zerocambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
@@ -257,25 +271,31 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
         plt.semilogx(k_c, pk_c/zero_reb(k_c),ls=":", label="CAMB")
     for ss in psims:
         (k, pk) = _get_pk(scale, ss)
-        assert np.all(np.abs(k/k_div-1)< 1e-4)
         if np.size(k) == 0:
             continue
-        plt.semilogx(k, pk/pk_div,ls=lss[ss], label=ss)
+        plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
     plt.ylim(ymin,ymax)
     plt.xlim(1e-2,20)
-    plt.legend(loc=0)
+    plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_"+fn+"-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":
+    plot_image(sims[0],8)
+    plot_image(sims[2],8,1)
+    plot_image(sims[2],8,2)
+    plot_image(sims[1],8,1)
+    plot_image(sims[1],8,2)
     for sc in (0.02, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc)
-        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel")
+        plot_single_redshift_rel_one(sc,psims=["b300p512nu0.06a",],fn="lowmass",ymin=0.9)
+        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.5,ymax=1.5)
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+        plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=sims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
         plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc)
