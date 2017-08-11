@@ -231,7 +231,7 @@ def plot_nu_single_redshift_rel_camb(scale):
 def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymin=0.8,ymax=1.2,fn="rel"):
     """Plot all neutrino powers relative to one simulation"""
     (k_div, pk_div) = select_nu_power(scale, pzerosim)
-    rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div)
+    rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value='extrapolate')
     for ss in psims:
         (k, pk_nu) = select_nu_power(scale, ss)
         plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
