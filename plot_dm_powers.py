@@ -131,7 +131,7 @@ def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart
     (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
-    shot=(512/npart)**3/(2*math.pi**2)*np.ones(np.size(pk_part_r))
+    shot=(300/npart)**3*np.ones(np.size(pk_part_r))
     pk = (part_prop*np.sqrt(pk_part_r-shot)+(1-part_prop)*np.sqrt(pk_sl[ii]))**2
     return (k_sl[ii], pk)
 
