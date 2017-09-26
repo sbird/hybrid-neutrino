@@ -13,9 +13,10 @@ from nbodykit.lab import BigFileCatalog
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
 sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
-checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
+# checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
+checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb", "b300p512nu0.4p"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit-ic":"--","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 
 def plot_image(sim,snap, dataset=1):
@@ -122,6 +123,8 @@ def munge_scale(scale):
 #0.0328786
 #vcrit = 500:
 #0.116826
+#vcrit = 1000:
+#0.450869
 def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1.):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
@@ -175,17 +178,20 @@ def select_nu_power(scale, ss):
     try:
         try:
             npart = 512
+            nu_part_time = 0.5
             if re.search("single",ss):
                 npart = 256
             #vcrit = 500
             part_prop = 0.116826
             if re.search("vcrit",ss):
-                #vcrit = 300
-                part_prop = 0.0328786
-            if re.search("all",ss):
+                #vcrit = 1000
+                part_prop = 0.450869
+            if re.search("all",ss) or re.search("nutime",ss):
                 #vcrit = 5000
                 part_prop = 1.
-            (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, scale=scale)
+                if re.search("all",ss):
+                    nu_part_time = 0.25
+            (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
         except FileNotFoundError:
             if not re.search("a$",ss):
                 print("Problem",genpk_neutrino)
