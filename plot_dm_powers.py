@@ -12,11 +12,11 @@ from nbodykit.lab import BigFileCatalog
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
+sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb-vcrit"]
 # checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
 checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb", "b300p512nu0.4p"]
 zerosim = "b300p512nu0"
-lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit-ic":"--","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
+lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 
 def plot_image(sim,snap, dataset=1):
@@ -125,6 +125,8 @@ def munge_scale(scale):
 #0.116826
 #vcrit = 1000:
 #0.450869
+#vcrit = 750:
+#0.275691
 def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1.):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
@@ -178,17 +180,20 @@ def select_nu_power(scale, ss):
     try:
         try:
             npart = 512
-            nu_part_time = 0.5
             if re.search("single",ss):
                 npart = 256
             #vcrit = 500
-            part_prop = 0.116826
+            nu_part_time = 0.51
+            part_prop = 0.275691
+#             part_prop = 0.116826
             if re.search("vcrit",ss):
                 #vcrit = 1000
+                nu_part_time = 0.5
                 part_prop = 0.450869
             if re.search("all",ss) or re.search("nutime",ss):
                 #vcrit = 5000
                 part_prop = 1.
+                nu_part_time = 0.5
                 if re.search("all",ss):
                     nu_part_time = 0.25
             (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
@@ -299,7 +304,7 @@ if __name__ == "__main__":
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc)
         plot_single_redshift_rel_one(sc,psims=["b300p512nu0.06a",],fn="lowmass",ymin=0.9)
-        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.5,ymax=1.5)
+        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.8,ymax=1.2)
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=sims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
         plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
