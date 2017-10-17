@@ -5,6 +5,7 @@ import math
 import re
 import numpy as np
 import scipy.interpolate
+import scipy.signal
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
@@ -13,11 +14,52 @@ from nbodykit.lab import BigFileCatalog
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
 sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb-vcrit"]
-# checksims = ["b300p512nu0.4hyb","b300p512nu0.4hyb-single","b300p512nu0.4hyb-vcrit","b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-all", "b300p512nu0.4p"]
-checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb", "b300p512nu0.4p"]
+checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-single"]
 zerosim = "b300p512nu0"
 lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
+
+def smooth(x,window_len=15,window='hanning'):
+    """smooth the data using a window with requested size.
+
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+
+    input:
+        x: the input signal
+        window_len: the dimension of the smoothing window; should be an odd integer
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+
+    see also:
+
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+
+    TODO: the window parameter could be the window itself if an array instead of a string
+    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
+    """
+    if window_len<3:
+        return x
+    s=np.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    else:
+        w=eval('np.'+window+'(window_len)')
+    y=np.convolve(w/w.sum(),s,mode='valid')
+    return y[int((window_len-1)/2):int(-(window_len-1)/2)]
 
 def plot_image(sim,snap, dataset=1):
     """Make a pretty picture of the mass distribution."""
@@ -213,6 +255,8 @@ def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     for ss in psims:
         (k, pk_nu) = select_nu_power(scale, ss)
         plt.loglog(k, pk_nu,ls=lss[ss], label=ss)
+    kl = np.logspace(-2, 2)
+    plt.loglog(kl, (300/512)**3*np.ones_like(kl), color="lightgrey", ls=":")
     cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
     cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
     cambtrans = os.path.join(cambdir,"ics_transfer_"+str(int(1/scale-1))+".dat")
@@ -220,6 +264,7 @@ def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
     plt.ylim(ymin=1e-5)
+    plt.xlim(0.05, 10)
     plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
@@ -233,7 +278,8 @@ def plot_nu_single_redshift_rel_camb(scale):
         (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
         rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
         (k, pk_nu) = select_nu_power(scale, ss)
-        plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
+        pkfilt = smooth(pk_nu/rebinned(k))
+        plt.semilogx(k, pkfilt,ls=lss[ss], label=ss)
     plt.ylim(0.9,1.2)
     plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_nu_camb-"+munge_scale(scale)+".pdf"))
@@ -245,7 +291,8 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
     rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value='extrapolate')
     for ss in psims:
         (k, pk_nu) = select_nu_power(scale, ss)
-        plt.semilogx(k, pk_nu/rebinned(k),ls=lss[ss], label=ss)
+        pkfilt = smooth(pk_nu/rebinned(k))
+        plt.semilogx(k, pkfilt,ls=lss[ss], label=ss)
     plt.ylim(ymin,ymax)
     plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_nu_"+fn+"-"+munge_scale(scale)+".pdf"))
@@ -261,7 +308,8 @@ def plot_single_redshift_rel_camb(scale):
             continue
         (k_camb, pk_camb) = get_camb_power(camb)
         rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
-        plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=ss)
+        pkfilt = smooth(pk/rebinned(k))
+        plt.semilogx(k, pkfilt,ls=lss[ss], label=ss)
     plt.ylim(0.94,1.06)
     plt.legend(loc=0,fontsize=7)
     plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
