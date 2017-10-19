@@ -201,6 +201,8 @@ which we have confirmed, using mathematica, to be accurate to $0.1\%$.
 The neutrino particles are initially unclustered; the velocities expected from structure formation at the initial redshift are substantially smaller than their thermal velocities, even for the slow tail. We verified explicitly that our results at all redshifts were unchanged for a simulation where the slow tail of the neutrinos had velocities imparted matching the transfer function of the cold dark matter, which is an over-estimate of the true initial velocity.
 Note that this technique still imposes some numerical overhead on the code because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex.
 
+Our hybrid neutrino implementation does not include the neutrino hierarchy, assuming all three neutrino species are degenerate. The inclusion of the neutrino hierarchy in future work should not be difficult, but we deferred it because the masses where it is important ($M_\nu < 0.15$~eV) are sufficiently low that their clustering is already adequately modelled by our linear response method.
+
 \subsection{Code improvements}
 \label{sec:code}
 
@@ -213,16 +215,21 @@ We have altered our neutrino integrator to be a stand-alone module, largely
 independent of the underlying N-body code. It should thus be easy to include
 into codes other than Gadget. We have also provided a script to integrate into the
 public version of Gadget-2, as well as the highly scalable public MP-Gadget
-used for the BlueTides simulation. Our code is publically downloadable from.
+used for the BlueTides simulation. Our code is publicly downloadable from.
 We have added comprehensive unit tests and documentation.
 
 \subsection{Simulations}
 \label{sec:simulations}
 
 All our simulations were run with MP-Gadget, using the scripts available
-and the initial condition generator S-GenIC.
+and the initial condition generator S-GenIC. Our simulations are detailed in Table \ref{tab:simulations}.
+All our simulations have a box size of $300$ comoving Mpc/h, and $512^3$ cold dark matter particles,
+initialised using the CDM+baryon transfer function at $z=99$. Each simulation has the same initial phases,
+ensuring the same distribution of late-time halos. We have performed simulations with massless neutrinos, and a linear response simulation with the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV and a normal neutrino hierarchy. All other simulations have a total neutrino mass of $0.4$~eV, the value preferred for the neutrino mass by \cite{Beutler_2014}, and assume a degenerate neutrino hierarchy. $0.4$~eV was chosen because it is the minimal neutrino mass for which the linear response method fails to accurately reproduce the neutrino power spectrum on these scales.
 
-Simulations:
+We have performed three simulations which differ only in the neutrino simulation method; one with linear response, one with particle neutrinos and one with our new hybrid implementation. We then performed a number of simulations designed to test the sensitivity of our hybrid method to numerical parameters. Our default hybrid neutrino simulation uses a critical velocity of $750$ (comoving) km/s, a neutrino switch-on time of $z_\nu = 1$ and includes $512^3$ neutrino particles, matching the cold dark matter. Our modified simulations included one with a neutrino switch-on time of $z_\nu = 4$, one with $256^3$ neutrino particles, and simulations with critical velocities of $1000$ and $5000$ km/s. The simulation with a critical velocity of $5000$ km/s includes all the neutrino power in particles after the neutrino switch-on time and is thus useful as a comparison to the pure particle method. We finally performed a simulation with a critical velocity of $500$ km/s, verifying that this was too small to achieve a converged neutrino power spectrum.
+For reference, the fraction of the neutrino matter density in particles for critical velocities of $500$, $750$, $1000$, $5000$ (comoving) km/s is $0.117$, $0.276$, $0.451$ and $1$ respectively.
+
 %TABLE OF SIMULATIONS.
 \begin{table}
 \begin{center}
@@ -241,16 +248,18 @@ Simulations:
 %     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
     Name & $M_\nu$ (eV) & Method & $N_\mathrm{nu}^{1/3}$ & $v_\mathrm{crit}$ & Notes \\
 \hline
-    &       0             &    -          & 0         & - &    \\
-    &     0.06            &   Analytic    & 0         & - &  Full hierarchy  \\
-    &     0.4             &   Analytic    & 0         & - &    \\
-    &     0.4             &   Particle    & 512       & - &    \\
+CDM    &       0             &    -          & 0         & - &    \\
+MINNU    &     0.06            &   Analytic    & 0         & - &  Normal hier.  \\
+LINRESP    &     0.4             &   Analytic    & 0         & - &    \\
+PARTICLE    &     0.4             &   Particle    & 512       & - &    \\
 %     &     0.4             &   Hybrid      & 256     &   &    \\
-    &     0.4             &   Hybrid      & 512       & 5000 & \\
-    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 4$  \\
-    &     0.4             &   Hybrid      & 512       & 500 &    \\
-    &     0.4             &   Hybrid      & 512       & 750 & \\
-    &     0.4             &   Hybrid      & 512       & 1000 & \\
+HYBRID    &     0.4             &   Hybrid      & 512       & 750 & \\
+HYBSING    &     0.4             &   Hybrid      & 256       & 750 & \\
+VCRIT    &     0.4             &   Hybrid      & 512       & 1000 & \\
+HYBALL    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 4$ \\
+NUTIME    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 1$  \\
+%    &     0.4             &   Hybrid      & 512       & 500 &    \\
+
 \hline
 \end{tabular}
 \end{center}
@@ -276,26 +285,6 @@ and $512^3$ cold dark matter particles.
 \section{Results}
 \label{sec:results}
 
-\begin{figure}
-\includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
-\caption{Plot showing the matter power spectrum ratio at $z=0$ between massless neutrinos and minimal neutrino mass; one massive neutrino with a mass of $0.06$ eV.
-}
-  \label{fig:minimal_mass}
-\end{figure}
-
-\begin{figure*}
-\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt2.pdf}
-\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4pt2.pdf}
-  \caption{Projected density plot of neutrino particles from hybrid vs particle simulation (with shot noise). Note how the hybrid particles cluster more.}
-  \label{fig:nu_density_plot}
-\end{figure*}
-
-\begin{figure}
-\includegraphics[width=0.45\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt1.pdf}
-  \caption{Projected density plot of CDM from the hybrid simulation}
-  \label{fig:cdm_density_plot}
-\end{figure}
-
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_rel-0_83330.pdf}
@@ -303,6 +292,13 @@ and $512^3$ cold dark matter particles.
   }
   \label{fig:matter_power}
 \end{figure*}
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/pks_lowmass-10.pdf}
+\caption{Plot showing the matter power spectrum ratio at $z=0$ between massless neutrinos and minimal neutrino mass; one massive neutrino with a mass of $0.06$ eV.
+}
+\label{fig:minimal_mass}
+\end{figure}
 
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-1.pdf}
@@ -313,16 +309,30 @@ and $512^3$ cold dark matter particles.
   \label{fig:neutrino_power}
 \end{figure*}
 
-There is good agreement between all methods for the total matter power.
-The particle method has a slightly reduced total power, which is due to our inability to
-treat variable neutrino mass in the particle method.
+\begin{figure*}
+\includegraphics[width=0.3\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt1.pdf}
+\includegraphics[width=0.3\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt2.pdf}
+\includegraphics[width=0.3\textwidth]{nuplots/dens-plt-b300p512nu0_4pt2.pdf}
+  \caption{Projected density plots at $z=0$. (Left) Cold dark matter. (Middle) Neutrino particles from the hybrid simulation, with initial velocity $<750$ (comoving) km/s. (Right) Neutrino particles from the pure particle simulation. No correction has been made for shot noise. The clustering of the hybrid particles is intermediate between that of the cold dark matter and the particle neutrinos. Notice how the positions of clusters and voids is the same in all three panels.}
+  \label{fig:density_plot}
+\end{figure*}
+
+In this Section we show the results of our simulations at low redshift for all three methods: particle, linear response and hybrid. Figure~\ref{fig:matter_power} shows the ratio of the matter power spectrum for our three methods at $z=0$ and $z = 0.2$ to the matter power spectrum of the massless neutrino CDM simulation. The HYBRID and LINRESP simulations are indistinguishable, differing by around $0.1\%$. The PARTICLE simulation shows a reduction in power of about $1-2\%$. This deficit is because the particle simulation does not include the increased mass of the neutrinos at early times, when they are relativistic, and thus slightly underestimates $\Omega_M$ between $z=99$ and $z=49$.\footnote{Note this discrepancy did not appear in \cite{AHB} because of the slightly inaccurate initial conditions detailed in Appendix \ref{sec:initcond}, which masked it by neglecting relativistic effects in all methods.}
+The effect of neutrinos differs from the linear theory, as calculated by CAMB, at $k \sim 0.2$ Mpc/h.
+Figure \ref{fig:minimal_mass} shows the results of the $M_\nu = 0.06$~eV linear response simulation at $z=0$, demonstrating that this simulation differs from linear theory at a similar scale, and further demonstrating that our simulations are converged and now able to reproduce the results of linear theory on large scales even for the lowest neutrino mass allowed by oscillation experiments, a feat never possible with particle neutrinos.
+
+Figure~\ref{fig:neutrino_power} compares the power spectrum of the neutrinos in each of our methods, as well as the linear theory power spectrum, at $z=0$ and $z=0.2$. For the HYBRID simulation we have computed the total neutrino power spectrum as the weighted sum of the power spectrum of the fast and slow components $P^{1/2}_\nu = f_\mathrm{fast} P^{1/2}_\mathrm{fast} + f_\mathrm{slow} P^{1/2}_\mathrm{slow}$, where $f_\mathrm{fast} + f_\mathrm{slow} = 1$.
+We have subtracted shot noise at the level shown in the Figure. Remarkably the neutrino power appears recoverable even two orders of magnitude below the shot noise level. Note that the shot noise for the HYBRID simulation is a factor of three lower than for the PARTICLE simulation, as the matter density in particle neutrinos is only one third of the total neutrino density. The neutrino power spectrum in the PARTICLE and HYBRID simulations agree by eye extremely well \spb{Lower panel with ratios?}, doubly remarkable given that the PARTICLE method does not reproduce the total matter clustering. Both methods show sharply increased neutrino power on small scales over the linear response method. We verified that at $z=1$ all three methods were in reasonable agreement.
+It thus seems that the hybrid method indeed improves agreement for the neutrino power spectrum.
+
+In order to give a visual impression of the clustering of the neutrinos and dark matter, Figure \ref{fig:density_plot} shows projected densities for the CDM next to neutrino particles from the HYBRID and PARTICLE simulations.\footnote{Projected density plots made using Nbodykit.} It is visually apparent that the structure of filaments, halos and voids is identical in all three plots, further reinforcing the conclusion of Figure \ref{fig:cross-corr} that the phases of the neutrinos and CDM are highly correlated. The increased clustering of the hybrid neutrinos, drawn from the initially slower part of the Fermi-Dirac distribution, is also apparent when compared to the particle neutrinos. However, they still cluster less than the CDM.
 
 \subsection{Numerical Checks}
 
 \begin{figure*}
   \includegraphics[width=0.45\textwidth]{nuplots/pks-cknu-1.pdf}
   \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel-1.pdf}
-  \caption{Plot showing the difference in the neutrino power spectrum from changing NuPartTime and vcrit is small. Also shown is changing the neutrino particle number. We have subtracted the neutrino shot noise.}
+  \caption{Plot showing the neutrino power spectrum from our numerical checks, at $z=0$. We have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles. (Left) Absolute neutrino power spectrum. (Right) Ratio of neutrino power spectra to the HYBALL simulation. We have subtracted the neutrino shot noise in all cases. Note that to reduce mode-to-mode scattering, the ratio curves have been smoothed.}
   \label{fig:vcrit}
 \end{figure*}
 
@@ -332,10 +342,9 @@ treat variable neutrino mass in the particle method.
 %    \label{fig:testpart}
 % \end{figure}
 %
-We have checked that our results are insensitive to the time at which the hybrid neutrinos switch on,
-as well as small variations in the fraction of neutrinos followed by particles or analytically. We further show that as long as we are on scales sufficiently large to avoid shot noise, our simulations are converged with respect to neutrino particle number.
+Figure~\ref{fig:vcrit} shows the effects of changing various numerical parameters of our hybrid neutrino simulations. All simulations agree to within $10\%$ until $k = 2$ Mpc/h, which corresponds to the mean inter-particle spacing of the simulation. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. In particular the PARTICLE and HYBALL simulations agree extremely well: these two simulations differ only in their treatment of neutrinos at $z > 4$. The PARTICLE simulation shows about $2\%$ less power than the HYBALL simulation, a similar deficit to the differences in the total matter power spectrum. The NUTIME simulation is identical to HYBALL, except that the neutrino switch-on time is $z=1$. This simulation has a power deficit of about $5\%$ on large scales. Note that it is likely the result of the NUTIME simulation is preferable; at high redshift the neutrino component suffers from shot noise, which may be leading to artificial structure growth in the neutrinos. Alternatively, there may be some genuine real structure growth which is being missed, although this seems unlikely at these large scales.
 
-Figure \ref{fig:cross-corr} shows the cross-correlation between (particle) neutrinos and CDM particles. Our analytic method implicitly assumes that this cross-correlation is unity. Figure \ref{fig:cross-corr} verifies this assumption for scales where the particle neutrino power is not dominated by shot noise. \spb{or which are larger than the neutrino free-streaming length?}
+The ratio with simulations which alter the neutrino critical velocity are somewhat noisy, an unfortunate consequence of combining the analytic and particle neutrino power spectra, which have slightly different mode-to-mode scatters. When all neutrinos are particles, this mode-to-mode scatter is the same for both simulations and disappears in the ratio. This scatter should be understood as a consequence of the finite accuracy of the Gadget gravity solver when dealing with a particle component making up less than $1\%$ of the total matter density. The VCRIT simulation, which also has a neutrino switch-on time of $z=1$, agrees well with the NUTIME simulation. The increased power around $k \sim 1$ is likely a consequence of the increased effective resolution in the neutrino component and thus slightly increased non-linear growth. The few percent changes at large scales are probably noise. The HYBRID simulation, with a slightly smaller critical velocity of $750$ km/s, exhibits $0-5\%$ less power at $k=0.1 - 0.5$ h/Mpc. While this could also be due to shot noise, we suspect this is because this simulation misses some real non-linear structure formation on these scales. We performed another simulation with a neutrino critical velocity of $500$ km/s, and found a similar, but larger, reduction in power. Furthermore, the HYBSING simulation, which is identical to HYBRID but with $8$ times fewer particles, gives identical results to the HYBRID simulation, suggesting that shot noise is not having a large effect. This is somewhat remarkable, given that at $k=2$ and $z=0$ shot noise dominates by a full order of magnitude, and it suggests that future users of this simulation code may use reduced particle numbers with confidence. Similar results are seen at other redshifts, although convergence is markedly worse ($20-30\%$) at the neutrino switch-on time in all cases.
 
 \section{Conclusions}
 \label{sec:conclusion}
