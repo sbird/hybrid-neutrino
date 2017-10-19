@@ -73,13 +73,33 @@ No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey
 
 \section{Introduction}
 
-Our paper is the greatest paper in the world. Blah de blah.
-This paper is organised as follows. In Section \ref{sec:methods},
-we describe our simulations methods. We describe our
-results and compare them against other methods
-in Section \ref{sec:results}. We conclude in Section \ref{sec:conclusion}.
-Appendix \ref{sec:manual} is a users manual for our neutrino module.
-\cite{AHB}
+Our paper is the greatest paper in the world. Blah de blah. \cite{AHB}
+
+The simplest method of simulating massive neutrinos is to treat them as a particle species, akin
+to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed
+in the initial conditions. This approach has been used extensively in the past,
+in, e.g.~\citep{Brandbyge_2008, Bird_2012}. Its main advantages are that it is simple to implement and fully includes the non-linear physics of the neutrinos. However, the large thermal velocities of the neutrino particles means that this method can cause numerical problems.
+
+When forming structure from cold dark matter, with low to zero thermal velocities, the matter in the fluid element represented by the N-body particle feels a similar force and thus moves cohesively in roughly the same direction. Thus
+the initial discretisation of the fluid remains a fair description of the final fluid state. However, for massive neutrinos, each neutrino particle has a random thermal velocity, which causes the matter in each fluid element to be constantly exchanged with other neighbouring N-body particles. This is modelled in a particle simulation by imparting a thermal velocity to the N-body particle, which means that the N-body particles constantly trade positions, leading to a flat power spectrum, known as shot noise. Reducing shot noise requires increasing the particle load of the simulation.
+Furthermore, because the neutrino is followed by a distinct particle species, modelling the neutrino hierarchy involves the use of at least two particle species, again increasing the cost of the simulation. Finally, particle neutrino simulations fix the total mass of the neutrino species, and are fully Newtonian. This can lead to a lack of power at early times, when the neutrinos are moving at relativistic velocities and have a larger effective mass.
+
+For these reasons, as well as reasons of numerical efficiency, in \cite{AHB} we proposed modelling neutrinos using a perturbative linear response approximation, described in more detail in Section~\ref{sec:analytic}. Here the neutrino component is followed using first-order linear perturbation theory, clustering in a background potential generated from the fully non-linear clustering of the CDM particles. The main improvement of this method over earlier perturbation-based neutrino codes \citep{Brandbyge_2009} was our use of the full non-linear CDM potential. This allows us
+to achieve accurate results for any level of CDM clustering, as long as neutrinos themselves are still
+clustering linearly.
+
+As shown in \cite{AHB}, this method computes the total matter power spectrum to better
+than 1\% for all astrophysically relevant neutrino masses ($M_\nu \lesssim 0.6$ eV), with minimal
+computational overhead. However, \citep{AHB} also found that this method did not reproduce the
+power spectrum of the neutrinos at low redshift $z < 0.5$, despite the fact that the linear neutrino perturbation remains perturbative. We found that this was due to the Fermi-Dirac distribution from which neutrino velocities are drawn. Although the average neutrino velocity leads to a free-streaming scale in excess of the non-linear scale, a subset of the neutrinos are drawn from the low-velocity tail of the Fermi-Dirac distribution and thus have smaller free-streaming scales. Because non-linear growth is substantially faster than linear growth, and because linear growth is suppressed to almost zero on these scales, these neutrinos cluster substantially more than their faster brethren and thus come to dominate the power spectrum despite making up a small fraction of the total neutrino matter density.
+
+We emphasize that this discrepancy does not affect any presently observable quantities for neutrino masses $M_\nu < 0.7$, the current upper limit from the primary CMB alone \cite{Planck_2015}. However, in order to ensure full generality of our method, and with the idea that simulations might ultimately be required for dedicated cosmic neutrino background experiments such as e.g.~\citep{Ptolemy}, we will here present an extension to our method which follows the neutrino power spectrum even when the neutrinos are themselves non-linear. This is done by including a species of particle neutrino drawn from the slow-moving tail of the initial Fermi-Dirac distribution. Since these neutrinos have a relatively slow initial velocity the numerical problems that plague purely particle simulations are mitigated.
+Furthermore, our implementation will allow the suppression of shot noise and relativistic effects by disabling the neutrino gravity at early times. This method is described in more detail in Section~\ref{sec:hybrid}. Note that our method differs from the hybrid method of \cite{Brandbyge_2010}, which dynamically creates neutrino particles based on a clustering condition. In our implementation, neutrino particles are always present, but initially do not gravitate.
+
+Our neutrino code is freely available as a patch to Gadget-2, and as a fully integrated part of the cosmological simulation code MP-Gadget, used for the BlueTides cosmological simulation \cite{Feng_2015}.
+
+This paper is organised as follows. In Section \ref{sec:methods}, we describe our simulations methods. We describe our
+results and compare them against other methods in Section \ref{sec:results}. We conclude in Section \ref{sec:conclusion}. Appendix \ref{sec:manual} is a users manual for our neutrino module and in Appendix \ref{sec:initcond} we describe improvements to our initial conditions since \cite{AHB}.
 
 \section{Methods}
 \label{sec:methods}
@@ -87,28 +107,24 @@ Appendix \ref{sec:manual} is a users manual for our neutrino module.
 \subsection{Particle Neutrinos}
 \label{sec:particle}
 
-Describe briefly particle method. Note that for best accuracy we are using the neutrino tree here,
-and that we rebuild it every timestep to avoid the high neutrino velocities causing numerical problems.
+The simplest method of simulating massive neutrinos is to treat them as a particle species, akin to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed in the initial conditions. This approach has been used extensively in the past, in, e.g.~\citep{Brandbyge_2008, Bird_2012}. As for cold dark matter, neutrino particles are also given displacements and velocities using the Zel'dovich approximation \citep{Zeldovich_1970}, such that their initial power spectrum matches the linear transfer function. However, for astrophysically relevant redshifts and neutrino masses, this is completely dominated by the thermal velocities. We have verified that omitting this velocity, or even using the velocity appropriate for the CDM transfer function, has zero effect on the final result of the simulations.
 
-The oldest and simplest method of 
-
-A tree gravity solver uses nodes, which resemble particles of particles. For reasons of efficiency, Gadget keeps these particles of particles around between timesteps, and moves them according to the average velocity of the particles within them. This works poorly when the particles in the node all have large random thermal velocities! So now we do not keep the particles around between timesteps anymore. This is a Gadget-3 specific bug.
-
-Gadget allows particles to have different timesteps and uses a kick-drift-kick momentum transfer scheme. When it wanted to output a snapshot, it would drift all particles to the desired time and write them. Because drifting does not include a kick, this meant that the neutrino momenta were incorrect. So now I build the timesteps around when we want outputs. This *was* documented, so isn't really a bug, but was unhelpful. 
+Our implementation of particle neutrinos includes several novel features. In particular, in earlier works \citep{Bird_2012}, we disabled the short-range tree force for the neutrino particles, leaving them affected only by the long-range particle-mesh force. Since the purpose of this work is to follow the non-linear small-scale evolution of the neutrinos accurately, we enable the short-range tree force in this work, although we use a softening length
+twice that of the cold dark matter particles, at $1/15$ th of the mean inter-particle spacing (still substantially below the neutrino free-streaming length). As in earlier work, when computing the displacement constraint on the long-range PM timestep, we omit displacement from the neutrinos, lest the PM timestep become extremely small. However, we do self-consistently compute the timesteps of neutrinos for the short range tree force.
 
 \subsection{Analytic Neutrinos}
 \label{sec:analytic}
 
-In this section we describe the semi-analytic linear response method for treating neutrinos from \cite{YAHSB}.
+In this section we describe the semi-analytic linear response method for treating neutrinos from \cite{AHB}.
 The work described in this paper is an extension to this method. The essential insight of this method is that
 neutrinos do not cluster below their free-streaming length.
 \begin{equation}
  k_{\rm fs}(z) \approx \frac{0.08}{\sqrt{1+z}}
 \sqrt{\frac{\Omega_{\rm M}}{0.3}} \frac{m_{\nu}}{0.1 ~ \textrm{eV}} h~ \textrm{Mpc}^{-1}.  \label{eq:kfs}
-\end{equation} 
-For astrophysically relevant neutrino masses, this free-streaming length is larger than the non-linear scale. 
-Thus while cold dark matter exhibits strong non-linear clustering, the neutrino species does not, behaving 
-almost as expected from linear perturbation theory. Following \cite{YAHSB}, we define $\mathcal{I}$ to 
+\end{equation}
+For astrophysically relevant neutrino masses, this free-streaming length is larger than the non-linear scale.
+Thus while cold dark matter exhibits strong non-linear clustering, the neutrino species does not, behaving
+almost as expected from linear perturbation theory. Following \cite{AHB}, we define $\mathcal{I}$ to
 be the Fourier transform of the unperturbed neutrino distribution function in momentum space, normalised so
 that $\mathcal{I}(0) = 1$ \citep{Brandenberger_1987, Bertschinger_Watts_1988},
 \begin{equation}
@@ -125,7 +141,7 @@ that $\mathcal{I}(0) = 1$ \citep{Brandenberger_1987, Bertschinger_Watts_1988},
   \label{fig:cross-corr}
 \end{figure}
 
-The neutrino power-spectrum is then given by (eq. (63) of \cite{YAHSB})
+The neutrino power-spectrum is then given by (eq. (63) of \cite{AHB})
 \begin{align}
 P_{\nu}^{1/2}(k, \tau) &= \mathcal{I}_{s_i, s}
 P_{\nu}^{1/2}(k, \tau_i) \left\{1 - (s - s_i)  a_i [\theta_{\nu}/\delta_{\nu}]_{i}(k)\right\}\nonumber\\
@@ -133,47 +149,41 @@ P_{\nu}^{1/2}(k, \tau_i) \left\{1 - (s - s_i)  a_i [\theta_{\nu}/\delta_{\nu}]_{
 P^{1/2}_{\rm M}(k, \tau') (s - s')d \tau', \label{eq:P-final}
 \end{align}
 where $\mathcal{I}_{s_1, s_2} \equiv \mathcal{I}([s_2 -s_1]k/m)$.
-The first term of Eq.~\ref{eq:P-final} represents a contribution from the initial conditions. In practice 
-for astrophysical masses neutrinos are initially relativistic, so this term is extremely small and may 
+The first term of Eq.~\ref{eq:P-final} represents a contribution from the initial conditions. In practice
+for astrophysical masses neutrinos are initially relativistic, so this term is extremely small and may
 be safely neglected (although we include it in our implementation for completeness).
-The second term is the perturbation to a neutrino geodesic from the CDM potential 
+The second term is the perturbation to a neutrino geodesic from the CDM potential
 integrated over cosmic time. This method is thus a linear response.
 
-A computation of the neutrino potential would use the CDM potential over all of cosmic history, which is impractical 
+A computation of the neutrino potential would use the CDM potential over all of cosmic history, which is impractical
 to store at the required number of time slices. Thus Eq.~\ref{eq:P-final} instead computes the neutrino power spectrum
 from stored CDM power spectra. In order to recover the neutrino potential, we use
 \begin{equation}
 \delta_{\nu}(\bs k, \tau) = \left(\frac{P_{\nu}(k,
     \tau)}{P_{\rm cdm}(k, \tau)}\right)^{1/2} \delta_{\rm cdm}(\bs k, \tau).\label{eq:phases}
 \end{equation}
-which is equivalent to assuming that the neutrinos and CDM have identical phases or, equivalently, 
-that neutrinos perfectly trace CDM structure. Physically, this is plausible: neutrinos behave much like 
-CDM on scales larger than their free streaming length, and do not cluster on smaller scales (so any 
-differences in their phases has limited practical impact, as $\delta_\nu$ is zero). 
-Figure~\ref{fig:cross-corr} shows the cross-correlation coefficient, 
+which is equivalent to assuming that the neutrinos and CDM have identical phases or, equivalently,
+that neutrinos perfectly trace CDM structure. Physically, this is plausible: neutrinos behave much like
+CDM on scales larger than their free streaming length, and do not cluster on smaller scales (so any
+differences in their phases has limited practical impact, as $\delta_\nu$ is zero).
+Figure~\ref{fig:cross-corr} shows the cross-correlation coefficient,
 \begin{equation}
 R = \frac{\left\langle \delta_\nu \delta_\mathrm{cdm} \right\rangle}{\sqrt{P_{\rm{cdm}} P_{\rm{\nu}}}}
 \end{equation}
 between neutrinos and CDM from a neutrino particle simulation. It is indeed unity on large scales,
 dropping to zero below the free-streaming length.
 
-The main improvement of this method over previous perturbation-based neutrino codes \citep{Brandbyge:2009}
-is our use of the full non-linear CDM potential in Eq.~\ref{eq:P-final}, which allows us 
-to achieve accurate results for any level of CDM clustering, as long as neutrinos themselves are still
-clustering linearly.
-
-As shown in \cite{YAHSB}, this method computes the total matter power spectrum to better 
-than 1\% for all astrophysically relevant neutrino masses ($M_\nu \lesssim 0.6$ eV), with minimal 
-computational overhead.
-
 \subsection{Hybrid Neutrinos}
 \label{sec:hybrid}
 
-Describe the method for implementing hybrid neutrinos:
-particles that start as tracers, un-clustered. They sample
-the Fermi-Dirac distribution with all velocities below some
-initial slow value. Initially the analytic code follow the full evolution,
-but then at some redshift the neutrino particles start to gravitate.
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
+  \caption{\spb{Plot showing the Fermi-Dirac distribution. Shade the left half of the plot and mark it as slow neutrinos}
+  }
+  \label{fig:fddistribution}
+\end{figure}
+
+In this Section we describe our implementation of hybrid neutrinos, our new simulation method and the main new technique of this paper. The idea behind hybrid neutrinos is that we split the initial Fermi-Dirac velocity of the neutrinos into fast and slow components. Such a split is shown graphically in Figure \ref{fig:fddistribution}. Fast neutrinos are followed analytically. Slow neutrinos are sampled by a population of N-body particles are inserted into the simulation with thermal velocities sampling the Fermi-Dirac distribution below a critical velocity, by default $750$ (comoving) km/s. Initially these particles are tracers; they feel the gravitational force of all other particles in the simulation, but do not gravitate themselves. At a critical redshift, by default $z=1$, these neutrino particles switch on and start to gravitate.
 
 After the neutrino particles start to gravitate we modify the
 analytic module so that neutrino perturbations are included only above a
@@ -188,15 +198,16 @@ We use the following asymptotic expansion for the integral:
 \end{align}
 which we have confirmed, using mathematica, to be accurate to $0.1\%$.
 
-
-We attempted to include neutrinos dynamically at a late time, but
-accurately modelling the non-linear distortions to the analytic
-Fermi-Dirac function proved overly complex. As the extra particles
-do not gravitate initially, their addition at early times does
-not significantly alter the efficiency of the code.
+The neutrino particles are initially unclustered; the velocities expected from structure formation at the initial redshift are substantially smaller than their thermal velocities, even for the slow tail. We verified explicitly that our results at all redshifts were unchanged for a simulation where the slow tail of the neutrinos had velocities imparted matching the transfer function of the cold dark matter, which is an over-estimate of the true initial velocity.
+Note that this technique still imposes some numerical overhead on the code because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex.
 
 \subsection{Code improvements}
 \label{sec:code}
+
+Enabling the tree force caused some numerical problems for our version of Gadget, MP-Gadget, which is based on Gadget-3.
+A tree gravity solver approximates the force from individual particles by the force a tree node, which combines nearby N-body particles into a larger whole. For reasons of efficiency, Gadget-3 does not rebuild the tree nodes every timestep, instead moving them according to the average velocity of the particles within them. As long as the particles within the node move in a coherent flow, this does not lead to inaccuracy. However, for neutrino particles the large thermal velocities of the particles causes them to quickly move from one tree node to another, which is not taken into account unless the tree is fully rebuilt every timestep. We found that this problem would manifest in the code apparently hanging, taking an infinite time to complete the tree force step. We also found that a more frequent rebuilding of the force tree led to differences in the final particle distribution even without massive neutrinos. We thus have modified MP-Gadget to rebuild the tree every timestep, reverting to the Gadget-2 behaviour.
+
+Furthermore, as documented in \cite{Springel_2005}, all versions of Gadget, when outputting a snapshot, drift all particles ballistically to the desired output time, but do not update their momenta. Thus snapshot output in Gadget takes place mid-timestep and includes velocities which are slightly out of sync with positions. For neutrino particles, whose clustering is intimately tied to their total momentum, this means that restarting from a snapshot will introduce an error in the final power spectrum. In \cite{AHB} we avoided this problem by simply running our jobs for long enough that we did not need to restart. However, for this work we have modified Gadget so that it chooses its timesteps around the planned output times. Thus output occurs only at the end of a (PM) timestep, when the positions and momenta are fully synced.
 
 We have altered our neutrino integrator to be a stand-alone module, largely
 independent of the underlying N-body code. It should thus be easy to include
