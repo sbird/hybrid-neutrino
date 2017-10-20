@@ -349,13 +349,11 @@ The ratio with simulations which alter the neutrino critical velocity are somewh
 \section{Conclusions}
 \label{sec:conclusion}
 
-This problem is comprehensively solved.
+We have extended our semi-analytic linear response neutrino simulation method from \cite{AHB} to include hybrid neutrinos, where a fraction of the neutrino density, drawn from the slow part of the Fermi-Dirac distribution, is followed by neutrino particles at late times. With this modification we show that we can reproduce the neutrino power spectra of well-converged particle methods and the large-scale total matter power expected by linear theory and predicted by the linear response method. We recommend that those wishing to compare observational surveys to simulations use the semi-analytic linear response method, as that reproduces all directly observable quantities, in particular the total matter power spectrum, galaxy clusters \citep{McCarthy_2015}, the weak lensing shear \citep{Liu_2017} and the Lyman-alpha forest \citep{AHB}. To aid this we have helpfully provided this method as a patch to Gadget-2 as well as integrated it into the public code MP-Gadget. The linear response code is computationally very efficient, involving a single integration for every PM timestep, and we have attempted to ensure that it will be easy to integrate into any structure formation code.
 
-Comparison with Neal's method:
-computationally efficient and easy to implement.
-Hybrid allows some naturally large dynamic range of N-body simulations while little shot noise.
+For simulators wishing instead to investigate the structure of the neutrino component of matter around collapsed objects \citep{Paco_2013}, neutrino wakes \cite{Inman_2016} or other explicitly non-linear objects, we recommend using the full hybrid neutrino code. For example, in future work one could compute the neutrino bispectrum or use our method to examine the distribution of massive neutrinos in cosmic voids, which \cite{Dalal_2016} argued would not be correctly followed by our linear response method. We suggest a neutrino switch-on redshift $z=1$ and a critical neutrino velocity of $750-1000$ km/s, which gave the best results in our tests. We further suggest that most simulators use a mean interparticle spacing for the neutrino component double that for the CDM, and thus $1/8$th the number density, as this gave identical results in our tests with much smaller computational overhead.
 
-Future work with voids, neutrino bispectrum.
+Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \cite{Hlozek_??}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators.
 
 \section*{Acknowledgements}
 
@@ -364,8 +362,28 @@ Future work with voids, neutrino bispectrum.
 \section{Kspace Neutrino Manual}
 \label{sec:manual}
 
-Here describe the parameters of the kspace neutrinos,
-as well as the installation procedure for Gadget 2.
+In this Appendix, we briefly describe the parameters of the linear response neutrino method. A similar description may be found in the README of the code repository. Table \ref{tab:parameters} shows a list of the required parameters, as well as brief descriptions. The number of extra parameters required is small. Three parameters are required to specify the initial power of the neutrino component, using a CAMB transfer function. Three parameters are required to specify the masses of the three active neutrino species. Finally, three parameters are used for the properties of the hybrid neutrino model: a global switch enabling the model, the critical velocity below which neutrinos are particles, and the neutrino switch-on time, after which neutrinos are actively gravitating. A script is provided in the repository which downloads and patches a fresh copy of Gadget-2: the ``apply-patches'' script in the gadget-2 subdirectory.
+
+%TABLE OF SIMULATIONS.
+\begin{table*}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+    Parameter & Description \\
+\hline
+KspaceTransferFunction   & CMB transfer functions, used to compute the neutrino the neutrino integration. \\
+TimeTransfer             & Scale factor of the CMB transfer functions. \\
+InputSpectrumUnitLengthincm   & Units of the CAMB transfer function in cm. \\
+MNue, MNum, MNut &  Three neutrino masses. For full generality, no neutrino  hierarchy is enforced. \\
+Vcrit            & Critical velocity below which the neutrinos are particles, if hybrid neutrinos are on. \\
+NuPartTime       & Scale factor at which the particle neutrinos start to gravitate, if hybrid neutrinos are on. \\
+HybridNeutrinosOn       & Switch to enable hybrid neutrinos. \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Table of code parameters, with brief descriptions.}
+\label{tab:parameters}
+\end{table*}
 
 \section{Initial Conditions}
 \label{sec:initcond}
