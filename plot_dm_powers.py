@@ -363,12 +363,34 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
     plt.savefig(os.path.join(savedir, "pks_"+fn+"-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
     plt.clf()
 
+def plot_fermi_dirac(Mnu, zz):
+    """Plot the fermi-dirac distribution for neutrinos at redshift z
+    Argument is total neutrino mass."""
+    tnu = 2.7255 * (4/11.)**(1./3) * 1.00328
+    bolevk = 8.61734e-5
+    nu_v = bolevk * tnu/ (Mnu/3) * (1+zz) * 2.99792e5
+    fdk = lambda x: x*x/(np.exp(x)+1)
+    xx = np.arange(0, 9*nu_v,10)
+    ff = np.zeros_like(xx, dtype=np.float64)
+    for i in range(np.size(xx)):
+        (fd, _) = scipy.integrate.quad(fdk, 0, xx[i]/nu_v)
+        ff[i] = fd / (1.5 * 1.20206)
+    plt.plot(xx, ff, "-", label="Fermi-Dirac distribution", color="blue")
+    plt.fill_between(xx, 0, ff, where=xx < 750, facecolor='grey', interpolate=True, alpha=0.5)
+    plt.ylim(0,1)
+    plt.xlim(0,np.max(xx))
+    plt.xlabel(r"$v_\nu$ (km/s)")
+    plt.ylabel(r"Fermi-Dirac cum. prob.")
+    plt.tight_layout()
+    plt.savefig(os.path.join(savedir, "fermidirac.pdf"))
+
 if __name__ == "__main__":
 #     plot_image(sims[0],8)
 #     plot_image(sims[2],8,1)
 #     plot_image(sims[2],8,2)
 #     plot_image(sims[1],8,1)
 #     plot_image(sims[1],8,2)
+    plot_fermi_dirac(0.4,0)
     for sc in (0.02, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
