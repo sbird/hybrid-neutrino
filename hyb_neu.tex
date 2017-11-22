@@ -49,9 +49,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\title{A Hybrid Particle-Analytic Method for Non-Linear Neutrino Structure}
-\author[ S. Bird and Y. Ali-Ha\"{\i}moud]{
-  Simeon Bird\thanks{E-mail: spb@ias.edu} and Yacine Ali-Ha\"{\i}moud\thanks{E-mail: yacine@ias.edu}\vspace{1.5mm}\\
+\title{A Hybrid Method for Simulating Non-Linear Neutrino Structure}
+\author[ S. Bird et al.]{  Simeon Bird\thanks{E-mail: sbird@ucr.edu}, Yacine Ali-Ha\"{\i}moud, Yu Feng, Jia Liu\vspace{1.5mm}\\
 No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey 08540}
 
 \begin{document}
@@ -73,9 +72,37 @@ No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey
 
 \section{Introduction}
 
-Our paper is the greatest paper in the world. Blah de blah.
+%Cite bahamas and Liu. Cite any other major simulation projects that used the neutrino code.
 
-A recent review can be found \citep{Lesgourgues_2006, Lesgourgues_2014}. Emulators have been built with the neutrino mass as a free parameter, although the neutrinos are included mostly at the linear order \citep{Lawrence_2017}.
+%Neutrinos have mass. Neutrino mass is important because. Neutrinos affect structure. In order to measure the mass accurately with structure we need to know precisely how neutrinos affect structure.
+%The structure in question is non-linear structure. We thus need to run simulations. This paper is about a method to put neutrinos into structure simulations.
+Neutrino are the lightest standard model particles, and neutrino oscillation experiments have shown that the sum of the neutrino masses is $M_\nu > 0.06$ eV \citep{Becker-Szendy_1992, Fukuda_1998}.
+However, measuring the neutrino mass in the laboratory is challenging due to the large difference in mass scales between neutrinos and other standard model particles \citep{Katrin}.
+Instead, the neutrino mass can be measured through its effect on the growth of cosmic structure. Massive neutrinos behave as light thermal relics, suppressing clustering below their thermal
+free-streaming length: for reviews of this effect see \cite{Lesgourgues_2006, Wong_2011, Lesgourgues_2014}. By measuring the clustering of matter and matter tracers in the Universe, cosmologists aim to detect this suppression and
+thus measure the neutrino mass. So far several experiments have placed upper limits on the sum of the neutrino mass. Currently the most stringent constraints come from the \Lya~forest \cite{Palanque_2015}
+in combination with the Planck cosmic microwave background experiment. Planck alone constrains $M_\nu < 0.7$ eV \citep{Planck_2015}, while the addition of the \Lya~forest data constrains $M_\nu < 0.12$ eV.
+Various other current and future structure formation probes have also constrained the neutrino mass. In particular, the Dark Energy Survey and Hyper Suprime Cam weak lensing experiments have
+constrained $M_\nu < ???$ eV \citep{DES} and $M_\nu < ???$ eV \citep{HSC}. The most recent galaxy power spectrum measurements from the Sloan Digital Sky Survey prefer a non-zero neutrino mass of $M_\nu = 0.3$ eV
+at moderate significance \citep{Beutler_2014}. Near-future lensing experiments will have the statistical power to measure the neutrino mass even if it is close to $0.06$ eV, the minimum required
+by oscillation experiments \citep{Abazajian_2006}.
+
+Taken together, these experiments indicate that a detection of neutrino mass from cosmology is imminent. However, realizing the statistical power of future surveys will require extremely accurate modelling
+of structure growth. Forthcoming surveys will derive their statistical power from small scales where structure growth has become non-linear \citep{someone}, and thus the only way to achieve this is
+through cosmological simulations. These simulations should include a massive neutrino model if the scales probed overlap with the free-streaming scale of the neutrino. For example, massive
+neutrinos are included as a free parameter in the ``Coyote'' matter power simulation suite \citep{Lawrence_2017}. Thus we require methods for incorporating massive neutrinos into cosmological structure simulations.
+
+These methods should be both computationally inexpensive and accurate. If the simulation methods used are insufficiently accurate, experiments will measure different values for the neutrino mass with the same level of cosmic structure.
+Conversely, if simulation techniques are overly computationally intensive, the number of simulations which can be performed will be reduced, again impeding the accuracy of the cosmological parameter measurement.
+
+In this paper we present improvements to our earlier neutrino simulation method from \cite{AHB}. This method is computationally efficient and accurately describes the effect of massive neutrinos
+on the growth of cold dark matter. However, our implementation was difficult to use, being tied to a non-public version of the simulation code Gadget-3 \cite{Springel_2005}.
+Furthermore, while our method described the cold dark matter and total matter power spectrum very accurately, it was not able to model the neutrino power spectrum on small scales,
+and was limited to $M_\nu < 1 $ eV. These limitations are not restrictive: observations require $M_\nu \ll 1$ eV and the neutrino power spectrum is not currently directly
+observable (but see \citep{Ptolemy}). However, in this paper we present a modification of our method which is portable to many different structure simulation codes, including the public version of Gadget-2,
+and removes both these restrictions. Our model is a hybrid approach, combining our earlier analytic framework for low neutrino masses and early times with a neutrino particle implementation for
+heavier neutrinos at late times. This allows for the first time a single simulation code to produce a well-converged neutrino simulation, at any neutrino mass, which includes
+both early-time relativistic effects and late-time non-linear growth in the neutrino sector.
 
 The simplest method of simulating massive neutrinos is to treat them as a particle species, akin
 to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed
@@ -357,6 +384,9 @@ For simulators wishing instead to investigate the structure of the neutrino comp
 Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \cite{Calabrese_2017}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators.
 
 \section*{Acknowledgements}
+
+This research project (or part of this research project) was conducted using computational resources (and/or scientific computing services) at the Maryland Advanced Research Computing Center (MARCC).
+SB was supported by NASA through Einstein Postdoctoral Fellowship Award Number PF5-160133.
 
 \appendix
 
