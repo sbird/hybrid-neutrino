@@ -76,19 +76,31 @@ No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey
 
 %Neutrinos have mass. Neutrino mass is important because. Neutrinos affect structure. In order to measure the mass accurately with structure we need to know precisely how neutrinos affect structure.
 %The structure in question is non-linear structure. We thus need to run simulations. This paper is about a method to put neutrinos into structure simulations.
-Neutrino are the lightest standard model particles, and neutrino oscillation experiments have shown that the sum of the neutrino masses is $M_\nu > 0.06$ eV \citep{Becker-Szendy_1992, Fukuda_1998}.
-However, measuring the neutrino mass in the laboratory is challenging due to the large difference in mass scales between neutrinos and other standard model particles \citep{Katrin}.
-Instead, the neutrino mass can be measured through its effect on the growth of cosmic structure. Massive neutrinos behave as light thermal relics, suppressing clustering below their thermal
-free-streaming length: for reviews of this effect see \cite{Lesgourgues_2006, Wong_2011, Lesgourgues_2014}. By measuring the clustering of matter and matter tracers in the Universe, cosmologists aim to detect this suppression and
-thus measure the neutrino mass. So far several experiments have placed upper limits on the sum of the neutrino mass. Currently the most stringent constraints come from the \Lya~forest \cite{Palanque_2015}
-in combination with the Planck cosmic microwave background experiment. Planck alone constrains $M_\nu < 0.7$ eV \citep{Planck_2015}, while the addition of the \Lya~forest data constrains $M_\nu < 0.12$ eV.
-Various other current and future structure formation probes have also constrained the neutrino mass. In particular, the Dark Energy Survey and Hyper Suprime Cam weak lensing experiments have
-constrained $M_\nu < ???$ eV \citep{DES} and $M_\nu < ???$ eV \citep{HSC}. The most recent galaxy power spectrum measurements from the Sloan Digital Sky Survey prefer a non-zero neutrino mass of $M_\nu = 0.3$ eV
-at moderate significance \citep{Beutler_2014}. Near-future lensing experiments will have the statistical power to measure the neutrino mass even if it is close to $0.06$ eV, the minimum required
-by oscillation experiments \citep{Abazajian_2006}.
+Neutrinos are the lightest standard model particles, and neutrino oscillation experiments have shown that the sum of the neutrino masses is $M_\nu > 0.06$ eV \citep{Becker-Szendy_1992, Fukuda_1998}.
+However, measuring the neutrino mass in the laboratory is challenging due to the large difference in mass scales between neutrinos and other standard model particles \cite[although see][]{Wolf_2010}.
+Massive neutrinos in the cosmic neutrino background also affect the growth of large scale structure. 
+Massive neutrinos behave as light thermal relics, suppressing clustering below their thermal
+free-streaming length: for reviews of this effect see \cite{Lesgourgues_2006, Wong_2011, Lesgourgues_2014}. 
+Measurements of the clustering of matter and matter tracers in the Universe can detect this effect and thus constrain the total mass of neutrinos. 
 
+Cosmological constraints on the neutrino mass sum ($M_\nu$) are quickly approaching the lower limit implied by neutrino oscillation data. For example, the Planck team obtained an upper limit of $M_\nu<0.23$~eV~\cite{planck2015xiii} (95\% CL) 
+using primary cosmic microwave background (CMB) temperature data, combined with low-$\ell$ polarization, CMB lensing, type Ia supernovae~\cite{Betoule_2014}, and baryon acoustic oscillation
+measurements~\cite{Beutler_2011, Anderson_2014, Ross_2015}. Ref.~\cite{Palanque_2015} found a tighter constraint of $M_\nu<0.15$~eV by combining Ly$\alpha$ forest data from the Sloan Digital Sky Survey (SDSS) with Planck. However, recent weak lensing data from the Dark Energy Survey combined with Planck weakens the upper limit to $0.29$ eV \citep{DES_2017}, and the most recent galaxy power spectrum measurements from SDSS show a slight preference for a non-zero neutrino mass of $M_\nu = 0.3$ eV \citep{Beutler_2014}.
+%Not citing HSC or KIDS because they are not yet competitive neutrino mass constraints \citep{HSC_2017}.
+Near-future large cosmological surveys such as the Dark Energy Spectroscopic Instrument (DESI) \cite{DESI} or the 
+Large Synoptic Survey Telescope~(LSST) \cite{LSST, Joudaki_2012} will have the statistical power to measure the neutrino mass even if it is close to $0.06$ eV, the minimum required by oscillation experiments \citep{Abazajian_2015}.
+Realizing the statistical power of future surveys will require extremely accurate modelling of structure growth and the effects of massive neutrinos on the matter density field.
+
+Furthermore, current and future experiments achieve their statistical power from small scales where structure formation is in the non-linear regime \citep[e.g.~][]{Troxel_2017, HSC_2017}. On large scales structure growth can be modelled analytically (e.g.,~\cite{Bond_1980,Zeldovich_1980,Ma_1994}). However, modelling non-linear effects on small scales requires $N$-body particle simulations.
+
+%%%%%EDIT
+The \texttt{Halofit} formalism~\cite{smith2003,takahashi2012,Bird2012,Mead2015,Mead2016,Casarini2009,Casarini2016}, based on the ``halo model''~\cite{PeacockSmith2000,Seljak2000} and calibrated against numerical simulations, has been widely used to provide a fitting function for the matter power spectrum in the nonlinear regime. Alternatively, a series of papers dubbed the ``Coyote Universe'' developed a prediction scheme called the ``emulator'', based on interpolating the measured $P(k)$ from a large number of simulations with various resolutions and cosmological models.  The emulator reached percent-level accuracy out to $k\approx 10$/Mpc and $z=4$ for $w$CDM cosmologies~\cite{heitmann2010i,heitmann2009ii,heitmann2010iii,heitmann2014e}. However, among all these efforts, only \cite{Bird2012} included massive neutrino {\red particles} in their simulation, and with only 3 different neutrino masses (0.15, 0.3 and 0.6~eV). Our work has a much denser sampling of neutrino masses, and hence is suitable to study the nonlinear effects of massive neutrinos as well as their degeneracy with other cosmological parameters.
+
+%%%%
 Taken together, these experiments indicate that a detection of neutrino mass from cosmology is imminent. However, realizing the statistical power of future surveys will require extremely accurate modelling
-of structure growth. Forthcoming surveys will derive their statistical power from small scales where structure growth has become non-linear \citep{someone}, and thus the only way to achieve this is
+of structure growth. 
+
+and thus the only way to achieve this is
 through cosmological simulations. These simulations should include a massive neutrino model if the scales probed overlap with the free-streaming scale of the neutrino. For example, massive
 neutrinos are included as a free parameter in the ``Coyote'' matter power simulation suite \citep{Lawrence_2017}. Thus we require methods for incorporating massive neutrinos into cosmological structure simulations.
 
