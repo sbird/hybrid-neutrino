@@ -78,59 +78,48 @@ No longer at Institute for Advanced Study, Einstein Drive, Princeton, New Jersey
 %The structure in question is non-linear structure. We thus need to run simulations. This paper is about a method to put neutrinos into structure simulations.
 Neutrinos are the lightest standard model particles, and neutrino oscillation experiments have shown that the sum of the neutrino masses is $M_\nu > 0.06$ eV \citep{Becker-Szendy_1992, Fukuda_1998}.
 However, measuring the neutrino mass in the laboratory is challenging due to the large difference in mass scales between neutrinos and other standard model particles \cite[although see][]{Wolf_2010}.
-Massive neutrinos in the cosmic neutrino background also affect the growth of large scale structure.
+
+However, massive neutrinos in the cosmic neutrino background also affect the growth of large scale structure.
 Massive neutrinos behave as light thermal relics, suppressing clustering below their thermal
-free-streaming length: for reviews of this effect see \cite{Lesgourgues_2006, Wong_2011, Lesgourgues_2014}.
+free-streaming length \citep[e.g.][]{Lesgourgues_2006, Wong_2011}.
 Measurements of the clustering of matter and matter tracers in the Universe can detect this effect and thus constrain the total mass of neutrinos.
 
 Cosmological constraints on the neutrino mass sum ($M_\nu$) are quickly approaching the lower limit implied by neutrino oscillation data. For example, the Planck team obtained an upper limit of $M_\nu<0.23$~eV~\cite{planck2015xiii} (95\% CL)
 using primary cosmic microwave background (CMB) temperature data, combined with low-$\ell$ polarization, CMB lensing, type Ia supernovae~\cite{Betoule_2014}, and baryon acoustic oscillation
-measurements~\cite{Beutler_2011, Anderson_2014, Ross_2015}. Ref.~\cite{Palanque_2015} found a tighter constraint of $M_\nu<0.15$~eV by combining Ly$\alpha$ forest data from the Sloan Digital Sky Survey (SDSS) with Planck. However, recent weak lensing data from the Dark Energy Survey combined with Planck weakens the upper limit to $0.29$ eV \citep{DES_2017}, and the most recent galaxy power spectrum measurements from SDSS show a slight preference for a non-zero neutrino mass of $M_\nu = 0.3$ eV \citep{Beutler_2014}.
+measurements~\cite{Beutler_2011, Anderson_2014, Ross_2015}. \cite{Palanque_2015} found a tighter constraint of $M_\nu<0.15$~eV by adding Lyman-$\alpha$ forest data from the Sloan Digital Sky Survey (SDSS). However, recent weak lensing data from the Dark Energy Survey combined with Planck weakens the upper limit to $0.29$ eV \citep{DES_2017}, and the most recent galaxy power spectrum measurements from SDSS show a slight preference for a non-zero neutrino mass of $M_\nu = 0.3$ eV \citep{Beutler_2014}.
 %Not citing HSC or KIDS because they are not yet competitive neutrino mass constraints \citep{HSC_2017}.
 % Taken together, these experiments indicate that a detection of neutrino mass from cosmology is imminent. However, realizing the statistical power of future surveys will require extremely accurate modelling
-of structure growth.
+%of structure growth.
 Near-future large cosmological surveys such as the Dark Energy Spectroscopic Instrument (DESI) \cite{DESI} or the
 Large Synoptic Survey Telescope~(LSST) \cite{LSST, Joudaki_2012} will have the statistical power to measure the neutrino mass even if it is close to $0.06$ eV, the minimum required by oscillation experiments \citep{Abazajian_2015}.
+
 Realizing the statistical power of future surveys will require extremely accurate modelling of structure growth and the effects of massive neutrinos on the matter density field.
 Furthermore, current and future experiments achieve their statistical power from small scales where structure formation is in the non-linear regime \citep[e.g.~][]{Troxel_2017, HSC_2017}.
 As following structure growth on non-linear scales ultimately requires fitting to $N$-body cosmological simulations, there is an urgent need to incorporate massive neutrinos into cosmological structure simulations
 in a way both accurate and computationally inexpensive.
-If the simulation methods used are insufficiently accurate, experiments will measure different values for the neutrino mass with the same level of cosmic structure.
+If the simulation methods used are insufficiently accurate, experiments will measure incorrect values for the neutrino mass.
 Conversely, if simulation techniques are overly computationally intensive, the number of simulations which can be performed will be reduced, again impeding the accuracy of the cosmological parameter measurement.
 
-In this paper we present improvements to our earlier neutrino simulation method from \cite{AHB}. This method is computationally efficient and accurately describes the effect of massive neutrinos
-on the growth of cold dark matter. However, our implementation was difficult to use, being tied to a non-public version of the simulation code Gadget-3 \cite{Springel_2005}.
-Furthermore, while our method described the cold dark matter and total matter power spectrum very accurately, it was not able to model the neutrino power spectrum on small scales,
-and was limited to $M_\nu < 1 $ eV. These limitations are not restrictive: observations require $M_\nu \ll 1$ eV and the neutrino power spectrum is not currently directly
-observable (but see \citep{Ptolemy}). However, in this paper we present a modification of our method which is portable to many different structure simulation codes, including the public version of Gadget-2,
-and removes both these restrictions. Our model is a hybrid approach, combining our earlier analytic framework for low neutrino masses and early times with a neutrino particle implementation for
-heavier neutrinos at late times. This allows for the first time a single simulation code to produce a well-converged neutrino simulation, at any neutrino mass, which includes
-both early-time relativistic effects and late-time non-linear growth in the neutrino sector.
+\cite{AHB} proposed modelling neutrinos using a perturbative linear response approximation \citep{Bond_1980, Ma_1994}, described in more detail in Section~\ref{sec:analytic}. The neutrino component is followed using first-order linear perturbation theory, clustering in a background potential generated from the fully non-linear clustering of the CDM particles. The main improvement of this method over earlier perturbation-based neutrino codes \citep{Brandbyge_2009} was our use of the full non-linear CDM potential. This allows us to achieve accurate results for any level of CDM clustering, as long as neutrinos themselves are still clustering linearly.
+The linear response method is computationally efficient and accurately describes the effect of massive neutrinos on the growth of cold dark matter.
+In fact, for $M_\nu \lesssim 0.6$ eV, which covers the whole observationally relevant mass range, it is accurate to better than 1\%. Due to its minimal computational overhead,
+it has been used to investigate the interactions between massive neutrinos and baryons \citep{Mummery_2017}, to constrain
+the neutrino mass using hydrodynamic simulations of large-scale structure \citep{McCarthy_2017, McCarthy_2018}.
 
-The simplest method of simulating massive neutrinos is to treat them as a particle species, akin
-to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed
-in the initial conditions. This approach has been used extensively in the past,
-in, e.g.~\citep{Brandbyge_2008, Bird_2012, Inman_2017, FVN_2017}. Its main advantages are that it is simple to implement and fully includes the non-linear physics of the neutrinos. However, the large thermal velocities of the neutrino particles means that this method can cause numerical problems. It has been used to examine voids \citep{Massara_2015}, clusters and halos \citep{FVN_2014, Castorina_2014, Costanzi_2013}, large-scale clustering \citep{Castorina_2015} and the ISW effect \citep{Carbone_2016}.
+However, \citep{AHB} also found that this method did not reproduce the power spectrum of the neutrinos at low redshift ($z < 0.5$), despite the fact that the linear neutrino perturbation remains perturbative.
+We found that this was due to the Fermi-Dirac distribution from which neutrino velocities are drawn. Although the average neutrino velocity leads to a free-streaming scale in excess of the non-linear scale, a subset of the neutrinos are drawn from the low-velocity tail of the Fermi-Dirac distribution and thus have smaller free-streaming scales. Because non-linear growth is substantially faster than linear growth, and because linear growth is suppressed to almost zero on these scales, these neutrinos cluster substantially more than their faster brethren and thus come to dominate the power spectrum despite making up a small fraction of the total neutrino matter density.
+This limitation is not restrictive; the neutrino power spectrum is not currently directly observable \citep[but see][]{Ptolemy}.
+Nevertheless, in this paper we present a modification of our method which is both accurate for large neutrino masses and able to model the neutrino power spectrum.
+Our model is a hybrid approach, combining our earlier analytic framework for low neutrino masses and early times with a neutrino particle implementation for
+heavier neutrinos at late times. The particle neutrinos have velocities drawn from the slow-moving tail of the initial Fermi-Dirac distribution. They are thus relatively slow,
+even initially, and so mitigate the numerical problems that plague purely particle simulations. Our new method allows, for the first time, a single simulation code to produce a well-converged neutrino simulation, at any neutrino mass, which includes both early-time relativistic effects and late-time non-linear growth in the neutrino sector. It could be used, for example, to make predictions for dedicated cosmic neutrino background experiments \citep{Ptolemy}. We describe it in more detail in Section~\ref{sec:hybrid}.
 
-When forming structure from cold dark matter, with low to zero thermal velocities, the matter in the fluid element represented by the N-body particle feels a similar force and thus moves cohesively in roughly the same direction. Thus
-the initial discretisation of the fluid remains a fair description of the final fluid state. However, for massive neutrinos, each neutrino particle has a random thermal velocity, which causes the matter in each fluid element to be constantly exchanged with other neighbouring N-body particles. This is modelled in a particle simulation by imparting a thermal velocity to the N-body particle, which means that the N-body particles constantly trade positions, leading to a flat power spectrum, known as shot noise. Reducing shot noise requires increasing the particle load of the simulation.
-Furthermore, because the neutrino is followed by a distinct particle species, modelling the neutrino hierarchy involves the use of at least two particle species, again increasing the cost of the simulation. Finally, particle neutrino simulations fix the total mass of the neutrino species, and are fully Newtonian. This can lead to a lack of power at early times, when the neutrinos are moving at relativistic velocities and have a larger effective mass.
+The earlier implementation in \cite{AHB} was somewhat difficult to use, being tied to a non-public version of the simulation code Gadget-3 \cite{Springel_2005}.
+Here we provide a public implementation of this simulation method, which is fully integrated into the public cosmological simulation
+code MP-Gadget \cite{Feng_2016}, available as a patch to Gadget-2, and designed to be portable to many similar structure simulation codes.
+The Gadget-2 port in particular is well-tested and has already been used to run a large suite of simulations \citep{Liu_2017}.
 
-For these reasons, as well as reasons of numerical efficiency, in \cite{AHB} we proposed modelling neutrinos using a perturbative linear response approximation \citep{Bond_1980, Ma_1994}, described in more detail in Section~\ref{sec:analytic}. Here the neutrino component is followed using first-order linear perturbation theory, clustering in a background potential generated from the fully non-linear clustering of the CDM particles. The main improvement of this method over earlier perturbation-based neutrino codes \citep{Brandbyge_2009} was our use of the full non-linear CDM potential. This allows us
-to achieve accurate results for any level of CDM clustering, as long as neutrinos themselves are still
-clustering linearly.
-
-As shown in \cite{AHB}, this method computes the total matter power spectrum to better
-than 1\% for all astrophysically relevant neutrino masses ($M_\nu \lesssim 0.6$ eV), with minimal
-computational overhead. However, \citep{AHB} also found that this method did not reproduce the
-power spectrum of the neutrinos at low redshift $z < 0.5$, despite the fact that the linear neutrino perturbation remains perturbative. We found that this was due to the Fermi-Dirac distribution from which neutrino velocities are drawn. Although the average neutrino velocity leads to a free-streaming scale in excess of the non-linear scale, a subset of the neutrinos are drawn from the low-velocity tail of the Fermi-Dirac distribution and thus have smaller free-streaming scales. Because non-linear growth is substantially faster than linear growth, and because linear growth is suppressed to almost zero on these scales, these neutrinos cluster substantially more than their faster brethren and thus come to dominate the power spectrum despite making up a small fraction of the total neutrino matter density.
-
-We emphasize that this discrepancy does not affect any presently observable quantities for neutrino masses $M_\nu < 0.7$, the current upper limit from the primary CMB alone \cite{Planck_2015}. However, in order to ensure full generality of our method, and with the idea that simulations might ultimately be required for dedicated cosmic neutrino background experiments such as e.g.~\citep{Ptolemy}, we will here present an extension to our method which follows the neutrino power spectrum even when the neutrinos are themselves non-linear. This is done by including a species of particle neutrino drawn from the slow-moving tail of the initial Fermi-Dirac distribution. Since these neutrinos have a relatively slow initial velocity the numerical problems that plague purely particle simulations are mitigated.
-Furthermore, our implementation will allow the suppression of shot noise and relativistic effects by disabling the neutrino gravity at early times. This method is described in more detail in Section~\ref{sec:hybrid}. Note that our method differs from the hybrid method of \cite{Brandbyge_2010}, which dynamically creates neutrino particles based on a clustering condition. In our implementation, neutrino particles are always present, but initially do not gravitate.
-
-Our neutrino code is freely available as a patch to Gadget-2, and as a fully integrated part of the cosmological simulation code MP-Gadget, used for the BlueTides cosmological simulation \cite{Feng_2016}.
-
-This paper is organised as follows. In Section \ref{sec:methods}, we describe our simulations methods. We describe our
+In Section \ref{sec:methods}, we describe the different methods we have implemented to simulate neutrinos. We describe our
 results and compare them against other methods in Section \ref{sec:results}. We conclude in Section \ref{sec:conclusion}. Appendix \ref{sec:manual} is a users manual for our neutrino module and in Appendix \ref{sec:initcond} we describe improvements to our initial conditions since \cite{AHB}.
 
 \section{Methods}
@@ -139,7 +128,14 @@ results and compare them against other methods in Section \ref{sec:results}. We 
 \subsection{Particle Neutrinos}
 \label{sec:particle}
 
-The simplest method of simulating massive neutrinos is to treat them as a particle species, akin to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed in the initial conditions. This approach has been used extensively in the past, in, e.g.~\citep{Brandbyge_2008, Bird_2012}. As for cold dark matter, neutrino particles are also given displacements and velocities using the Zel'dovich approximation \citep{Zeldovich_1970}, such that their initial power spectrum matches the linear transfer function. However, for astrophysically relevant redshifts and neutrino masses, this is completely dominated by the thermal velocities. We have verified that omitting this velocity, or even using the velocity appropriate for the CDM transfer function, has zero effect on the final result of the simulations.
+The simplest method of simulating massive neutrinos is to treat them as a particle species, akin
+to the cold dark matter, but with a lower particle mass and a large thermal velocity imposed
+in the initial conditions. This approach has been used extensively in the past,
+in, e.g.~\citep{Brandbyge_2008, Bird_2012, Inman_2017, FVN_2017}. Its main advantages are that it is simple to implement and fully includes the non-linear physics of the neutrinos. However, the large thermal velocities of the neutrino particles means that this method can cause numerical problems. It has been used to examine voids \citep{Massara_2015}, clusters and halos \citep{FVN_2014, Castorina_2014, Costanzi_2013}, large-scale clustering \citep{Castorina_2015} and the ISW effect \citep{Carbone_2016}. As for cold dark matter, neutrino particles are given displacements and velocities using the Zel'dovich approximation \citep{Zeldovich_1970}, such that their initial power spectrum matches the linear transfer function. \footnote{For astrophysically relevant redshifts and neutrino masses, the neutrino velocity is completely dominated by their thermal velocities. We have verified explicitly that omitting the structure formation component of the initial neutrino velocities has zero effect on the final result of the simulations.}
+
+When forming structure from cold dark matter, with low to zero thermal velocities, the matter in the fluid element represented by the N-body particle feels a similar force and thus moves cohesively in roughly the same direction. Thus
+the initial discretisation of the fluid remains a fair description of the final fluid state. However, for massive neutrinos, each neutrino particle has a random thermal velocity, which causes the matter in each fluid element to be constantly exchanged with other neighbouring N-body particles. This is modelled in a particle simulation by imparting a thermal velocity to the N-body particle, which means that the N-body particles constantly trade positions, leading to a flat power spectrum, known as shot noise. Reducing shot noise requires increasing the particle load of the simulation.
+Furthermore, because the neutrino is followed by a distinct particle species, modelling the neutrino hierarchy involves the use of at least two particle species, again increasing the cost of the simulation. Finally, particle neutrino simulations fix the total mass of the neutrino species, and are fully Newtonian. This can lead to a lack of power at early times, when the neutrinos are moving at relativistic velocities and have a larger effective mass.
 
 Our implementation of particle neutrinos includes several novel features. In particular, in earlier works \citep{Bird_2012}, we disabled the short-range tree force for the neutrino particles, leaving them affected only by the long-range particle-mesh force. Since the purpose of this work is to follow the non-linear small-scale evolution of the neutrinos accurately, we enable the short-range tree force in this work, although we use a softening length
 twice that of the cold dark matter particles, at $1/15$ th of the mean inter-particle spacing (still substantially below the neutrino free-streaming length). As in earlier work, when computing the displacement constraint on the long-range PM timestep, we omit displacement from the neutrinos, lest the PM timestep become extremely small. However, we do self-consistently compute the timesteps of neutrinos for the short range tree force.
@@ -216,6 +212,8 @@ dropping to zero below the free-streaming length.
 \end{figure}
 
 In this Section we describe our implementation of hybrid neutrinos, our new simulation method and the main new technique of this paper. The idea behind hybrid neutrinos is that we split the initial Fermi-Dirac velocity of the neutrinos into fast and slow components. Such a split is shown graphically in Figure \ref{fig:fddistribution}. Fast neutrinos are followed analytically. Slow neutrinos are sampled by a population of N-body particles are inserted into the simulation with thermal velocities sampling the Fermi-Dirac distribution below a critical velocity, by default $750$ (comoving) km/s. Initially these particles are tracers; they feel the gravitational force of all other particles in the simulation, but do not gravitate themselves. At a critical redshift, by default $z=1$, these neutrino particles switch on and start to gravitate.
+
+Note that our method differs from the hybrid method of \cite{Brandbyge_2010}, which dynamically creates neutrino particles based on a clustering condition. In our implementation, neutrino particles are always present, but initially do not gravitate.
 
 After the neutrino particles start to gravitate we modify the
 analytic module so that neutrino perturbations are included only above a
