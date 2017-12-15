@@ -142,6 +142,12 @@ The discrete nature of the neutrino particles, and their random distribution, in
 Our implementation of particle neutrinos includes several novel features improving accuracy. In particular, in earlier works \citep{Bird_2012}, we disabled the short-range tree force for the neutrino particles, leaving them affected only by the long-range particle-mesh force. Since the purpose of this work is to follow the non-linear small-scale evolution of the neutrinos accurately, we enable the short-range tree force in this work, although we use a softening length
 twice that of the cold dark matter particles, at $1/15$ th of the mean inter-particle spacing (still substantially below the neutrino free-streaming length). The size of the long-range particle mesh timestep in Gadget is chosen so that no particle moves more than a fraction of a grid cell in a single timestep. As in earlier work, we exempt the neutrinos from this constraint, lest the PM timestep become extremely small. However, unlike earlier work, we do self-consistently compute the timesteps of neutrinos for the short range tree force.
 
+%%%%
+We encountered numerical problems with 
+Enabling the tree force caused some numerical problems for our version of Gadget, MP-Gadget, which is based on Gadget-3.
+A tree gravity solver approximates the force from individual particles by the force a tree node, which combines nearby N-body particles into a larger whole. For reasons of efficiency, Gadget-3 does not rebuild the tree nodes every timestep, instead moving them according to the average velocity of the particles within them. As long as the particles within the node move in a coherent flow, this does not lead to inaccuracy. However, for neutrino particles the large thermal velocities of the particles causes them to quickly move from one tree node to another, which is not taken into account unless the tree is fully rebuilt every timestep. We found that this problem would manifest in the code apparently hanging, taking an infinite time to complete the tree force step. We also found that a more frequent rebuilding of the force tree led to differences in the final particle distribution even without massive neutrinos. We thus have modified MP-Gadget to rebuild the tree every timestep, reverting to the Gadget-2 behaviour.
+%%%%
+
 \subsection{Analytic Neutrinos}
 \label{sec:analytic}
 
@@ -252,29 +258,12 @@ Our hybrid neutrino implementation does not include the neutrino hierarchy, assu
 
 Note that our hybrid neutrino technique still imposes some numerical overhead above the linear response method, because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex. The overhead is reduced from purely particle neutrino simulations, both because fewer neutrino particles are needed to achieve a given level of shot noise and because the particle neutrinos are moving more slowly. However, since there is still some overhead, we recommend that simulators which do not require high accuracy in the neutrino power spectrum use the linear response method.
 
-\subsection{Code improvements}
-\label{sec:code}
-
-Enabling the tree force caused some numerical problems for our version of Gadget, MP-Gadget, which is based on Gadget-3.
-A tree gravity solver approximates the force from individual particles by the force a tree node, which combines nearby N-body particles into a larger whole. For reasons of efficiency, Gadget-3 does not rebuild the tree nodes every timestep, instead moving them according to the average velocity of the particles within them. As long as the particles within the node move in a coherent flow, this does not lead to inaccuracy. However, for neutrino particles the large thermal velocities of the particles causes them to quickly move from one tree node to another, which is not taken into account unless the tree is fully rebuilt every timestep. We found that this problem would manifest in the code apparently hanging, taking an infinite time to complete the tree force step. We also found that a more frequent rebuilding of the force tree led to differences in the final particle distribution even without massive neutrinos. We thus have modified MP-Gadget to rebuild the tree every timestep, reverting to the Gadget-2 behaviour.
-
-Furthermore, as documented in \cite{Springel_2005}, all versions of Gadget, when outputting a snapshot, drift all particles ballistically to the desired output time, but do not update their momenta. Thus snapshot output in Gadget takes place mid-timestep and includes velocities which are slightly out of sync with positions. For neutrino particles, whose clustering is intimately tied to their total momentum, this means that restarting from a snapshot will introduce an error in the final power spectrum. In \cite{AHB} we avoided this problem by simply running our jobs for long enough that we did not need to restart. However, for this work we have modified Gadget so that it chooses its timesteps around the planned output times. Thus output occurs only at the end of a (PM) timestep, when the positions and momenta are fully synced.
-
-We have altered our neutrino integrator to be a stand-alone module, largely
-independent of the underlying N-body code. It should thus be easy to include
-into codes other than Gadget. We have also provided a script to integrate into the
-public version of Gadget-2, as well as the highly scalable public MP-Gadget
-used for the BlueTides simulation. Our code is publicly downloadable from.
-We have added comprehensive unit tests and documentation.
-
 \subsection{Simulations}
 \label{sec:simulations}
 
-All our simulations were run with MP-Gadget, using the scripts available
-and the initial condition generator S-GenIC. Our simulations are detailed in Table \ref{tab:simulations}.
-All our simulations have a box size of $300$ comoving Mpc/h, and $512^3$ cold dark matter particles,
-initialised using the CDM+baryon transfer function at $z=99$. Each simulation has the same initial phases,
-ensuring the same distribution of late-time halos. We have performed simulations with massless neutrinos, and a linear response simulation with the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV and a normal neutrino hierarchy. All other simulations have a total neutrino mass of $0.4$~eV, the value preferred for the neutrino mass by \cite{Beutler_2014}, and assume a degenerate neutrino hierarchy. $0.4$~eV was chosen because it is the minimal neutrino mass for which the linear response method fails to accurately reproduce the neutrino power spectrum on these scales.
+Our simulations were run with MP-Gadget \url{https://github.com/rainwoodman/MP-Gadget/} and are detailed in Table \ref{tab:simulations}. We used a box size of $300$ comoving Mpc/h with $512^3$ cold dark matter particles,
+initialised using a CDM+baryon transfer function at $z=99$. Each simulation has the same initial phases,
+ensuring the same distribution of late-time halos. We have performed simulations with massless neutrinos, and a linear response simulation with the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV (and a normal neutrino hierarchy). All other simulations have a total neutrino mass of $0.4$~eV, and assume a degenerate neutrino hierarchy. We used a relatively high neutrino mass $0.4$~eV was chosen because it is the minimal neutrino mass for which the linear response method fails to accurately reproduce the neutrino power spectrum on these scales.
 
 We have performed three simulations which differ only in the neutrino simulation method; one with linear response, one with particle neutrinos and one with our new hybrid implementation. We then performed a number of simulations designed to test the sensitivity of our hybrid method to numerical parameters. Our default hybrid neutrino simulation uses a critical velocity of $750$ (comoving) km/s, a neutrino switch-on time of $z_\nu = 1$ and includes $512^3$ neutrino particles, matching the cold dark matter. Our modified simulations included one with a neutrino switch-on time of $z_\nu = 4$, one with $256^3$ neutrino particles, and simulations with critical velocities of $1000$ and $5000$ km/s. The simulation with a critical velocity of $5000$ km/s includes all the neutrino power in particles after the neutrino switch-on time and is thus useful as a comparison to the pure particle method. We finally performed a simulation with a critical velocity of $500$ km/s, verifying that this was too small to achieve a converged neutrino power spectrum.
 For reference, the fraction of the neutrino matter density in particles for critical velocities of $500$, $750$, $1000$, $5000$ (comoving) km/s is $0.117$, $0.276$, $0.451$ and $1$ respectively.
@@ -411,10 +400,12 @@ SB was supported by NASA through Einstein Postdoctoral Fellowship Award Number P
 
 \appendix
 
-\section{Kspace Neutrino Manual}
+\section{Manual}
 \label{sec:manual}
 
-In this Appendix, we briefly describe the parameters of the linear response neutrino method. A similar description may be found in the README of the code repository. Table \ref{tab:parameters} shows a list of the required parameters, as well as brief descriptions. The number of extra parameters required is small. Three parameters are required to specify the initial power of the neutrino component, using a CAMB transfer function. Three parameters are required to specify the masses of the three active neutrino species. Finally, three parameters are used for the properties of the hybrid neutrino model: a global switch enabling the model, the critical velocity below which neutrinos are particles, and the neutrino switch-on time, after which neutrinos are actively gravitating. A script is provided in the repository which downloads and patches a fresh copy of Gadget-2: the ``apply-patches'' script in the gadget-2 subdirectory.
+In this Appendix, we briefly describe the parameters of the linear response neutrino method. A similar description may be found in the README of the code repository: \url{https://github.com/sbird/kspace-neutrinos/}. Our neutrino integrator has been altered to be a stand-alone module, largely independent of the underlying N-body code. To aid integration, we have included copious comments and unit tests. A script is provided in the repository which downloads and patches a fresh copy of Gadget-2 to include massive neutrinos: the ``apply-patches'' script in the gadget-2 subdirectory.
+
+Table \ref{tab:parameters} shows a list of the required parameters, as well as brief descriptions. The number of extra parameters required is small. Three parameters are required to specify the initial power of the neutrino component, using a CAMB or CLASS transfer function file. Three parameters are required to specify the masses of the three active neutrino species. Finally, three parameters are used for the properties of the hybrid neutrino model: a global switch enabling the model, the critical velocity below which neutrinos are particles, and the neutrino switch-on time, after which neutrinos are actively gravitating.
 
 %TABLE OF SIMULATIONS.
 \begin{table*}
@@ -436,6 +427,8 @@ HybridNeutrinosOn       & Switch to enable hybrid neutrinos. \\
 \caption{Table of code parameters, with brief descriptions.}
 \label{tab:parameters}
 \end{table*}
+
+As documented in \cite{Springel_2005} and the Gadget-2 manual, all versions of Gadget output snapshots mid-timestep. This is implemented by drifting all particles (even those not currently active) to the desired output time. However, particles are not kicked to update their momenta, so that the output particle velocities are those from the last active timestep. For neutrino particles, whose clustering is intimately tied to their total momentum, restarting from a snapshot using Gadget-2 or later will introduce an error in the $z=0$ power spectrum. We therefore strongly recommend that Gadget-2 simulators restart their simulations, if necessary, from restart files. This does not apply for MP-Gadget, which we have modified so that snapshots always occur at the end of a PM timestep, when all particles are active.
 
 \section{Initial Conditions}
 \label{sec:initcond}
