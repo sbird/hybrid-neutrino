@@ -159,7 +159,8 @@ Motivated by the numerical difficulties with particle simulations, we sought to 
 The applicability of this method follows is because neutrinos do not cluster below their free-streaming length, given by
 \begin{equation}
  k_{\rm fs}(z) \approx \frac{0.08}{\sqrt{1+z}}
-\sqrt{\frac{\Omega_{\rm M}}{0.3}} \frac{m_{\nu}}{0.1 ~ \textrm{eV}} h~ \textrm{Mpc}^{-1}.  \label{eq:kfs}
+\sqrt{\frac{\Omega_{\rm M}}{0.3}} \frac{m_{\nu}}{0.1 ~ \textrm{eV}} h~ \textrm{Mpc}^{-1}.
+\label{eq:kfs}
 \end{equation}
 For astrophysically relevant neutrino masses, this free-streaming length is larger than the non-linear scale.
 Thus while cold dark matter exhibits strong non-linear clustering, the neutrino species does not, behaving
@@ -220,14 +221,19 @@ dropping to zero on small scales where the particle neutrino power is dominated 
   \label{fig:fddistribution}
 \end{figure}
 
-In this Section we describe our implementation of hybrid neutrinos, our new simulation method and the main new technique of this paper. The idea behind hybrid neutrinos is that we split the initial Fermi-Dirac velocity of the neutrinos into fast and slow components. Such a split is shown graphically in Figure \ref{fig:fddistribution}. Fast neutrinos are followed analytically. Slow neutrinos are sampled by a population of N-body particles are inserted into the simulation with thermal velocities sampling the Fermi-Dirac distribution below a critical velocity, by default $750$ (comoving) km/s. Initially these particles are tracers; they feel the gravitational force of all other particles in the simulation, but do not gravitate themselves. At a critical redshift, by default $z=1$, these neutrino particles switch on and start to gravitate.
+\cite{AHB} showed that the linear response neutrino simulation method did not fully reproduce the neutrino power spectrum on small scales. This initially appears strange; we showed that the neutrino free-streaming length is larger than the non-linear scale, so how do neutrinos cluster non-linearly? The answer is that the initial thermal velocity of neutrinos is not a delta function, but a Fermi-Dirac distribution. Neutrinos drawn from the slow tail of the distribution will have a smaller free-streaming length, whch may be smaller than the non-linear scale. Such slow neutrinos make up a small fraction of the total matter density, but can still dominate the power spectrum because the clustering of faster neutrinos is heavily suppressed.
 
-Note that our method differs from the hybrid method of \cite{Brandbyge_2010}, which dynamically creates neutrino particles based on a clustering condition. In our implementation, neutrino particles are always present, but initially do not gravitate.
+Building on this insight, we have implemented a hybrid particle-linear response neutrino simulation method. Neutrinos are split into fast and slow components, based on their Fermi-Dirac velocities. Figure~\ref{fig:fddistribution} shows the cumulative Fermi-Dirac distribution graphically, with the shaded area under the curve indicating the slow neutrino component. When generating initial conditions for the simulation, we create N-body particles with thermal velocities matching the (redshifted) slow neutrino component.\footnote{Our hybrid method differs substantially from the similarly named technique described in \cite{Brandbyge_2010}. In that work, neutrino particles are dynamically created during the simulation, when neutrino clustering exceeds a threshold. In our implementation, the neutrino particles generated with the initial conditions, but do not gravitate initially.}
 
-After the neutrino particles start to gravitate we modify the
-analytic module so that neutrino perturbations are included only above a
-minimum momentum corresponding to the initial slow value sampled by the
-particle velocity distribution. In other words (insert YAH analytics here).
+Initially these ``slow neutrino'' N-body particles behave as tracers; they experience gravitational force from the cold dark matter, but they do not gravitate. The neutrino component is followed entirely by the linear response method described 
+in Section~\ref{sec:analytic}. Our hybrid method thus avoids being affected by neutrino shot noise or early-time relativistic effects.
+
+Slow-moving neutrinos are distributed completely homogeneously in the simulation initial conditions. The velocities expected from structure formation at the initial redshift are substantially smaller than neutrino thermal velocities, even for slow neutrinos. 
+We verified explicitly that our results at all redshifts were unchanged for a simulation where our slow-moving neutrinos had an initial clustering matching the transfer function of the cold dark matter, a conservative over-estimate of the true initial clustering.
+
+Once the simulation reaches a critical redshift, the particle neutrinos are ``switched on'' and begin to gravitate.
+After this point the linear response method is modified to reduce the matter density in the analytic neutrino component by the amount of mass in the neutrino particles. We also modify the neutrino power spectrum calculation so that neutrino perturbations are included only for unperturbed velocities faster than those sampled by the ``slow-moving'' neutrino particles. 
+In other words \spb{TODO: YAH analytic formula from YAH here}.
 
 We use the following asymptotic expansion for the integral:
 \begin{align}
@@ -236,11 +242,15 @@ We use the following asymptotic expansion for the integral:
  &+ (2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2) \cos(q_\mathrm{c} X)\;,\\
 \end{align}
 which we have confirmed, using mathematica, to be accurate to $0.1\%$.
+\spb{End analytic results from YAH}.
 
-The neutrino particles are initially unclustered; the velocities expected from structure formation at the initial redshift are substantially smaller than their thermal velocities, even for the slow tail. We verified explicitly that our results at all redshifts were unchanged for a simulation where the slow tail of the neutrinos had velocities imparted matching the transfer function of the cold dark matter, which is an over-estimate of the true initial velocity.
-Note that this technique still imposes some numerical overhead on the code because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex.
+By default we consider the ``slow-moving '' tail of the Fermi-Dirac distribution to be all neutrino density with an unperturbed velocity less than $750$ (comoving) km/s. We found by experiment that this value was the smallest that led to good agreement 
+with the particle neutrino method. The effects of other cutoff velocities are discussed in Section~\ref{sec:results}.
+The critical redshift at which particle neutrinos switched on was set at $z=1$, for similar reasons.
 
 Our hybrid neutrino implementation does not include the neutrino hierarchy, assuming all three neutrino species are degenerate. The inclusion of the neutrino hierarchy in future work should not be difficult, but we deferred it because the masses where it is important ($M_\nu < 0.15$~eV) are sufficiently low that their clustering is already adequately modelled by our linear response method.
+
+Note that our hybrid neutrino technique still imposes some numerical overhead above the linear response method, because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex. The overhead is reduced from purely particle neutrino simulations, both because fewer neutrino particles are needed to achieve a given level of shot noise and because the particle neutrinos are moving more slowly. However, since there is still some overhead, we recommend that simulators which do not require high accuracy in the neutrino power spectrum use the linear response method.
 
 \subsection{Code improvements}
 \label{sec:code}
