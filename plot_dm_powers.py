@@ -13,12 +13,13 @@ from nbodykit.lab import BigFileCatalog
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4a","b300p512nu0.4p","b300p512nu0.4hyb"]
+sims = ["b300p512nu0.4hyb", "b300p512nu0.4a","b300p512nu0.4p"]
 checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-single"]
 zerosim = "b300p512nu0"
 lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"NUTIME","b300p512nu0.4hyb-all":"HYBALL","b300p512nu0.06a":"MINNU"}
 scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
+scale_to_camb = {0.02: '49', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
 
 def smooth(x,window_len=15,window='hanning'):
     """smooth the data using a window with requested size.
@@ -194,7 +195,7 @@ def plot_single_redshift(scale):
             continue
         plt.loglog(k, pk,ls=lss[ss], label=labels[ss])
     cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
-    camb = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
+    camb = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
     (k_camb, pk_camb) = get_camb_power(camb)
     rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
@@ -234,7 +235,7 @@ def select_nu_power(scale, ss):
             npart = 512
             if re.search("single",ss):
                 npart = 256
-            #vcrit = 500
+            #vcrit = 750
             nu_part_time = 0.51
             part_prop = 0.275691
 #             part_prop = 0.116826
@@ -268,8 +269,8 @@ def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     kl = np.logspace(-2, 2)
     plt.loglog(kl, (300/512)**3*np.ones_like(kl), color="lightgrey", ls=":")
     cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
-    cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
-    cambtrans = os.path.join(cambdir,"ics_transfer_"+str(int(1/scale-1))+".dat")
+    cambmat = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
+    cambtrans = os.path.join(cambdir,"ics_transfer_"+scale_to_camb[scale]+".dat")
     (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
     rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB")
@@ -286,8 +287,8 @@ def plot_nu_single_redshift_rel_camb(scale):
     """Plot all neutrino powers relative to CAMB"""
     for ss in sims:
         cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
-        cambmat = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
-        cambtrans = os.path.join(cambdir,"ics_transfer_"+str(int(1/scale-1))+".dat")
+        cambmat = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
+        cambtrans = os.path.join(cambdir,"ics_transfer_"+scale_to_camb[scale]+".dat")
         (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
         rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
         (k, pk_nu) = select_nu_power(scale, ss)
@@ -321,7 +322,7 @@ def plot_single_redshift_rel_camb(scale):
     """Plot all the simulations at a single redshift"""
     for ss in sims:
         cambdir = os.path.join(os.path.join(datadir, ss),"camb_linear")
-        camb = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
+        camb = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (k, pk) = _get_pk(scale, ss)
         if np.size(k) == 0:
             continue
@@ -342,11 +343,11 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
     rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value="extrapolate")
     if camb:
         zerocambdir = os.path.join(os.path.join(datadir, pzerosim),"camb_linear")
-        camb = os.path.join(zerocambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
+        camb = os.path.join(zerocambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (zero_k, zero_pk_c) = get_camb_power(camb)
         zero_reb=scipy.interpolate.interpolate.interp1d(zero_k,zero_pk_c)
         cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
-        cambpath = os.path.join(cambdir,"ics_matterpow_"+str(int(1/scale-1))+".dat")
+        cambpath = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (k_c, pk_c) = get_camb_power(cambpath)
         plt.semilogx(k_c, pk_c/zero_reb(k_c),ls=":", label="CAMB")
     for ss in psims:
@@ -383,6 +384,7 @@ def plot_fermi_dirac(Mnu, zz):
     plt.ylabel(r"Fermi-Dirac cum. prob.")
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "fermidirac.pdf"))
+    plt.clf()
 
 if __name__ == "__main__":
 #     plot_image(sims[0],8)
@@ -397,7 +399,7 @@ if __name__ == "__main__":
         plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc)
-        plot_single_redshift_rel_one(sc,psims=["b300p512nu0.06a",],fn="lowmass",ymin=0.9, ymax=1.0)
+        plot_single_redshift_rel_one(sc,psims=["b300p512nu0.06a",],fn="lowmass",ymin=0.92, ymax=1.0)
         plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.8,ymax=1.2)
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=sims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
