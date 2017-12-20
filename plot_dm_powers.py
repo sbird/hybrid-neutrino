@@ -18,8 +18,8 @@ checksims = ["b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hy
 zerosim = "b300p512nu0"
 lss = {"b300p512nu0.4p":"-.", "b300p512nu0.4a":"--","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"NUTIME","b300p512nu0.4hyb-all":"HYBALL","b300p512nu0.06a":"MINNU"}
-scale_to_snap = {0.02: '0', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
-scale_to_camb = {0.02: '49', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
+scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
+scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
 
 def smooth(x,window_len=15,window='hanning'):
     """smooth the data using a window with requested size.
@@ -236,7 +236,7 @@ def select_nu_power(scale, ss):
             if re.search("single",ss):
                 npart = 256
             #vcrit = 750
-            nu_part_time = 0.51
+            nu_part_time = 0.5
             part_prop = 0.275691
 #             part_prop = 0.116826
             if re.search("vcrit",ss):
@@ -393,7 +393,7 @@ if __name__ == "__main__":
 #     plot_image(sims[1],8,1)
 #     plot_image(sims[1],8,2)
     plot_fermi_dirac(0.4,0)
-    for sc in (0.02, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_crosscorr(sc)
