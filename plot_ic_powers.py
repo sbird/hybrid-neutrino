@@ -1,6 +1,7 @@
 """Scripts to plot the power spectra from our simulations"""
 import os.path
 import glob
+import re
 import numpy as np
 import scipy.interpolate
 import matplotlib
@@ -11,6 +12,14 @@ datadir = os.path.expanduser("~/data/rescale_ICtest")
 savedir = "icplots/"
 sims = ["rescale_omegab","single_norescale","rescale"]
 lss = {"rescale_omegab":"-.", "single_norescale":"--", "rescale":"-"}
+labels = {"rescale_omegab":"radrescale", "single_norescale":"norescale", "rescale":"noradrescale"}
+#colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c',"b300p512nu0.4hyb-single":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-all": '#e377c2',"b300p512nu0.06a":'#1f77b4'}
+
+plt.style.use('anjalistyle')
+
+def munge_scale(scale):
+    """Make the scale param be a string suitable for printing"""
+    return re.sub(r"\.","_",str(scale))
 
 def get_camb_power(matpow):
     """Plot the power spectrum from CAMB
@@ -68,10 +77,15 @@ def plot_single_redshift_rel_one(scale, divisor=1):
         (k, pk) = _get_pk(scale, ss)
         if np.size(k) == 0:
             continue
-        plt.semilogx(k, pk/pk_div,ls=lss[ss], label=ss)
-    plt.ylim(0.99,1.01)
-    plt.legend(loc=0)
-    plt.savefig(os.path.join(savedir, "pks_rel-"+str(scale)+".pdf"))
+        plt.semilogx(k, pk/pk_div -1 ,ls=lss[ss], label=labels[ss])
+    plt.ylim(-0.01,0.01)
+    plt.yticks((-0.01,-0.005, 0, 0.005, 0.01), ("-0.010","-0.005","0.000", "0.005", "0.010"))
+    plt.xlim(0.01, 10)
+    plt.legend(frameon=False, loc='lower left',fontsize=12)
+    plt.xlabel("k (h/Mpc)")
+    plt.ylabel(r"$\mathrm{P}(k)$ ratio")
+    plt.tight_layout()
+    plt.savefig(os.path.join(savedir, "pks_rel-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
 if __name__ == "__main__":

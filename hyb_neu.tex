@@ -5,7 +5,7 @@
 %MNRAS
 %\documentclass[useAMS, usenatbib, usegraphicx, twocolumn]{mnras}
 
-\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}, draft]{hyperref}
+\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}]{hyperref}
 % \newcommand{\eprint}[1]{\href{http://arxiv.org/abs/#1}{#1}}
 % \newcommand{\adsurl}[1]{\href{#1}{ADS}}
 
@@ -275,7 +275,7 @@ Note that our hybrid neutrino technique still imposes some numerical overhead ab
 %     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
 %     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
 %     &     0.4             &   Hybrid      & 300         & 512       &  $256^3$ nu particles    \\
-    Name & $M_\nu$ (eV) & Method & $N_\mathrm{nu}^{1/3}$ & $v_\mathrm{crit}$ & Notes \\
+    Name & $M_\nu$ (eV) & Method & $N_\nu^{1/3}$ & $v_\mathrm{crit}$ & Notes \\
 \hline
 CDM    &       0             &    -          & 0         & - &    \\
 MINNU    &     0.06            &   Lin. Resp.    & 0         & - &  NH  \\
@@ -285,10 +285,10 @@ PARTICLE    &     0.4             &   Particle    & 512       & - &    \\
 HYBRID    &     0.4             &   Hybrid      & 512       & 750 & \\
 HYBSING    &     0.4             &   Hybrid      & 256       & 750 & \\
 VCRIT    &     0.4             &   Hybrid      & 512       & 1000 & \\
-HYBALL    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 4$ \\
-NUTIME    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 1$  \\
+HYBALL    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 1$ \\
+NUTIME    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 4$  \\
 %    &     0.4             &   Hybrid      & 512       & 500 &    \\
-
+% Note HYBALL and NUTIME are swapped compared to their directory names
 \hline
 \end{tabular}
 \end{center}
@@ -347,6 +347,12 @@ The fraction of the neutrino matter density in particles for critical velocities
   \label{fig:neutrino_power}
 \end{figure*}
 
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/pks_nu_rel-1.pdf}
+  \caption{The ratio of the neutrino power spectrum for simulations using linear response (LINRESP) and particle (PARTICLE) methods to the hybrid simulation (HYBRID) at $z=0$. Also shown is the linear theory neutrino power spectrum from CAMB. We have subtracted shot noise from the particle and hybrid simulations.}
+  \label{fig:rel_neutrino_power}
+\end{figure}
+
 Figure \ref{fig:density_plot} shows projected densities for the CDM and neutrino particles from the HYBRID and PARTICLE simulations.\footnote{Projected density plots made using Nbodykit.}, in order to give a visual impression of the clustering of the neutrinos and dark matter. The structure of filaments, halos and voids is identical in all three plots, further reinforcing the conclusion of Figure \ref{fig:cross-corr} that the phases of the neutrinos and CDM are highly correlated. The neutrino particles in the hybrid simulation cluster more than in the purely particle simulation, but in both cases less than the CDM. This matches the expected behaviour given their lower initial thermal velocities.
 
 Figure~\ref{fig:matter_power} shows the $z=0$ and $z=0.5$ matter power spectrum for all three neutrino simulation methods: particle, linear response and hybrid. These three simulations are identical except for the method used to follow neutrino perturbations. In particular, they all use the same cosmological background solution, which includes radiation and massive neutrinos. Figure~\ref{fig:matter_power} shows the ratio of the matter power spectrum in each simulation with massive neutrinos compared to the matter power spectrum from a pure-CDM massless neutrino simulation. We also show the linear theory evolution from CAMB. Validating our new hybrid method, the hybrid and linear response simulation methods produce matter power spectra which are indistinguishable by eye, and in fact differ by around $0.1\%$. They also agree well with linear theory on linear scales, $k < 0.2$ h/Mpc.
@@ -356,42 +362,44 @@ The matter power spectrum of particle neutrino simulation is lower than the othe
 Figure \ref{fig:minimal_mass} shows the results of the $M_\nu = 0.06$~eV linear response simulation at $z=0$. This simulation agrees with linear theory for $k < 0.2$ h/Mpc, further demonstrating that our simulations are able to reproduce the results of linear theory on large scales even for the lowest neutrino mass allowed by oscillation experiments. These low neutrino masses will become increasingly important as the upper limit on $M_\nu$ is reduced. Particle simulations struggle to produce good agreement with linear theory at these masses because they are highly shot noise dominated and assume a degenerate neutrino hierarchy, which is inaccurate for $M_\nu < 0.1$ eV.
 
 Figure~\ref{fig:neutrino_power} shows the neutrino power spectrum at $z=0$ and $z=0.5$ for the same three simulations, demonstrating each of the neutrino simulation methods, as well as the linear theory power spectrum from CAMB. For the hybrid simulation we have computed the total neutrino power spectrum as the weighted sum of the power spectrum of the fast and slow components $P^{1/2}_\nu = f_\mathrm{fast} P^{1/2}_\mathrm{fast} + f_\mathrm{slow} P^{1/2}_\mathrm{slow}$, where $f_\mathrm{fast} + f_\mathrm{slow} = 1$.
-Neutrino particle shot noise has been subtracted from both the particle and hybrid simulation. Remarkably the neutrino power appears recoverable even two orders of magnitude below the shot noise level. The shot noise for the hybrid simulation is reduced by $0.27$, corresponding to the reduced fraction of matter density in particle neutrinos, and demonstrating an advantage of the hybrid approach. Conceptually, the hybrid approach focuses expensive computational resources where it is really needed, on slow neutrinos which cluster non-linearly. 
+Neutrino particle shot noise has been subtracted from both the particle and hybrid simulation. Remarkably the neutrino power appears recoverable even two orders of magnitude below the shot noise level. The shot noise for the hybrid simulation is reduced by $0.27$, corresponding to the reduced fraction of matter density in particle neutrinos, and demonstrating an advantage of the hybrid approach. Conceptually, the hybrid approach focuses expensive computational resources where it is really needed, on slow neutrinos which cluster non-linearly.
 
-Both particle and hybrid methods show sharply increased neutrino power on small scales over the linear response method. At $z >= 1$ all three methods are in good agreement, as also found in \cite{AHB}. However, Figure~\ref{fig:neutrino_power} demonstrates that the hybrid neutrino simulation reproduces the neutrino power spectrum of the particle simulation at $z = 0$ and $z=0.5$.
+Both particle and hybrid methods show sharply increased neutrino power on small scales over the linear response method. At $z >= 1$ all three methods are in good agreement, as also found in \cite{AHB}. However, Figure~\ref{fig:neutrino_power} demonstrates that the hybrid neutrino simulation reproduces the neutrino power spectrum of the particle simulation on small scales at $z = 0$ and $z=0.5$. As Figure~\ref{fig:rel_neutrino_power} shows, the particle and hybrid simulations differ quantitatively by $10\%$ at $k=1$ h/Mpc, with the hybrid simulation producing more power. This difference is most likely a result of the increased mass resolution in the hybrid simulation. The hybrid simulation is in much better agreement with CAMB for $k < 0.1$ h/Mpc, with the particle simulation most likely suffering from the dynamical effects of neutrino particle shot noise at early times. For $k < 0.1$ h/Mpc, the hybrid and linear response simulations also agree at the $1\%$ level, with the linear response simulation in marginally better agreement with CAMB, although the difference is small. 
 
-\subsection{Numerical Checks}
+In summary, our new hybrid method agrees well with CAMB on linear scales, for both neutrino and matter power spectrum. It reproduces the non-linear matter growth function of both particle and linear response simulations, and the non-linear neutrino growth seen in the particle simulation, with somewhat higher resolution.
+
+\subsection{Sensitivity to Model Parameters}
 \label{sec:check}
 
 \begin{figure*}
   \includegraphics[width=0.45\textwidth]{nuplots/pks-cknu-1.pdf}
   \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel-1.pdf}
-  \caption{(Left) The neutrino power spectrum from our set of numerical check simulations at $z=0$. We have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles. We show the linear theory power spectrum from CAMB for comparison. We have subtracted shot noise at the level shown by the dashed grey curve. (Right) Ratio of neutrino power spectra to the HYBALL simulation, in which all neutrino density is followed by particles after $z=1$. These curves have been smoothed with at $15$-point Hanning filter to reduce numerical noise.}
+\caption{(Left) The effect of changing our hybrid model parameters on the neutrino power spectrum at $z=0$. We have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles. We show the linear theory power spectrum from CAMB for comparison. We have subtracted shot noise at the level shown by the dashed grey curve. (Right) Ratio of neutrino power spectra to the results of the default hybrid simulation parameters (HYBRID). Data has been smoothed with at $15$-point Hanning filter to reduce numerical noise.}
   \label{fig:vcrit}
 \end{figure*}
 
-% \begin{figure}
-%     \includegraphics[width=0.45\textwidth]{nuplots/P_nu_M500_z0.pdf}
-%     \caption{Plot showing CDM simulation with test particle neutrinos with fixed (not FD) single velocity of $500$ km/s at $z=0$. Neutrino power spectrum, compared to analytic $P_{CDM}$.\spb{I can't find the analytic estimates anymore...need to reproduce them. Also not sure I trust these specific simulations: I found some gadget bugs along the way. They should be re-run or possibly removed.}}
-%    \label{fig:testpart}
-% \end{figure}
-%
-Figure~\ref{fig:vcrit} shows the effects of changing various numerical parameters of our hybrid neutrino simulations. All simulations agree to within $10\%$ until $k = 2$ Mpc/h, which corresponds to the mean inter-particle spacing of the simulation. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. In particular the PARTICLE and HYBALL simulations agree extremely well: these two simulations differ only in their treatment of neutrinos at $z > 4$. The PARTICLE simulation shows about $2\%$ less power than the HYBALL simulation, a similar deficit to the differences in the total matter power spectrum. The NUTIME simulation is identical to HYBALL, except that the neutrino switch-on time is $z=1$. This simulation has a power deficit of about $5\%$ on large scales. Note that it is likely the result of the NUTIME simulation is preferable; at high redshift the neutrino component suffers from shot noise, which may be leading to artificial structure growth in the neutrinos. Alternatively, there may be some genuine real structure growth which is being missed, although this seems unlikely at these large scales.
+Figure~\ref{fig:neutrino_power} demonstrated that the hybrid neutrino method is capable of reproducing the neutrino power spectrum of a particle simulation, with substantially lower levels of shot noise. In this Section we show the sensitivity of our neutrino power spectrum measurement to various parameters of the hybrid model. In particular, we have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles (and thus the level of shot noise). The total matter power spectra for all these simulations agreed to within $0.5\%$. Figure~\ref{fig:vcrit} shows the neutrino power spectra of these simulations, compared to a hybrid simulation with the default parameters: neutrino switch-on time of $z=1$, $512^3$ neutrino particles and a critical neutrino velocity $v_\mathrm{crit} = 750$ km/s. Note that with these parameters the hybrid simulation also agrees well with CAMB for $k < 0.1$ h/Mpc. 
 
-The ratio with simulations which alter the neutrino critical velocity are somewhat noisy, an unfortunate consequence of combining the analytic and particle neutrino power spectra, which have slightly different mode-to-mode scatters. When all neutrinos are particles, this mode-to-mode scatter is the same for both simulations and disappears in the ratio. This scatter should be understood as a consequence of the finite accuracy of the Gadget gravity solver when dealing with a particle component making up less than $1\%$ of the total matter density. The VCRIT simulation, which also has a neutrino switch-on time of $z=1$, agrees well with the NUTIME simulation. The increased power around $k \sim 1$ is likely a consequence of the increased effective resolution in the neutrino component and thus slightly increased non-linear growth. The few percent changes at large scales are probably noise. The HYBRID simulation, with a slightly smaller critical velocity of $750$ km/s, exhibits $0-5\%$ less power at $k=0.1 - 0.5$ h/Mpc. While this could also be due to shot noise, we suspect this is because this simulation misses some real non-linear structure formation on these scales. We performed another simulation with a neutrino critical velocity of $500$ km/s, and found a similar, but larger, reduction in power. Furthermore, the HYBSING simulation, which is identical to HYBRID but with $8$ times fewer particles, gives identical results to the HYBRID simulation, suggesting that shot noise is not having a large effect. This is somewhat remarkable, given that at $k=2$ and $z=0$ shot noise dominates by a full order of magnitude, and it suggests that future users of this simulation code may use reduced particle numbers with confidence. Similar results are seen at other redshifts, although convergence is markedly worse ($20-30\%$) at the neutrino switch-on time in all cases.
+All simulations, including the purely particle simulation, agree to within $10\%$ on scales larger than the mean inter-particle spacing of the simulation, $k < 2$ Mpc/h, while our preferred parameter ranges agree to $5\%$. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. Simulation outputs at $z > 0$ produce similar results, with the exception of output very close to the neutrino switch-on time, which for numerical reasons is converged only at the $20-30\%$ level. In the HYBSING simulation we decreased the neutrino particle load by a factor of $8$, to $256^3$, with negligible change in our power spectra for $k < 1$ h/Mpc, demonstrating that we are converged with respect to mass resolution and thus that shot noise has negligible effect on our default results.
+
+We can see the effect of changing the fraction of neutrino matter density in particles by comparing the default to the VCRIT and HYBALL simulations, which progressively increase the fraction of neutrinos in particles. Too small a value of $v_\mathrm{crit}$ will miss non-linear growth in neutrinos followed by the linear response model, while too large a value of $v_\mathrm{crit}$ risks being affected by shot noise. Both VCRIT ($v_\mathrm{crit} = 1000$ km/s) and HYBALL ($v_\mathrm{crit} = 5000$ km/s) produce a similar increase in the neutrino power spectrum in the quasilinear regime between $k = 0.1$ and $k = 0.5$ h/Mpc, which may suggest that our default value of $v_\mathrm{crit} = 750$ km/s is marginally too low. Note that for $k > 1$ h/Mpc both simulations produce less neutrino power, reflecting their lower mass resolution.
+
+The effect of changing the initial neutrino switch-on time can be seen by comparing the NUTIME simulation to the HYBALL simulation.
+The NUTIME simulation has a neutrino switch-on time of $z=4$, while HYBALL uses the default switch-on time of $z=1$. Both of these simulations follow all the neutrino mass density in particles, like the PARTICLE simulation. We chose to use this configuration to test the desired switch-on time because it would maximize the effect of shot noise. The NUTIME and PARTICLE simulations produce about $5\%$ more power than HYBALL on large scales, and thus exceed the linear theory power from CAMB by the same amount. It is likely that the power in these simulations is being artificially increased by neutrino shot noise, and so a switch-on time of $z=1$ is recommended.
 
 \section{Conclusions}
 \label{sec:conclusion}
 
-We have extended our semi-analytic linear response neutrino simulation method from \cite{AHB} to include hybrid neutrinos, where a fraction of the neutrino density, drawn from the slow part of the Fermi-Dirac distribution, is followed by neutrino particles at late times. With this modification we show that we can reproduce the neutrino power spectra of well-converged particle methods and the large-scale total matter power expected by linear theory and predicted by the linear response method. We recommend that those wishing to compare observational surveys to simulations use the semi-analytic linear response method, as that reproduces all directly observable quantities, in particular the total matter power spectrum, galaxy clusters \citep{McCarthy_2017}, the weak lensing shear \citep{Liu_2017} and the Lyman-alpha forest \citep{AHB}. To aid this we have helpfully provided this method as a patch to Gadget-2 as well as integrated it into the public code MP-Gadget. The linear response code is computationally very efficient, involving a single integration for every PM timestep, and we have attempted to ensure that it will be easy to integrate into any structure formation code.
+We have extended our linear response neutrino simulation method from \cite{AHB} to better account for non-linear growth in the neutrino component and thus reproduce the non-linear neutrino power spectrum as well as the non-linear matter power spectrum. 
+Our improved method is a hybrid: initially fast-moving neutrinos are followed as before using a linear response method, while initially slow-moving neutrinos, which can be captured by CDM halos, are followed using particles at late times. We show that our new hybrid method reproduces the non-linear matter power of the linear response simulations, as expected from \cite{AHB}, while also reproducing the significantly large neutrino power spectrum seen in purely particle simulations at $z=0$. Because neutrinos are followed analytically at early times, the hybrid code retains the ability of our linear response method to include early-time relativistic effects and avoid the impact of shot noise. We show that it agrees well with CAMB when structure growth is linear. Since only a fraction of the neutrino matter density is followed by neutrinos, we show that converged results can be obtained with a relatively small neutrino particle load. Our simulation code is publicly available, both integrated into the simulation code MP-Gadget and as a series of patches to Gadget-2 \footnote{\url{https://github.com/sbird/kspace-neutrinos}}.
 
-For simulators wishing instead to investigate the structure of the neutrino component of matter around collapsed objects \citep{FVN_2013}, neutrino wakes \cite{Inman_2015} or other explicitly non-linear objects, we recommend using the full hybrid neutrino code. For example, in future work one could compute the neutrino bispectrum \citep{Furhrer_2015} or use our method to examine the distribution of massive neutrinos in cosmic voids, which \cite{Banerjee_2016} argued would not be correctly followed by our linear response method. We suggest a neutrino switch-on redshift $z=1$ and a critical neutrino velocity of $750-1000$ km/s, which gave the best results in our tests. We further suggest that most simulators use a mean interparticle spacing for the neutrino component double that for the CDM, and thus $1/8$th the number density, as this gave identical results in our tests with much smaller computational overhead.
+We recommend that most simulators wishing to compare to observational surveys continue to use the linear response method, as it is computationally efficient and still reproduces well the properties of the total matter density, which are the directly observable quantities. However, for simulators wishing instead to investigate the structure of the neutrino component, our hybrid method provides much improved accuracy. Simulations using our method could be used to investigate, for example, the distribution of neutrino matter around collapsed objects \citep{FVN_2013}, neutrino wakes \citep{Inman_2015}, the neutrino bispectrum \citep{Furhrer_2015} or the distribution of massive neutrinos in cosmic voids \citep{Banerjee_2016}. We suggest a neutrino switch-on redshift $z=1$ and a critical neutrino velocity of $750-1000$ km/s, which gave the best results in our tests. We further suggest that most simulators use a mean interparticle spacing for the neutrino component double that for the CDM, and thus $1/8$th the number density, as this gave identical results in our tests with much smaller computational overhead.
 
-Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \cite{Calabrese_2017}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators.
+Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \citep{Calabrese_2017}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators.
 
 \section*{Acknowledgements}
 
-This research project (or part of this research project) was conducted using computational resources 
+This research project was conducted using computational resources 
 at the Maryland Advanced Research Computing Center (MARCC). SB was supported by NASA through 
 Einstein Postdoctoral Fellowship Award Number PF5-160133.
 
@@ -402,7 +410,10 @@ Einstein Postdoctoral Fellowship Award Number PF5-160133.
 
 In this Appendix, we briefly describe the parameters of the linear response neutrino method. A similar description may be found in the README of the code repository: \url{https://github.com/sbird/kspace-neutrinos/}. Our neutrino integrator has been altered to be a stand-alone module, largely independent of the underlying N-body code. To aid integration, we have included copious comments and unit tests. A script is provided in the repository which downloads and patches a fresh copy of Gadget-2 to include massive neutrinos: the ``apply-patches'' script in the gadget-2 subdirectory.
 
-Table \ref{tab:parameters} shows a list of the required parameters, as well as brief descriptions. The number of extra parameters required is small. Three parameters are required to specify the initial power of the neutrino component, using a CAMB or CLASS transfer function file. Three parameters are required to specify the masses of the three active neutrino species. Finally, three parameters are used for the properties of the hybrid neutrino model: a global switch enabling the model, the critical velocity below which neutrinos are particles, and the neutrino switch-on time, after which neutrinos are actively gravitating.
+Table \ref{tab:parameters} shows a list of the required parameters, as well as brief descriptions. The number of extra parameters required is small. Three parameters are required to specify the initial power of the neutrino component, using a CAMB or CLASS transfer function file. Three parameters are required to specify the masses of the three active neutrino species.
+There is a global switch enabling the hybrid neutrino model. We recommend that most simulators not specifically interested in the properties of massive neutrinos use linear response simulations and thus disable this. If you are interested in hybrid neutrinos, there are two more parameters: the critical velocity below which neutrinos are particles, and the neutrino switch-on time, after which neutrinos are actively gravitating. The neutrino switch-on time should be set to $z=1$. A critical velocity of $750-1000$ km/s worked well for us, but should be chosen depending on the desired balance between non-linear growth and shot noise on the scales of interest.
+It should also be set in your initial conditions code, when the particle load of initially homogeneous neutrino particles are added.
+For our simulations a neutrino particle load $8$ times smaller than the CDM particle load was sufficient.
 
 %TABLE OF SIMULATIONS.
 \begin{table*}
@@ -425,117 +436,80 @@ HybridNeutrinosOn       & Switch to enable hybrid neutrinos. \\
 \label{tab:parameters}
 \end{table*}
 
-As documented in \cite{Springel_2005} and the Gadget-2 manual, all versions of Gadget output snapshots mid-timestep. This is implemented by drifting all particles (even those not currently active) to the desired output time. However, particles are not kicked to update their momenta, so that the output particle velocities are those from the last active timestep. For neutrino particles, whose clustering is intimately tied to their total momentum, restarting from a snapshot using Gadget-2 or later will introduce an error in the $z=0$ power spectrum. We therefore strongly recommend that Gadget-2 simulators restart their simulations, if necessary, from restart files. This does not apply for MP-Gadget, which we have modified so that snapshots always occur at the end of a PM timestep, when all particles are active.
+As documented in \cite{Springel_2005} and the Gadget-2 manual, Gadget-2 and some versions of Gadget-3 output snapshots mid-timestep. This is implemented by drifting all particles (even those not currently active) to the desired output time. However, particles are not kicked to update their momenta, so that the output particle velocities are those from the last active timestep. For neutrino particles, whose clustering is intimately tied to their total momentum, restarting from a snapshot using Gadget-2 or later will introduce an error in the $z=0$ power spectrum. We therefore strongly recommend that Gadget-2 simulators restart their simulations, if necessary, from restart files. This does not apply for MP-Gadget, which we have modified so that snapshots always occur at the end of a PM timestep, when all particles are active.
 
 \section{Initial Conditions}
 \label{sec:initcond}
 
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{icplots/pks_rel-1.pdf}
-\includegraphics[width=0.45\textwidth]{icplots/pks_camb-1.pdf}
-  \caption{(Left) The $z=0$ power spectrum from three simulations.
-  These are initialised respectively with the $z=99$ transfer function,
-  the scaled $z=0$ transfer function, and the $z=0$ transfer function
-  scaled and evolved neglecting radiation density.
-  Curves are normalised to the simulation using the scaled $z=0$ transfer function.
-  (Right) The same three simulations normalised to the linear matter
-  power spectrum from CAMB at $z=0$.}
-  \label{fig:rescaling0}
-\end{figure*}
-
-\begin{figure*}
 \includegraphics[width=0.45\textwidth]{icplots/pks_rel-0_1.pdf}
-\includegraphics[width=0.45\textwidth]{icplots/pks_camb-0_1.pdf}
-  \caption{(Left) The $z=10$ power spectrum from three simulations.
-  These are initialised respectively with the $z=99$ transfer function,
-  the scaled $z=0$ transfer function, and the $z=0$ transfer function
-  scaled and evolved neglecting radiation density.
-  Curves are normalised to the simulation using the scaled $z=0$ transfer function.
-  (Right) The same three simulations normalised to the linear matter
-  power spectrum from CAMB at $z=0$.}
-  \label{fig:rescaling10}
+% \includegraphics[width=0.45\textwidth]{icplots/pks_camb-1.pdf}
+  \caption{The ratio between matter power spectra from three simulations with different initial conditions.
+  These are initialized respectively using the $z=99$ (norescale) transfer function,
+  the scaled $z=0$ transfer function (radrescale), and the $z=0$ transfer function
+  scaled and evolved neglecting radiation density (noradrescale). Power spectra are normalised to the norescale simulation.
+  (Left) At $z=0$. (Right) At $z=9$.}
+  \label{fig:rescaling}
 \end{figure*}
 
-%Show higher redshift?
-
-Since \cite{AHB}, we have improved our initial conditions, generated
-using our freely available initial conditions code
-S-GenIC \url{https://github.com/sbird/S-GenIC}. These improvements concern
-the relationship between velocities and displacements in Lagrangian perturbation theory.
-\citep{Zeldovich_1970, Scoccimarro_1998}. In linear Lagrangian perturbation theory,
-velocities and displacements are related by a scale-independent factor
-
+In this Appendix, we detail improvements to the accuracy of our simulation initial conditions, generated using S-GenIC \footnote{\url{https://github.com/sbird/S-GenIC}}, since \cite{AHB}.
+Following Lagrangian perturbation theory \citep{Zeldovich_1970, Scoccimarro_1998}, 
+the particle velocities and displacements are related by:
 \begin{equation}
-v(k) = a H(a) \frac{d \log D(a)}{d \log a} \delta(k)
+v(k) = a H(a) \frac{d \log D(a)}{d \log a} \delta(k)\,.
 \label{eq:vel_prefac}
 \end{equation}
-where $D(a)$ is the linear growth function and $H = \dot{a}/a$, the Hubble function.
-In \cite{AHB}, the Hubble function used in Eq.~\ref{eq:vel_prefac}
-neglected radiation density, leading to a small error.
+$D(a)$ is the linear growth function and $H = \dot{a}/a$ the Hubble function.
 
-Furthermore, in matter domination, the derivative of the linear growth function,
-$\frac{d \log D(a)}{d \log a}$, was approximated by \citep{Bouchet:1995}
+In \cite{AHB}, the Hubble function used in Eq.~\ref{eq:vel_prefac}
+neglected radiation density. Furthermore, following \cite{Bouchet:1995}, we 
+approximated the derivative of the linear growth function, $\frac{d \log D(a)}{d \log a}$, by 
 \begin{equation}
 \frac{d \log D(a)}{d \log a} \approx \left(\frac{\Omega_M a^{-3}}{\Omega_M  a^{-3} + \Omega_L}\right)^{0.6}\,.
 \end{equation}
-However, this approximation neglects the radiation density, which becomes
-non-negligible at $z > 50$. This is important particularly when considering
-massive neutrinos, because at high redshift neutrinos are slightly relativistic,
-and thus the background density depends slightly on the neutrino mass.
+This approximation is valid in matter domination, but again neglects the radiation density,
+which becomes non-negligible at $z > 50$. Both of these approximations are especially notable
+when simulating massive neutrinos, because at high redshift neutrinos are slightly relativistic,
+and thus the background density depends slightly on the neutrino mass. In practice the error 
+induced by each approximation partially cancels, leaving an under-estimation of the effect of 
+massive neutrinos on structure formation by $\sim 2 \%$, visible in, for example, 
+Figure 4 of \cite{AHB}\footnote{We thank Francisco Villaescusa-Navarro for first pointing these problems out to us.}
 
-In practice these two approximations partially cancelled, leading
-to results that were correct to a couple of percent. However, we
-have now removed them both and use both the full Hubble function
+In the simulations presented here we use both the full Hubble function
 and obtain $\frac{d \log D(a)}{d \log a}$ by numerically solving
 the linear growth equation \citep{Peebles:1993}:
 \begin{equation}
-\frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{a \Omega_M}{H(a)} D(a) = 0
+\frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{a \Omega_M}{H(a)} D(a) = 0\,.
 \end{equation}
-subject to initial conditions at $z \gg 100$ corresponding
-to the exact growing mode in a matter-radiation universe \citep{Groth:1975}
+The initial conditions for this differential equation are set at $z \gg 100$ corresponding
+to the growing mode in a matter-radiation universe \citep{Groth:1975}:
 \begin{equation}
   D(a_i) = \Omega_r + \frac{3}{2} \Omega_M a_i\,.
 \end{equation}
+In the presence of massive neutrinos, because the free-streaming scale is redshift dependent, 
+the growth function is not exactly scale independent. However, \cite{Zennaro_2017} showed this
+effect is negligible for our redshifts and scales of interest.
 
-In the presence of baryon or neutrino fluids, the scale-independence
-of the growth function is itself an approximation. For neutrinos, this
-is because the free-streaming scale is redshift dependent. For baryons
-it is because the baryons initially couple to the photons, suppressing
-their power on scales which are sub-horizon at $z \sim 1100$. However,
-by $z=99$ the baryons have already fallen into
-the potential wells generated by the CDM,
-and $\delta_\mathrm{b} \approx 0.7 \delta_\mathrm{CDM}$.
-\cite{Zennaro_2017} showed this effect to induce only
-a sub-percent error for our scales of interest and hence we neglect it.
-
-We choose to generate our initial conditions using the CAMB total matter transfer
+Our initial conditions are generated using the CAMB total matter transfer
 function at $z=99$. An alternative is to generate initial conditions
-using the $z=0$ transfer function, scaled by $D(99)/D(0)$. This can
+using the $z=0$ transfer function, scaled to the initial redshift by the 
+linear growth function, $D(z_\mathrm{ic})$. This can
 be used to account for background radiation density, if radiation is not included
-in the background evolution. Even if radiation is included, it can account
-for radiation perturbations and other relativistic effects on the scale
-of the horizon at $z=99$ \citep{Zennaro_2017}. It also naturally accounts
-for the fact that our single fluid simulations are unable to accunt for
-the different growth rates experienced by baryons and CDM.
+in the background evolution, or for radiation perturbations and other relativistic
+effects on the scale of the horizon at $z=99$ \citep{Zennaro_2017}.
 
-In Figure \ref{fig:rescaling0} we show the differences between the $z=0$
-power spectra produced using the $z=99$ transfer function, the
+Figure \ref{fig:rescaling} shows the differences in power spectra 
+produced with the $z=99$ transfer function, the
 scaled $z=0$ transfer function, and the $z=0$ transfer function
-scaled and evolved neglecting radiation density.
-For our scales of interest, these differences are slight,
-especially compared to the variance induced by our finite box size.
-Thus we use the $z=99$ transfer function as it is practically and conceptually simple,
-whereas the linear scaling becomes complex in the presence of massive neutrinos.
-
-Note the differences on small scales between the simulations which
-include radiation in the background and the simulations which do not.
-This is due to the linear growth being underestimated
-at $z > 10$ in the simulations without radiation. On scales which are
-already non-linear at these redshifts, non-linear growth will be inaccurately
-computed. Although this effect is small, we nevertheless suggest that simulations
+scaled and evolved neglecting radiation density at $z=0$ and $z=9$.
+For our scales of interest, these differences are small.
+The largest differences occur at $z=9$ in the simulation which neglects 
+background radiation density, producing a change of half a percent in 
+the high redshift growth rate. Although this effect is small, we nevertheless suggest that simulations
 which use scaled $z=0$ transfer functions still include radiation in the background.
-Note also that simulations with boxes $\gtrsim 2$ Gpc should somehow account
-for radiation and relativistic effects.
+We use the $z=99$ transfer function as it is practically and conceptually simple,
+whereas the linear scaling is complex in the presence of massive neutrinos.
 
 \label{lastpage}
 
