@@ -151,9 +151,11 @@ We traced these problems to an optimisation present in Gadget-3. In order to avo
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
-  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods.
-  The cross-correlation is unity for scales where the neutrino power is not dominated by shot noise (vertical dotted line), justifying the use of
-  this approximation in the linear response method.
+  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods. 
+  Shot noise has been subtracted from the neutrino power spectrum.
+  The cross-correlation is unity for scales where the neutrino power is not dominated by shot noise (vertical dotted line),
+  and $\sim 0.9$ for all scales larger than the mean interparticle spacing of the simulation. This justifies the
+  approximation that neutrinos and CDM are completely correlated used in the linear response method.
   }
   \label{fig:cross-corr}
 \end{figure}
@@ -343,7 +345,7 @@ The fraction of the neutrino matter density in particles for critical velocities
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-1.pdf}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-0_6667.pdf}
-  \caption{The neutrino power spectrum with massive neutrinos ($M_\nu = 0.4$ eV) for simulations using linear response (LINRESP) hybrid (HYBRID) and particle (PARTICLE) methods. (Left) At $z=0$. (Right) At $z=0.5$. We have subtracted shot noise from the particle and hybrid simulations. The dashed grey curve shows the level of shot noise subtracted from the particle simulation. We show the linear theory neutrino power spectrum from CAMB for comparison. There is good agreement between the hybrid and particle simulation methods.}
+  \caption{The neutrino power spectrum with massive neutrinos ($M_\nu = 0.4$ eV) for simulations using linear response (LINRESP) hybrid (HYBRID) and particle (PARTICLE) methods. (Left) At $z=0$. (Right) At $z=0.5$. We have subtracted shot noise from the particle and hybrid simulations. The heavier dashed grey curve shows the level of shot noise subtracted from the particle simulation, while the lighter dashed grey curve shows the level subtracted from the hybrid simulation. We show the linear theory neutrino power spectrum from CAMB for comparison. There is good agreement between the hybrid and particle simulation methods.}
   \label{fig:neutrino_power}
 \end{figure*}
 
@@ -351,6 +353,12 @@ The fraction of the neutrino matter density in particles for critical velocities
 \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_rel-1.pdf}
   \caption{The ratio of the neutrino power spectrum for simulations using linear response (LINRESP) and particle (PARTICLE) methods to the hybrid simulation (HYBRID) at $z=0$. Also shown is the linear theory neutrino power spectrum from CAMB. We have subtracted shot noise from the particle and hybrid simulations.}
   \label{fig:rel_neutrino_power}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/pks-nu-split-1.pdf}
+  \caption{The neutrino power spectrum for the hybrid simulation (HYBRID) at $z=0$, split into fast (analytic) and slow (particle) neutrino components. Shot noise has been subtracted at the level shown by the grey line.}
+  \label{fig:neutrino_power_split}
 \end{figure}
 
 Figure \ref{fig:density_plot} shows projected densities for the CDM and neutrino particles from the HYBRID and PARTICLE simulations.\footnote{Projected density plots made using Nbodykit.}, in order to give a visual impression of the clustering of the neutrinos and dark matter. The structure of filaments, halos and voids is identical in all three plots, further reinforcing the conclusion of Figure \ref{fig:cross-corr} that the phases of the neutrinos and CDM are highly correlated. The neutrino particles in the hybrid simulation cluster more than in the purely particle simulation, but in both cases less than the CDM. This matches the expected behaviour given their lower initial thermal velocities.
@@ -361,7 +369,8 @@ The matter power spectrum of particle neutrino simulation is lower than the othe
 
 Figure \ref{fig:minimal_mass} shows the results of the $M_\nu = 0.06$~eV linear response simulation at $z=0$. This simulation agrees with linear theory for $k < 0.2$ h/Mpc, further demonstrating that our simulations are able to reproduce the results of linear theory on large scales even for the lowest neutrino mass allowed by oscillation experiments. These low neutrino masses will become increasingly important as the upper limit on $M_\nu$ is reduced. Particle simulations struggle to produce good agreement with linear theory at these masses because they are highly shot noise dominated and assume a degenerate neutrino hierarchy, which is inaccurate for $M_\nu < 0.1$ eV.
 
-Figure~\ref{fig:neutrino_power} shows the neutrino power spectrum at $z=0$ and $z=0.5$ for the same three simulations, demonstrating each of the neutrino simulation methods, as well as the linear theory power spectrum from CAMB. For the hybrid simulation we have computed the total neutrino power spectrum as the weighted sum of the power spectrum of the fast and slow components $P^{1/2}_\nu = f_\mathrm{fast} P^{1/2}_\mathrm{fast} + f_\mathrm{slow} P^{1/2}_\mathrm{slow}$, where $f_\mathrm{fast} + f_\mathrm{slow} = 1$.
+Figure~\ref{fig:neutrino_power} shows the neutrino power spectrum at $z=0$ and $z=0.5$ for the same three simulations, demonstrating each of the neutrino simulation methods, as well as the linear theory power spectrum from CAMB. For the hybrid simulation we have computed the total neutrino power spectrum as the weighted sum of the power spectrum of the fast and slow components $P^{1/2}_\nu = f_\mathrm{fast} P^{1/2}_\mathrm{fast} + f_\mathrm{slow} P^{1/2}_\mathrm{slow}$, where $f_\mathrm{fast} + f_\mathrm{slow} = 1$. Figure~\ref{fig:neutrino_power_split} shows the neutrino power spectra for each individual component, demonstrating that the slow neutrinos do indeed cluster substantially more. 
+
 Neutrino particle shot noise has been subtracted from both the particle and hybrid simulation. Remarkably the neutrino power appears recoverable even two orders of magnitude below the shot noise level. The shot noise for the hybrid simulation is reduced by $0.27$, corresponding to the reduced fraction of matter density in particle neutrinos, and demonstrating an advantage of the hybrid approach. Conceptually, the hybrid approach focuses expensive computational resources where it is really needed, on slow neutrinos which cluster non-linearly.
 
 Both particle and hybrid methods show sharply increased neutrino power on small scales over the linear response method. At $z >= 1$ all three methods are in good agreement, as also found in \cite{AHB}. However, Figure~\ref{fig:neutrino_power} demonstrates that the hybrid neutrino simulation reproduces the neutrino power spectrum of the particle simulation on small scales at $z = 0$ and $z=0.5$. As Figure~\ref{fig:rel_neutrino_power} shows, the particle and hybrid simulations differ quantitatively by $10\%$ at $k=1$ h/Mpc, with the hybrid simulation producing more power. This difference is most likely a result of the increased mass resolution in the hybrid simulation. The hybrid simulation is in much better agreement with CAMB for $k < 0.1$ h/Mpc, with the particle simulation most likely suffering from the dynamical effects of neutrino particle shot noise at early times. For $k < 0.1$ h/Mpc, the hybrid and linear response simulations also agree at the $1\%$ level, with the linear response simulation in marginally better agreement with CAMB, although the difference is small. 
