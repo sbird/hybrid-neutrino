@@ -77,9 +77,9 @@ def plot_single_redshift_rel_one(scale, divisor=1):
         (k, pk) = _get_pk(scale, ss)
         if np.size(k) == 0:
             continue
-        plt.semilogx(k, pk/pk_div -1 ,ls=lss[ss], label=labels[ss])
-    plt.ylim(-0.01,0.01)
-    plt.yticks((-0.01,-0.005, 0, 0.005, 0.01), ("-0.010","-0.005","0.000", "0.005", "0.010"))
+        plt.semilogx(k, pk/pk_div ,ls=lss[ss], label=labels[ss])
+    plt.ylim(0.99,1.01)
+    plt.yticks((1-0.01,1-0.005, 1, 1.005, 1.01), ("0.990","0.995","1.000", "1.005", "1.010"))
     plt.xlim(0.01, 10)
     plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel("k (h/Mpc)")

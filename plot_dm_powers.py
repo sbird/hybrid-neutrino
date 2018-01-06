@@ -19,6 +19,7 @@ sims = ["b300p512nu0.4hyb", "b300p512nu0.4a","b300p512nu0.4p"]
 checksims = ["b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single"]
 zerosim = "b300p512nu0"
 lss = {"b300p512nu0.4p":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
+alpha = {"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb-single":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0}
 labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-all":"NUTIME","b300p512nu0.06a":"MINNU"}
 colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c',"b300p512nu0.4hyb-single":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-all": '#e377c2',"b300p512nu0.06a":'#1f77b4'}
 
@@ -181,18 +182,20 @@ def munge_scale(scale):
 #0.450869
 #vcrit = 750:
 #0.275691
-def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1.):
+def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
     ii = np.where(k_sl != 0.)
     if scale < nu_part_time:
-        return k_sl[ii], pk_sl[ii]
+        return k_sl[ii], pk_sl[ii], np.zeros_like(pk_sl[ii])
     (k_part,pk_part)=load_genpk(genpk_neutrino,box)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
     shot=(300/npart)**3*np.ones(np.size(pk_part_r))
     pk = (part_prop*np.sqrt(pk_part_r-shot)+(1-part_prop)*np.sqrt(pk_sl[ii]))**2
-    return (k_sl[ii], pk)
+    if split:
+        return k_sl[ii], pk_part_r - shot, pk_sl[ii]
+    return (k_sl[ii], pk, part_prop*shot)
 
 def plot_single_redshift(scale):
     """Plot all the simulations at a single redshift"""
@@ -209,6 +212,7 @@ def plot_single_redshift(scale):
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P} (k)$ (Mpc/h)$^3$")
     plt.legend(frameon=False, loc=0,fontsize=12)
+    plt.text(0.02, 0.1,"z="+str(np.round(1/scale -1)))
     plt.savefig(os.path.join(savedir, "pks-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
@@ -222,12 +226,13 @@ def plot_crosscorr(scale):
         (_, pk_dm) = load_genpk(genpk_dm,300)
         genpk_cross = os.path.join(os.path.join(datadir,ss),"output/PK-DMxnu-PART_00"+scale_to_snap[scale])
         (k_cross, pk_cross) = load_genpk(genpk_cross,300)
-        corr_coeff = pk_cross / np.sqrt(pk_dm* pk_nu)
+        shot=(300/512.)**3*np.ones_like(pk_nu)
+        corr_coeff = pk_cross / np.sqrt(pk_dm* (pk_nu -shot))
         plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
     plt.axvline(x=0.8, ls=":", color="grey")
     plt.legend(frameon=False, loc=0,fontsize=12)
     plt.xlabel(r"k (h/Mpc)")
-    plt.ylabel(r"Cross-power")
+    plt.ylabel(r"Cross-correlation coefficient")
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "corr_coeff-"+munge_scale(scale)+".pdf"))
     plt.clf()
@@ -256,11 +261,12 @@ def select_nu_power(scale, ss):
                 nu_part_time = 0.5
                 if re.search("all",ss):
                     nu_part_time = 0.25
-            (k, pk_nu) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
+            (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
         except FileNotFoundError:
             if not re.search("a$",ss):
                 print("Problem",genpk_neutrino)
             (k, pk_nu) = get_nu_power(matpow[0])
+            shot = np.zeros_like(k)
     except IndexError:
         (k, pk_nu) = load_genpk(genpk_neutrino,300)
         #So it matches the binning of the lin resp code.
@@ -270,26 +276,49 @@ def select_nu_power(scale, ss):
         #Shot noise
         shot=(300/512.)**3*np.ones_like(pk_nu)
         pk_nu -=shot
-    return (k, pk_nu)
+    return (k, pk_nu, shot)
+
+def plot_nu_single_redshift_split(scale,ss,fn="nu-split"):
+    """Plot all the neutrino power in simulations at a single redshift, splitting the fast and slow components."""
+    #Get total neutrino power
+    (k, pk_nu, shot) = select_nu_power(scale, ss)
+    plt.loglog(k, pk_nu,ls="-", label=labels[ss], color=colors[ss])
+    #Plot split power.
+    sdir = os.path.join(os.path.join(datadir, ss),"output")
+    matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
+    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
+    (k, pk_nu_slow, pk_nu_fast) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, npart=512, scale=scale, split=True)
+    plt.loglog(k, pk_nu_slow, ls="-.",label=r"Slow $\nu$", color="blue")
+    plt.loglog(k, pk_nu_fast, ls=":",label=r"Fast $\nu$", color="black")
+    plt.loglog(np.concatenate([[0.005,],k]), np.concatenate([[shot[0],],shot]), color="lightgrey", ls=":")
+    plt.text(0.02, 1e-3,"z="+str(np.round(1/scale-1,2)))
+    plt.ylim(ymin=1e-5)
+    plt.xlim(0.01, 10)
+    plt.xlabel("k (h/Mpc)")
+    plt.ylabel(r"$\mathrm{P}_\nu(k)$ (Mpc/h)$^3$")
+    plt.legend(frameon=False, loc='upper right',fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
+    plt.clf()
 
 def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     """Plot all the neutrino power in simulations at a single redshift"""
     for ss in psims:
-        (k, pk_nu) = select_nu_power(scale, ss)
+        (k, pk_nu, shot) = select_nu_power(scale, ss)
         plt.loglog(k, pk_nu,ls=lss[ss], label=labels[ss], color=colors[ss])
-    kl = np.logspace(-2, 2)
-    plt.loglog(kl, (300/512)**3*np.ones_like(kl), color="lightgrey", ls=":")
+        plt.loglog(np.concatenate([[0.005,],k]), np.concatenate([[shot[0],],shot]), color="lightgrey", ls=":", alpha = alpha[ss])
     cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
     cambmat = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
     cambtrans = os.path.join(cambdir,"ics_transfer_"+scale_to_camb[scale]+".dat")
     (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
     rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
     plt.semilogx(k, rebinned(k),ls=":", label="CAMB", color="black")
+    plt.text(0.02, 1e-3,"z="+str(np.round(1/scale-1,2)))
     plt.ylim(ymin=1e-5)
     plt.xlim(0.01, 10)
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P}_\nu(k)$ (Mpc/h)$^3$")
-    plt.legend(frameon=False, loc=0,fontsize=12)
+    plt.legend(frameon=False, loc='upper right',fontsize=12)
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
@@ -302,7 +331,7 @@ def plot_nu_single_redshift_rel_camb(scale, ymin=0.9, ymax=1.1):
         cambtrans = os.path.join(cambdir,"ics_transfer_"+scale_to_camb[scale]+".dat")
         (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambmat, cambtrans)
         rebinned=scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb)
-        (k, pk_nu) = select_nu_power(scale, ss)
+        (k, pk_nu, _) = select_nu_power(scale, ss)
         pkfilt = smooth(pk_nu/rebinned(k))
         plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
     plt.ylim(ymin, ymax)
@@ -315,7 +344,7 @@ def plot_nu_single_redshift_rel_camb(scale, ymin=0.9, ymax=1.1):
 
 def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymin=0.8,ymax=1.2,fn="rel", camb=False):
     """Plot all neutrino powers relative to one simulation"""
-    (k_div, pk_div) = select_nu_power(scale, pzerosim)
+    (k_div, pk_div, _) = select_nu_power(scale, pzerosim)
     rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value='extrapolate')
     if camb:
         cambdir = os.path.join(os.path.join(datadir, sims[0]),"camb_linear")
@@ -326,7 +355,7 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
         pkfilt = smooth(pk_camb(k_div)/pk_div)
         plt.semilogx(k_div, pkfilt,ls=":", label="CAMB", color="black")
     for ss in psims:
-        (k, pk_nu) = select_nu_power(scale, ss)
+        (k, pk_nu, _) = select_nu_power(scale, ss)
         pkfilt = smooth(pk_nu/rebinned(k))
         plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
     plt.ylim(ymin,ymax)
@@ -378,6 +407,10 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
     plt.ylim(ymin,ymax)
     plt.xlim(0.01,10)
     plt.xlabel("k (h/Mpc)")
+    if len(psims) > 1:
+        plt.text(0.05, 0.95,"z="+str(np.round(1/scale -1,2)))
+    else:
+        plt.text(0.05, 0.99,"z="+str(np.round(1/scale -1,2)))
     plt.ylabel(r"$\mathrm{P}(k)$ ratio")
     plt.legend(frameon=False, loc=0,fontsize=12)
     plt.tight_layout()
@@ -396,12 +429,16 @@ def plot_fermi_dirac(Mnu, zz):
     for i in range(np.size(xx)):
         (fd, _) = scipy.integrate.quad(fdk, 0, xx[i]/nu_v)
         ff[i] = fd / (1.5 * 1.20206)
-    plt.plot(xx, ff, "-", label="Fermi-Dirac distribution", color="blue")
+    plt.plot(xx, ff, "-", label="Cumulative F-D distribution", color="blue")
+    plt.plot(xx, fdk(xx/nu_v), "--", label="F-D distribution", color="black")
     plt.fill_between(xx, 0, ff, where=xx < 750, facecolor='grey', interpolate=True, alpha=0.5)
+    plt.text(400, 0.02, "Slow")
+    plt.text(2000, 0.5, "Fast")
     plt.ylim(0,1)
     plt.xlim(0,np.max(xx))
     plt.xlabel(r"$v_\nu$ (km/s)")
-    plt.ylabel(r"Fermi-Dirac cum. prob.")
+    plt.ylabel(r"Probability")
+    plt.legend(loc='upper left',frameon=False,fontsize=12)
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "fermidirac.pdf"))
     plt.clf()
@@ -413,7 +450,9 @@ if __name__ == "__main__":
 #     plot_image(sims[1],8,1)
 #     plot_image(sims[1],8,2)
     plot_fermi_dirac(0.4,0)
-    for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
+#     for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.6667, 0.8333, 1):
+        plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_crosscorr(sc)
