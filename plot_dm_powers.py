@@ -71,13 +71,15 @@ def smooth(x,window_len=15,window='hanning'):
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y[int((window_len-1)/2):int(-(window_len-1)/2)]
 
-def plot_image(sim,snap, dataset=1):
+def plot_image(sim,snap, dataset=1, colorbar=False):
     """Make a pretty picture of the mass distribution."""
     pp = os.path.join(os.path.join(datadir, sim), "output/PART_00"+str(snap))
     cat = BigFileCatalog(pp, dataset=str(dataset), header='Header')
     mesh = cat.to_mesh(Nmesh=512)
     plt.clf()
-    plt.imshow(np.log10(mesh.preview(axes=(0, 1))), extent=(0,300,0,300))
+    plt.imshow(np.log10(mesh.preview(axes=(0, 1))-1), extent=(0,300,0,300), vmin=2, vmax=4)
+    if colorbar:
+        plt.colorbar()
     plt.xlabel("x (Mpc/h)")
     plt.ylabel("y (Mpc/h)")
     plt.tight_layout()
@@ -394,7 +396,7 @@ def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,y
         zerocambdir = os.path.join(os.path.join(datadir, pzerosim),"camb_linear")
         camb = os.path.join(zerocambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (zero_k, zero_pk_c) = get_camb_power(camb)
-        zero_reb=scipy.interpolate.interpolate.interp1d(zero_k,zero_pk_c)
+        zero_reb=scipy.interpolate.interpolate.interp1d(zero_k,zero_pk_c, fill_value='extrapolate')
         cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
         cambpath = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (k_c, pk_c) = get_camb_power(cambpath)
@@ -444,14 +446,14 @@ def plot_fermi_dirac(Mnu, zz):
     plt.clf()
 
 if __name__ == "__main__":
-#     plot_image(sims[0],8)
-#     plot_image(sims[2],8,1)
-#     plot_image(sims[2],8,2)
-#     plot_image(sims[1],8,1)
-#     plot_image(sims[1],8,2)
+    plot_image(zerosim,8,1)
+    plot_image(sims[2],8,1)
+    plot_image(sims[2],8,2, colorbar=True)
+    plot_image(sims[0],8,1)
+    plot_image(sims[0],8,2)
     plot_fermi_dirac(0.4,0)
-#     for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
-    for sc in (0.6667, 0.8333, 1):
+    for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
+#     for sc in (0.6667, 0.8333, 1):
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")

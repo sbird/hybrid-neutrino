@@ -79,6 +79,7 @@ def plot_single_redshift_rel_one(scale, divisor=1):
             continue
         plt.semilogx(k, pk/pk_div ,ls=lss[ss], label=labels[ss])
     plt.ylim(0.99,1.01)
+    plt.text(0.1, 1.005,"z="+str(np.round(1/scale -1)))
     plt.yticks((1-0.01,1-0.005, 1, 1.005, 1.01), ("0.990","0.995","1.000", "1.005", "1.010"))
     plt.xlim(0.01, 10)
     plt.legend(frameon=False, loc='lower left',fontsize=12)
