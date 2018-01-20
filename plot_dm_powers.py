@@ -77,7 +77,7 @@ def plot_image(sim,snap, dataset=1, colorbar=False):
     cat = BigFileCatalog(pp, dataset=str(dataset), header='Header')
     mesh = cat.to_mesh(Nmesh=512)
     plt.clf()
-    plt.imshow(np.log10(mesh.preview(axes=(0, 1))-1), extent=(0,300,0,300), vmin=2, vmax=4)
+    plt.imshow(np.log10(mesh.preview(axes=(0, 1))/512), extent=(0,300,0,300), vmin=-0.5, vmax=1)
     if colorbar:
         plt.colorbar()
     plt.xlabel("x (Mpc/h)")
@@ -264,7 +264,7 @@ def select_nu_power(scale, ss):
                 if re.search("all",ss):
                     nu_part_time = 0.25
             (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
-        except FileNotFoundError:
+        except (IOError,FileNotFoundError):
             if not re.search("a$",ss):
                 print("Problem",genpk_neutrino)
             (k, pk_nu) = get_nu_power(matpow[0])
