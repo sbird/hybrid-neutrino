@@ -6,6 +6,7 @@ import re
 import numpy as np
 import scipy.interpolate
 import scipy.signal
+import bigfile
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
@@ -28,6 +29,48 @@ colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.
 #              '#bcbd22', '#17becf']
 scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
+
+def HMFFromFOF(foftable, h0=False, bins='auto'):
+    """Print a conventionally normalised halo mass function from the FOF tables.
+    Units returned are:
+    dn/dM (M_sun/Mpc^3) (comoving) Note no little-h!
+    If h0 == True, units are dn/dM (h^4 M_sun/Mpc^3)
+    bins specifies the number of evenly spaced bins if an integer,
+    or one of the strings understood by numpy.histogram."""
+    bf = bigfile.BigFile(foftable)
+    #1 solar in g
+    msun_in_g = 1.989e33
+    #1 Mpc in cm
+    Mpc_in_cm = 3.085678e+24
+    #In units of 10^10 M_sun by default.
+    try:
+        imass_in_g = bf["Header"].attrs["UnitMass_in_g"]
+    except KeyError:
+        imass_in_g = 1.989e43
+    #Length in units of kpc/h by default
+    try:
+        ilength_in_cm = bf["Header"].attrs["UnitLength_in_cm"]
+    except KeyError:
+        ilength_in_cm = 3.085678e+21
+    hub = bf["Header"].attrs["HubbleParam"]
+    box = bf["Header"].attrs["BoxSize"]
+    #Convert to Mpc from kpc/h:
+    box *= ilength_in_cm / hub / Mpc_in_cm
+    masses = bf["FOFGroups/Mass"][:]
+    #This is N(M) evenly spaced in log(M)
+    NM, Mbins = np.histogram(np.log10(masses), bins=bins)
+    #Convert Mbins to Msun
+    Mbins = 10**Mbins
+    Mbins *= (imass_in_g / msun_in_g)
+    #Find dM:
+    #This is dn/dM (Msun)
+    dndm = NM/(Mbins[1:] - Mbins[:-1])
+    Mcent = (Mbins[1:] + Mbins[:-1])/2.
+    #Now divide by the volume:
+    dndm /= box**3
+    if h0:
+        dndm /= hub**4
+    return Mcent, dndm
 
 def smooth(x,window_len=15,window='hanning'):
     """smooth the data using a window with requested size.
@@ -303,6 +346,29 @@ def plot_nu_single_redshift_split(scale,ss,fn="nu-split"):
     plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
+def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim):
+    """Plot the halo mass function relative to one simulation."""
+    sdir = os.path.join(os.path.join(datadir, pzerosim),"output")
+    foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
+    (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
+#     plt.loglog(MMz, dndmz, ls="-", label=r"$M_\nu = 0$", color="black")
+    for ss in sims:
+        sdir = os.path.join(os.path.join(datadir, ss),"output")
+        foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
+        try:
+            (MMa, dndm) = HMFFromFOF(foftable, bins = 40)
+#             plt.loglog(MMa, dndm, ls=lss[ss], label=labels[ss], color=colors[ss])
+            plt.semilogx(MMa, dndm/dndmz, ls=lss[ss], label=labels[ss], color=colors[ss])
+        except bigfile.pyxbigfile.Error:
+            pass
+    plt.xlabel("Halo Mass ($M_\odot$)")
+    plt.ylabel(r"dn/dM (ratio)")
+#     plt.ylim(0.,1.5)
+    plt.legend(frameon=False, loc='upper right',fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(savedir, "hmf-"+munge_scale(scale)+".pdf"))
+    plt.clf()
+
 def plot_nu_single_redshift(scale,psims=sims,fn="nu"):
     """Plot all the neutrino power in simulations at a single redshift"""
     for ss in psims:
@@ -454,6 +520,7 @@ if __name__ == "__main__":
     plot_fermi_dirac(0.4,0)
     for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
+        plot_hmf_rel_one(sc)
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
