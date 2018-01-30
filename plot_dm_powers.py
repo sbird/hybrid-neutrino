@@ -7,6 +7,7 @@ import numpy as np
 import scipy.interpolate
 import scipy.signal
 import bigfile
+import halo_mass_function
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ savedir = "nuplots/"
 sims = ["b300p512nu0.4hyb", "b300p512nu0.4a","b300p512nu0.4p"]
 checksims = ["b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single"]
 zerosim = "b300p512nu0"
+lowmass=["b300p512nu0.06a",]
 lss = {"b300p512nu0.4p":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
 alpha = {"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb-single":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0}
 labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-all":"NUTIME","b300p512nu0.06a":"MINNU"}
@@ -346,25 +348,37 @@ def plot_nu_single_redshift_split(scale,ss,fn="nu-split"):
     plt.savefig(os.path.join(savedir, "pks-"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim):
+def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
     """Plot the halo mass function relative to one simulation."""
     sdir = os.path.join(os.path.join(datadir, pzerosim),"output")
     foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
     (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
-#     plt.loglog(MMz, dndmz, ls="-", label=r"$M_\nu = 0$", color="black")
+    scale_sigma8_0 = {0.02: 0.0219, 0.1: 0.1087, 0.2:0.2164, 0.333:0.3561, 0.5:0.516, 0.6667: 0.6505, 0.8333: 0.7567, 1:0.8375}
+    scale_sigma8_mnu = {0.02: 0.0204, 0.1: 0.986, 0.2:0.1943, 0.333:0.3173, 0.5:0.4572, 0.6667: 0.5746, 0.8333: 0.6669, 1:0.7372}
+    mf = halo_mass_function.HaloMassFunction.watson_FOF
+    h0 = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_0[1], mass_function=mf)
+    hmnu = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288-0.4/96.14/0.7**2,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_mnu[1],mass_function=mf)
+    if not rel:
+        plt.loglog(MMz, dndmz, ls="-", label=r"$M_\nu = 0$", color="black")
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
         try:
             (MMa, dndm) = HMFFromFOF(foftable, bins = 40)
-#             plt.loglog(MMa, dndm, ls=lss[ss], label=labels[ss], color=colors[ss])
-            plt.semilogx(MMa, dndm/dndmz, ls=lss[ss], label=labels[ss], color=colors[ss])
+            if rel:
+                plt.semilogx(MMa, dndm/0.7**4/h0.dndm(MMz*0.7), ls=lss[ss], label=labels[ss], color=colors[ss])
+            else:
+                plt.loglog(MMa, dndm, ls=lss[ss], label=labels[ss], color=colors[ss])
         except bigfile.pyxbigfile.Error:
             pass
     plt.xlabel("Halo Mass ($M_\odot$)")
-    plt.ylabel(r"dn/dM (ratio)")
+    if rel:
+        plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls="-",label="Watson",color="black")
+        plt.ylabel(r"dn/dM (ratio)")
+    else:
+        plt.ylabel(r"dn/dM ($M^{-1}_\odot \mathrm{Mpc}^{-3}$)")
 #     plt.ylim(0.,1.5)
-    plt.legend(frameon=False, loc='upper right',fontsize=12)
+    plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "hmf-"+munge_scale(scale)+".pdf"))
     plt.clf()
@@ -512,11 +526,11 @@ def plot_fermi_dirac(Mnu, zz):
     plt.clf()
 
 if __name__ == "__main__":
-    plot_image(zerosim,8,1)
-    plot_image(sims[2],8,1)
-    plot_image(sims[2],8,2, colorbar=True)
-    plot_image(sims[0],8,1)
-    plot_image(sims[0],8,2)
+#     plot_image(zerosim,8,1)
+#     plot_image(sims[2],8,1)
+#     plot_image(sims[2],8,2, colorbar=True)
+#     plot_image(sims[0],8,1)
+#     plot_image(sims[0],8,2)
     plot_fermi_dirac(0.4,0)
     for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
@@ -527,7 +541,8 @@ if __name__ == "__main__":
         plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
-        plot_single_redshift_rel_one(sc,psims=["b300p512nu0.06a",],fn="lowmass",ymin=0.92, ymax=1.0)
+        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
+        plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
         plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.88,ymax=1.1)
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
