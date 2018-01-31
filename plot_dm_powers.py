@@ -20,11 +20,11 @@ savedir = "nuplots/"
 sims = ["b300p512nu0.4hyb", "b300p512nu0.4a","b300p512nu0.4p"]
 checksims = ["b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single"]
 zerosim = "b300p512nu0"
-lowmass=["b300p512nu0.06a",]
-lss = {"b300p512nu0.4p":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-"}
-alpha = {"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb-single":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0}
-labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-all":"NUTIME","b300p512nu0.06a":"MINNU"}
-colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c',"b300p512nu0.4hyb-single":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-all": '#e377c2',"b300p512nu0.06a":'#1f77b4'}
+lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
+lss = {"b300p512nu0.4p":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
+alpha = {"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb-single":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
+labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-all":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
+colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c',"b300p512nu0.4hyb-single":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-all": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728'}
 
 #new_colors = [,,, ,
 #              , '#8c564b', '#e377c2', '#7f7f7f',
