@@ -158,23 +158,6 @@ The large velocity of the neutrino particles caused severe numerical issues in G
 %\label{sec:analytic}
 %
 %
-%\begin{figure}
-%\includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
-%  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods.
-%  The cross-correlation is unity for scales where the neutrino power is not dominated by shot noise (vertical dotted line), justifying the use of
-%  this approximation in the linear response method.
-%  }
-%  \label{fig:cross-corr}
-%\end{figure}
-%
-%\begin{figure}
-%\includegraphics[width=0.45\textwidth]{nuplots/fermidirac.pdf}
-%  \caption{The integrated Fermi-Dirac distribution, showing the cumulative probability for neutrinos to have an unperturbed velocity less than $v_\nu$ at $z=0$ for total neutrino mass $M_\nu = 0.4$ eV.
-%  The grey shaded region shows the neutrino density followed by particles in our hybrid method.
-%  }
-%  \label{fig:fddistribution}
-%\end{figure}
-%
 %In this section we describe the semi-analytic linear response method for treating neutrinos from \cite{AHB}.
 %Motivated by the numerical difficulties with particle simulations, we sought to use an analytic treatment.
 %The applicability of this method follows is because neutrinos do not cluster below their free-streaming length, given by
@@ -234,10 +217,14 @@ The large velocity of the neutrino particles caused severe numerical issues in G
 
 \subsection{Linear-response approximation} \label{sec:analytic}
 
-\yah{Replacing the ``analytic neutrinos" section by a general description of the linear-response method. Feel free to adapt/merge}.
+AHB13, motivated by numerical difficulties with particle simulations,
+devised an analytic, linear response approximation. The central idea
+is to solve the linearized collisionless Boltzmann equation for neutrinos,
+using the full non-linear Newtonian potential of the cold dark matter.
+In this section we briefly review the linear-response approximation,
+for a general collisionless species with phase-space density $f$.
 
-
-In this section we briefly review the linear-response approximation for a general collisionless species with phase-space density $f$. We denote by $s$ the ``superconformal" or ``Newtonian" time $(ds \equiv dt/a^2$, where $a$ is the scale factor), and overdots denote derivatives with respect to $s$. Comoving scales are denoted by $\bs{x}$ and $\bs{u} \equiv \dot{\bs{x}}$ denotes the rescaled peculiar velocity of a massive particle. We normalize the phase-space density such that the overdensity is given by
+We denote by $s$ the ``superconformal" or ``Newtonian" time $(ds \equiv dt/a^2$, where $a$ is the scale factor), and overdots denote derivatives with respect to $s$. Comoving scales are denoted by $\bs{x}$ and $\bs{u} \equiv \dot{\bs{x}}$ denotes the rescaled peculiar velocity of a massive particle. We normalize the phase-space density such that the overdensity is given by
 \beq
 1 + \delta(s, \bs{x}) = \int d^3 u ~ f(s, \bs{x}, \bs{u}).
 \eeq
@@ -267,15 +254,18 @@ where the kernel $\mathcal{I}$ is given by \citep{Brandenberger_1987, Bertsching
 \earr
 where in the last line we have integrated by parts, and $j_0(x) \equiv \sin x/x$ is the zero-th spherical Bessel function.
 
-The first piece in Eq.~\eqref{eq:delta-phi} corresponds to the free propagation of initial perturbations between times $s_i$ and $s$. The second piece corresponds to the sourcing of perturbations by gravitational potentials. We have checked explicitly that the former is negligible relative to the latter for the problem at hand, and we shall drop it in what follows.
+The first piece in Eq.~\eqref{eq:delta-phi} corresponds to the free propagation of initial perturbations between times $s_i$ and $s$. The second piece corresponds to the sourcing of perturbations by gravitational potentials. We have checked explicitly that the former is negligible relative to the latter for the problem at hand.
+%, and we shall drop it in what follows. We do not actually drop it
 
 
+Since we cannot afford to store the full three-dimensional matter density field as a function of time, we must simplify Eq.~\eqref{eq:delta-phi} further. Following AHB13, we approximate
+\begin{equation}
+ \delta_M(s', \bs{k}) \approx \sqrt{P_M(s', k)/P_M(s, k)}~ \delta_M(s, \bs{k})\,,
+ \label{eq:phases}
+\end{equation}
+in the integral. This approximation is a priori only accurate on linear scales. However, as argued in AHB13, the non-linear scale is smaller than the free-streaming scale, which implies that on non-linear scales the kernel $\mathcal{I}$ suppresses early-time contributions to the integral. As a consequence, this approximation ought to be reasonably accurate on all scales. We can confirm this expectation using a particle neutrino simulation. Eq.~\ref{eq:phases} is equivalent to assuming that the cross-correlation between neutrinos and CDM is unity. Figure \ref{fig:cross-corr} shows the cross-correlation coefficient between neutrino particles and CDM in a particle simulation and in our new hybrid method, demonstrating that it is indeed close to unity as long as the neutrino power spectrum is not dominated by particle shot noise. This validates our use of Eq.~\ref{eq:phases}.
 
-Since we cannot afford to store the full three-dimensional matter density field as a function of time, we must simplify Eq.~\eqref{eq:delta-phi} further. Following AHB13, we approximate $\delta_M(s', \bs{k}) \approx \sqrt{P_M(s', k)/P_M(s, k)}~ \delta_M(s, \bs{k})$ in the integral. This approximation is a priori only accurate on linear scales. However, as argued in AHB13, the non-linear scale is smaller than the free-streaming scale, which implies that on non-linear scales the kernel $\mathcal{I}$ suppresses early-time contributions to the integral. As a consequence, this approximation ought to be reasonably accurate on all scales.
-
-This last approximation allows us to only store the one-dimensional matter power spectrum as a function of time\footnote{The code actually provides the CDM power spectrum. We estimate the matter power spectrum by adding the neutrino power from the previous timestep. It would be possible to iterate this procedure, but in practice it is always immediately converged to a high degree of accuracy, see Appendix B of AHB13.} We do so at even intervals $\Delta a = 0.01$. The neutrino power spectrum is computed by performing an integral over an interpolation of all past matter power spectra. \yah{Why log-space interpolation since stored on a linearly-spaced table in $a$?} \spb{I meant log(P(k)) is interpolated linearly in a, sorry.}
-
-\yah{I am not sure what exactly is the narrative for Figure \ref{fig:cross-corr}. I think the tracer-particle simulations would fit nicely here: they would show how well the above approximation performs, and would give a sense of the relevant $v_{\rm crit}$.}
+The approximation in Eq.~\ref{eq:phases} allows us to only store the one-dimensional matter power spectrum as a function of time\footnote{The code actually provides the CDM power spectrum. We estimate the matter power spectrum by adding the neutrino power from the previous timestep. It would be possible to iterate this procedure, but in practice it is always immediately converged to a high degree of accuracy, see Appendix B of AHB13.} We do so at even intervals $\Delta a = 0.01$. The neutrino power spectrum is computed by performing an integral over an interpolation of all past matter power spectra. \yah{Why log-space interpolation since stored on a linearly-spaced table in $a$?} \spb{I meant log(P(k)) is interpolated linearly in a, sorry.}
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
