@@ -79,7 +79,7 @@ $^4$Institution}
 
 \section{Introduction}
 
-\spb{2. Why does the particle method lose power from z=99 to z=49? Shot noise! 3. Change vcrit to 850. 4. Run particle simulation with minimal mass (0,0,0.06). 5. Implement numerical derivative of CAMB transfer in MP-GenIC. 6. Add YAH plot to justify critical velocity and switch-on time}
+\spb{3. Change vcrit to 850. 5. Implement numerical derivative of CAMB transfer in MP-GenIC.}
 
 %Cite bahamas and Liu. Cite any other major simulation projects that used the neutrino code.
 
@@ -279,40 +279,8 @@ The approximation in Eq.~\ref{eq:phases} allows us to only store the one-dimensi
   \label{fig:cross-corr}
 \end{figure}
 
-\subsection{Hybrid method} \label{sec:hybrid}
-
-\yah{Using text I had but tried to add existing paragraphs as much as possible; feel free to put things back as seen fit.}
-
-In AHB13, the linear-response approximation was used for the \emph{entire} phase-space of neutrinos. Yet, as discussed above, this approximation worsens as the velocity is lowered, and should eventually break down below some critical velocity. One can therefore not expect that the evolution of the low-velocity component of the phase-space density is appropriately captured by linear response, and a fortiori, that the total neutrino overdensity is correctly computed. Indeed, AHB13 showed that the linear response neutrino simulation method did not fully reproduce the neutrino power spectrum on small scales.
-
-To remedy this issue, we split neutrinos into a ``slow" and a ``fast" component. The split is defined in terms of the \emph{unperturbed} velocities: neutrinos whose initial velocity is less than a critical velocity $v_{\rm crit}$ are called slow, and the rest are called fast. This is a well-defined split in ``Lagrangian" velocity space. As a consequence, both the slow and fast components independently satisfy the collisionless Boltzmann equation, which we are free to solve with different techniques (and we need not worry about the scrambling of ``Eulerian" velocities by subsequent evolution). We use the linear-response technique for the fast component, for which it works best. We focus the computationally expensive $N$-body technique on the small fraction of slow neutrinos, for which it is really needed. The pure $N$-body method is recovered for $v_{\rm crit} \rightarrow \infty$, and the pure linear-response method of AHB13 is obtained in the limit $v_{\rm crit} \rightarrow 0$.
-
-The unperturbed phase-space density of the fast neutrinos is
-\beq
-f_0(u) \propto \Theta(u - v_{\rm crit}) \left(\rme^{m_\nu u/T_\nu} + 1 \right)^{-1},
-\eeq
-where $\Theta$ is the Heaviside function (or an inifinitesimally smoothed version of it, so that $f_0$ is differentiable), $m_\nu$ is the mass of a single neutrino or antineutrino, and $T_\nu \approx 1.68 \times 10^{-4}$ eV is the temperature of the cosmic neutrino background. The normalization is again such that $\int d^3 u f_0(u) = 1$. The kernel in Eq.~\eqref{eq:delta-phi} is therefore given by
-\barr
-\mathcal{I}(\kappa) = \frac{\int_{q_c}^{\infty} dq~ j_0\left(\kappa \frac{T_\nu}{m_\nu}q\right)~ q^2 /(\rme^q + 1) }{\int_{q_c}^{\infty} dq ~q^2/(\rme^q + 1)}, \ \ \ q_c \equiv \frac{m_\nu v_{\rm crit}}{T_\nu}.
-\earr
-We use the following asymptotic expansion for the integral:
-\barr
- \int^\infty_{q_\mathrm{c}} \frac{j_0(qX)}{e^q + 1} q^2 dq &=& - \sum^{\infty}_{n=1} (-1)^n \frac{\rme^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X),\\
- I_n(q_\mathrm{c},X) &=& (n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2) \frac{\sin(q_\mathrm{c} X)}{X} \nonumber \\
- &+& (2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2) \cos(q_\mathrm{c} X),
-\earr
-which we have confirmed, using Mathematica, to have an absolute error of $< 10^{-4}$ for $n_\mathrm{max} = 20$.
-
-In principle, the optimal critical velocity $v_{\rm crit}$ increases with time, as neutrinos redshift and gravitational potentials deepen. In practice, given that the linear-response method of AHB13 is already very accurate \yah{to quantify better}, we will be content with using the linear-response approximation for all neutrinos above some cutoff redshift $z_{\nu}$, and a single $v_{\rm crit}$ below that redshift. Our implementation therefore has two free parameters, $v_{\rm crit}$ and $z_{\nu}$.
-
-It is not our goal to provide a detailed study of the optimal choice of these parameters, which depends on the observables one is interested in computing. We may get a simple estimate of the relevant $v_{\rm crit}$ from AHB13's analysis of the condition for neutrinos to escape a time-dependent potential: rewriting their equation (16), we find that the minimal velocity required to escape capture by a halo with characteristic extent $r_0$, potential $\phi_0$, varying on a timescale $\Delta t_\phi$, is
-\barr
-v \gtrsim 500 ~\textrm{km/s} ~ \left(\frac1{H_0 \Delta t_\phi} ~ \frac{r_0}{0.5~ h^{-1} \textrm{Mpc}}~ \frac{\sqrt{|\phi_0|}}{3000~ \textrm{km/s}} \right)^{1/2}.
-\earr
-We therefore expect that a critical velocity of several hundred km/s should be used. Our fiducial choice in this work is $v_{\rm crit} = 750$ km/s, which we discuss more in Section \ref{sec:results}. We reiterate that the choice of critical velocity should be adapted to the problem of interest.
-\yah{Discuss $z_\nu$. The choice of these parameters lacks a quantitative motivation. This defeats a bit our purpose of providing a high-accuracy code. Goes back to the question of how to quantify convergence for these neutrino sims...}
-
-For reference, for a neutrino mass sum $M_\nu = 0.4$ eV, 28\% of neutrinos have velocities below 750 km/s, as illustrated in Fig.~\ref{fig:fddistribution}, where we show the differential and cumulative neutrino velocity distributions.
+\subsection{Hybrid method}
+\label{sec:hybrid}
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/fermidirac.pdf}
@@ -322,51 +290,88 @@ For reference, for a neutrino mass sum $M_\nu = 0.4$ eV, 28\% of neutrinos have 
   \label{fig:fddistribution}
 \end{figure}
 
-We could in principle generate slow neutrino particles at $z_\nu$, using the linear-response approximation in order to compute their overdensities and bulk velocities. Doing so accurately would require computing neutrino perturbations as a function of their thermal velocity, i.e.~using Eq.~\eqref{eq:delta-phi} and its time derivative for $f_0(u)$ given by narrow distributions around velocity bins $u_i$ (this would be equivalent to the multi-fluid method of \citealt{Dupuy_14}). Instead, we chose to generate slow neutrino particles at the initial simulation redshift $z_i = 99$, and follow them as tracer particles until $z_\nu$, i.e. compute their trajectories in the potential sourced by the CDM and neutrinos, but not use them to compute densities until after $z_\nu$. This imposes some numerical overhead over the pure linear-response method, because of the need to evolve the tracer neutrinos with small timesteps at early times, but allows to get accurate ``initial" conditions for slow-neutrino particles at $z_\nu$. In any case, the overhead is reduced from pure particle neutrino simulations, both because fewer neutrino particles are needed to achieve a given level of shot noise and because the particle neutrinos are moving more slowly.
+In AHB13, the linear-response approximation was used for the \emph{entire} phase-space of neutrinos.
+Yet, as discussed above, this approximation should eventually break down below some critical velocity, as neutrinos start to behave more similarly to the CDM. In fact, the velocity of neutrinos follows a Fermi-Dirac distribution, meaning that some fraction of the neutrinos will initially have near-zero velocities and be poorly described by the linear response approximation. Indeed, AHB13 showed that the linear response neutrino simulation method did not fully reproduce the neutrino power spectrum at late times and on small scales.
+Even if slow neutrinos make up a small fraction of the total matter density, they can still dominate the total power spectrum because the clustering of the faster neutrinos is heavily suppressed.
 
-Simulating slow neutrino trajectories from $z_i = 99$ also allows us to start from completely homogeneous initial conditions, i.e. neglect any initial overdensities and bulk velocities. We verified explicitly that our results at all redshifts were unchanged for a simulation where our slow-moving neutrinos had an initial clustering matching the transfer function of the CDM, a conservative over-estimate of their true initial clustering.
+To remedy this issue, we split neutrinos into a ``slow" and a ``fast" component. The split is defined in terms of the \emph{unperturbed} velocities: neutrinos whose initial velocity is less than a critical velocity $v_{\rm crit}$ are called slow, and the rest are called fast. Because at linear order velocity shells do not mix, neutrinos which are initially labelled as fast or slow remain within these categories throughout their evolution. As a consequence, both the slow and fast components independently satisfy the collisionless Boltzmann equation, which we are free to solve with different techniques. We use the linear-response technique for the fast component, whose over-densities remain small. We focus the computationally expensive $N$-body technique on the small fraction of slow neutrinos, for which it is really needed. The pure $N$-body method is recovered for $v_{\rm crit} \rightarrow \infty$, and the pure linear-response method of AHB13 is obtained in the limit $v_{\rm crit} \rightarrow 0$. Figure~\ref{fig:fddistribution} shows the Fermi-Dirac distribution, with the shaded area under the curve indicating the slow neutrino component.
 
-The simulations presented in this paper assume that all three neutrino species are degenerate, for ease of comparison with particle simulations. For neutrino masses small enough that the neutrino hierarchy is important, $M_\nu < 0.15$~eV, less than 3\% of neutrino initial velocities are $< 750$ km/s. AHB13 showed that the linear response method is able to accurately model the neutrino power spectrum at these masses. Future hybrid simulations including a neutrino hierarchy would generate particles only for the most massive neutrino species. \spb{What I had before was perhaps overly negative...}
+In principle, the optimal critical velocity $v_{\rm crit}$ increases with time, as neutrinos redshift and gravitational potentials deepen. For example, while the CDM potential is linear, the desired critical velocity is zero. These early times are also exactly those where the neutrino thermal velocity and thus the impact of neutrino particle shot noise is largest. For this reason we follow all neutrinos using the linear response method until redshift $z_{\nu}$, when a significant fraction of the ``slow'' neutrinos cluster non-linearly. Our hybrid method thus avoids most of the effects of neutrino particle shot noise, and has two free parameters, $v_{\rm crit}$ and $z_{\nu}$.
 
-\subsection{Neutrino Critical velocity}
-\label{sec:critvel}
+\subsubsection{Choice of neutrino splitting parameters}
+\label{sec:parameters}
 
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/lin_resp_halofit.pdf}
+\caption{The expected over-density of linear response neutrinos, demonstrating the critical velocity at which they are expected to become non-linear at $z=0$. \spb{Change velocities used to 0, 100, 400, 800, 1000, make labels bigger, shrink range, add redshift.} The expected neutrino power spectrum using our linear response approximation for a variety of different neutrino velocity shells. The matter power spectrum is computed using {\small HALOFIT}. Non-linear effects are expected for neutrino velocities where $\Delta^2 \gtrsim 1$.
+  }
+\label{fig:halofitvshell}
+\end{figure}
 
+\begin{figure}
+  \includegraphics[width=0.45\textwidth]{nuplots/banerjee_lin_resp.pdf}
+  \caption{
+  The neutrino power spectrum in different velocity shells compared to the neutrino velocity shell simulations of \protect\cite{Banerjee_2018}. Excepting residual shot noise in their method, the linear response approximation provides accurate predictions for $v > 800$ km/s, as expected. \spb{I would like to include both plots: this one shows us that the particles and analytics match up to 800 km/s. The other shows us that we would expect them to match, because we are in a regime where perturbation theory works.}
+  }
+  \label{fig:simvshell}
+\end{figure}
 
-%
-%\subsection{Hybrid Neutrinos}
-%\label{sec:hybrid}
-%
-%\cite{AHB} showed that the linear response neutrino simulation method did not fully reproduce the neutrino power spectrum on small scales. This initially appears strange; we showed that the neutrino free-streaming length is larger than the non-linear scale, so how do neutrinos cluster non-linearly? The answer is that the initial thermal velocity of neutrinos is not a delta function, but a Fermi-Dirac distribution. Neutrinos drawn from the slow tail of the distribution will have a smaller free-streaming length, which may be smaller than the non-linear scale. Such slow neutrinos make up a small fraction of the total matter density, but can still dominate the power spectrum because the clustering of faster neutrinos is heavily suppressed.
-%
-%Building on this insight, we have implemented a hybrid particle-linear response neutrino simulation method. Neutrinos are split into fast and slow components, based on their Fermi-Dirac velocities. We refer to the velocity separating these components as the neutrino critical velocity, $v_\mathrm{crit}$. Figure~\ref{fig:fddistribution} shows the cumulative Fermi-Dirac distribution graphically, with the shaded area under the curve indicating the slow neutrino component. When generating initial conditions for the simulation, we create N-body particles with thermal velocities matching the (redshifted) slow neutrino component.\footnote{Our hybrid method differs substantially from the similarly named technique described in \cite{Brandbyge_2010}. In that work, neutrino particles are dynamically created during the simulation, when neutrino clustering exceeds a threshold. In our implementation, the neutrino particles generated with the initial conditions, but do not gravitate initially.}
-%
-%Initially these ``slow neutrino'' N-body particles behave as tracers; they experience gravitational force from the CDM, but they do not gravitate. The neutrino component is followed entirely by the linear response method described
-%in Section~\ref{sec:analytic}. Our hybrid method thus avoids being affected by neutrino particle shot noise, and treats early-time relativistic effects correctly.
-%
-%Slow-moving neutrinos are distributed completely homogeneously in the simulation initial conditions. The velocities expected from structure formation at the initial redshift are substantially smaller than neutrino thermal velocities, even for slow neutrinos.
-%We verified explicitly that our results at all redshifts were unchanged for a simulation where our slow-moving neutrinos had an initial clustering matching the transfer function of the CDM, a conservative over-estimate of the true initial clustering.
-%
-%Once the simulation reaches a critical redshift, $z_\nu$, the particle neutrinos are ``switched on'' and begin to gravitate.
-%After this point the linear response method is modified to reduce the matter density in the analytic neutrino component by the amount of mass in the neutrino particles. We also modify the neutrino power spectrum calculation so that neutrino perturbations are included only for unperturbed velocities faster than those sampled by the ``slow-moving'' neutrino particles.
-%In other words \spb{TODO: YAH analytic formula from YAH here}.
-%
-%We use the following asymptotic expansion for the integral:
-%\begin{align}
-% \int^\infty_{q_\mathrm{c}} \frac{j_0(qX) q^2}{e^q + 1} q^2 dq &= - \Sigma^{\infty}_{n=1} (-1)^n \frac{\exp^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X) \;,\\
-% I_n(q_\mathrm{c},X) &= (n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2) \frac{\sin(q_\mathrm{c} X)}{X} \\
-% &+ (2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2) \cos(q_\mathrm{c} X)\;,\\
-%\end{align}
-%which we have confirmed, using mathematica, to be accurate to $0.1\%$.
-%\spb{End analytic results from YAH}.
+In this Section, we derive expectations for desired neutrino critical velocity and critical redshift.
+We expect the linear response approximation to be accurate for a given neutrino velocity shell as long
+as we are in a regime where the neutrino over-density in that shell remains less than unity, and thus described by perturbation theory. Figure~\ref{fig:halofitvshell} shows the expected neutrino power spectrum in a variety of velocity shells. Note that changing the neutrino mass alters the amount of neutrinos in each velocity shell, but does not alter the shell's evolution.
+
+We used {\small HALOFIT} \cite{Smith_2003} to obtain approximate matter power spectra until $z=0$. These power spectra were used as sources in a linear response calculation for the shown power spectra, which assume a particle with a thermal velocity distribution given by a delta function. \spb{Yacine: is this what you did?} We then computed the expected dimensionless power spectrum for each velocity shell. We see that at $z=0$ the over-density is unity in a unperturbed velocity shell of $700 - 800$ km/s. Initially slower neutrinos will have over-densities significantly altered by non-linear graviational clustering, and so would not follow the expected linear response power spectra in Figure~\ref{fig:halofitvshell}.
+
+Figure~\ref{fig:simvshell} validates our expectation using the neutrino velocity shell simulations of \cite{Banerjee_2018}. In these simulations, neutrinos are initialised in a variety of velocity bins, each of which we can compare to the expectation of our linear response approximation. We see that, as expected from Figure~\ref{fig:halofitvshell}, and excluding particle shot noise in the higher velocity shells, our linear response approximation is a good match for all shells with $v_\mathrm{crit} \geq 838$ km/s. To be conservative, we
+thus use a default neutrino critical velocity of $850$ km/s. We expect all neutrinos initially faster than this value to be accurately followed to $z=0$. For the critical neutrino redshift, we performed a similar computation to Figure~\ref{fig:halofitvshell} at $z=1$, finding that $\Delta^2 > 1$ for $v_\mathrm{crit} = 100$, corresponding to $0.14\%$ of the neutrinos for $M_\nu  = 0.4$ eV. We thus conservatively set $z_\nu = 1$, although we caution that simulations which use a larger neutrino mass might require $z_\nu > 1$.
+
+% We may get a simple estimate of the relevant $v_{\rm crit}$ from AHB13's analysis of the condition for neutrinos to escape a time-dependent potential: rewriting their equation (16), we find that the minimal velocity required to escape capture by a halo with characteristic extent $r_0$, potential $\phi_0$, varying on a timescale $\Delta t_\phi$, is
+% \barr
+% v \gtrsim 500 ~\textrm{km/s} ~ \left(\frac1{H_0 \Delta t_\phi} ~ \frac{r_0}{0.5~ h^{-1} \textrm{Mpc}}~ \frac{\sqrt{|\phi_0|}}{3000~ \textrm{km/s}} \right)^{1/2}.
+% \earr
+% We therefore expect that a critical velocity of several hundred km/s should be used. Our fiducial choice in this work is $v_{\rm crit} = 750$ km/s, which we discuss more in Section \ref{sec:results}.
+
+% For reference, for a neutrino mass sum $M_\nu = 0.4$ eV, 28\% of neutrinos have velocities below 750 km/s.
+
 %
 %By default we consider the ``slow-moving '' tail of the Fermi-Dirac distribution to be all neutrino density with an unperturbed velocity less than $750$ (comoving) km/s. We found by experiment that this value was the smallest that led to good agreement
 %with the particle neutrino method. The effects of other cutoff velocities are discussed in Section~\ref{sec:results}.
 %The critical redshift at which particle neutrinos switched on was set at $z=1$, for similar reasons.
-%
-%Our hybrid neutrino implementation does not include the neutrino hierarchy, assuming all three neutrino species are degenerate \yah{Why :-(}. The inclusion of the neutrino hierarchy in future work should not be difficult, but we deferred it because the masses where it is important ($M_\nu < 0.15$~eV) are sufficiently low that their clustering is already adequately modelled by our linear response method.
-%
-%Note that our hybrid neutrino technique still imposes some numerical overhead above the linear response method, because of the need to evolve the tracer neutrinos with small timesteps at early times. We attempted to avoid this by inserting neutrinos dynamically at a late time, but accurately modelling the non-linear distortions to the analytic Fermi-Dirac function proved overly complex. The overhead is reduced from purely particle neutrino simulations, both because fewer neutrino particles are needed to achieve a given level of shot noise and because the particle neutrinos are moving more slowly. However, since there is still some overhead, we recommend that simulators which do not require high accuracy in the neutrino power spectrum use the linear response method.
+
+\subsubsection{Implementation of the split ``slow'' neutrinos}
+
+We could in principle generate slow neutrino particles at $z_\nu$, the cutoff redshift after which some neutrinos are not followed accurately with the linear response approximation. We would then use the linear-response approximation to compute the initial neutrino overdensities and bulk velocities. Doing so accurately would require computing neutrino perturbations as a function of their thermal velocity. We would use Eq.~\eqref{eq:delta-phi} and its time derivative for $f_0(u)$ given by narrow distributions around velocity bins $u_i$\footnote{This would be equivalent to the multi-fluid method of \citealt{Dupuy_14}}.
+
+Instead, we chose to generate slow neutrino particles at the initial simulation redshift $z_i = 99$, and follow them as tracer particles until $z_\nu$. Their trajectories are thus computed using the N-body technique in the total matter potential, comprising CDM and linear-response neutrinos. However, they themselves do not gravitate and affect the trajectories of other particles until after $z_\nu$\footnote{Note that the hybrid method of \cite{Brandbyge_2010} creates neutrino particles dynamically during the simulation, rather than initially treating them as tracers.}. The increased particle load still imposes some numerical overhead over the pure linear-response method, but allows for accurate ``initial" conditions for slow-neutrino particles at $z_\nu$.
+
+In our tests, before $z_\nu$, the hybrid particle simulations were about $35\%$ slower than the linear response simulations, while a pure particle simulation was about $150\%$ slower with the same particle load.
+The numerical overhead is thus substantially reduced for the hybrid method over pure particle neutrino simulations. This is because the neutrino particles have a slower average velocity in the hybrid method and thus longer timesteps.
+
+Simulating slow neutrino trajectories from $z_i = 99$ also allows us to start from completely homogeneous initial conditions, i.e. neglect any initial overdensities and bulk velocities. We verified explicitly that our results at all redshifts were unchanged for a simulation where our slow-moving neutrinos had an initial clustering matching the transfer function of the CDM, a conservative over-estimate of their true initial clustering.
+
+For ease of comparison with particle simulations, the simulations presented in this paper assume that all three neutrino species are degenerate. Neutrino masses small enough that the neutrino hierarchy is important, $M_\nu < 0.15$~eV, have $\lesssim 3$\% of neutrino initial velocities $< 800$ km/s. AHB13 showed that the linear response method is able to accurately model the neutrino power spectrum at these masses. Future hybrid simulations including a neutrino hierarchy would generate particles only for the most massive neutrino species, as for particle simulations. \spb{What I had before was perhaps overly negative...}
+
+
+\subsubsection{Implementation of the split ``fast'' neutrinos}
+
+After the slow neutrinos have begun to gravitate, the linear response approximation must be modified to include only the ``fast'' neutrinos, that is, the portion of the neutrino phase space with unperturbed velocities higher than the cutoff velocity. Here we describe how the equation of the linear response approximation described in Section~\ref{sec:analytic} are modified to describe this case.
+
+The unperturbed phase-space density of the fast neutrinos is
+\begin{equation}
+f_0(u) \propto \Theta(u - v_{\rm crit}) \left(\rme^{m_\nu u/T_\nu} + 1 \right)^{-1},
+\end{equation}
+
+where $\Theta$ is the Heaviside function (or an infinitesimally smoothed version of it, so that $f_0$ is differentiable), $m_\nu$ is the mass of a single neutrino or antineutrino, and $T_\nu \approx 1.68 \times 10^{-4}$ eV is the temperature of the cosmic neutrino background. The normalization is again such that $\int d^3 u f_0(u) = 1$. The kernel in Eq.~\eqref{eq:delta-phi} is therefore given by
+\barr
+\mathcal{I}(\kappa) = \frac{\int_{q_c}^{\infty} dq~ j_0\left(\kappa \frac{T_\nu}{m_\nu}q\right)~ q^2 /(\rme^q + 1) }{\int_{q_c}^{\infty} dq ~q^2/(\rme^q + 1)}, \ \ \ q_c \equiv \frac{m_\nu v_{\rm crit}}{T_\nu}.
+\earr
+We use the following asymptotic expansion for the integral:
+\begin{align}
+ \int^\infty_{q_\mathrm{c}} \frac{j_0(qX)}{e^q + 1} q^2 dq &= - \sum^{\infty}_{n=1} (-1)^n \frac{\rme^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X),\\
+ I_n(q_\mathrm{c},X) &= \left(n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2\right) \frac{\sin(q_\mathrm{c} X)}{X} \nonumber \\
+ &+ \left(2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2\right) \cos(q_\mathrm{c} X),
+\end{align}
+which we have confirmed, using Mathematica, to have an absolute error of $< 10^{-4}$ for $n_\mathrm{max} = 20$.
 
 \subsection{Simulations}
 \label{sec:simulations}
@@ -395,20 +400,20 @@ LINRESP    &     0.4             &   Lin. Resp.    & 0         & - &    \\
 PARTICLE    &     0.4             &   Particle    & 512       & - &    \\
 2xPARTICLE    &     0.4             &   Particle    & 1024 & - &    \\
 %     &     0.4             &   Hybrid      & 256     &   &    \\
-HYBRID    &     0.4             &   Hybrid      & 512       & 750 & \\
-HYBSING    &     0.4             &   Hybrid      & 256       & 750 & \\
-VCRITLO    &     0.4             &   Hybrid      & 512       & 500 & \\
+HYBRID    &     0.4             &   Hybrid      & 512       & 850 & \\
+HYBSING    &     0.4             &   Hybrid      & 256       & 850 & \\
+NUTIME    &     0.4             &   Hybrid      & 512       & 850 & $z_\nu = 4$  \\
+VCRITLO    &     0.4             &   Hybrid      & 512       & 750 & \\
 VCRIT    &     0.4             &   Hybrid      & 512       & 1000 & \\
 HYBALL    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 1$ \\
-NUTIME    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 4$  \\
 %    &     0.4             &   Hybrid      & 512       & 500 &    \\
 % Note HYBALL and NUTIME are swapped compared to their directory names
 \hline
 \end{tabular}
 \end{center}
-\caption{Table of simulation parameters. All simulations have a box of $300$ Mpc/h
+\caption{Table of simulations performed. All simulations have a box of $300$ Mpc/h
 and $512^3$ CDM particles. NH denotes a normal hierarchy for the neutrino masses.
-For $M_\nu = 0.4$ eV, the fraction of neutrinos slower than critical velocities of $500$, $750$, $1000$, $5000$ km/s is $0.117$, $0.276$, $0.451$ and $1$ respectively. \yah{are names necessary, or can we go with S1, S2, etc...?} \spb{I always find names easier to follow...}}
+For $M_\nu = 0.4$ eV, the fraction of neutrinos slower than critical velocities of $750$, $850$, $1000$, $5000$ km/s is $0.276$, $???$, $0.451$ and $1$ respectively. \yah{are names necessary, or can we go with S1, S2, etc...?} \spb{I always find names easier to follow...}}
 \label{tab:simulations}
 \end{table}
 
@@ -425,7 +430,7 @@ For $M_\nu = 0.4$ eV, the fraction of neutrinos slower than critical velocities 
 Our simulations were run with MP-Gadget\footnote{\url{https://github.com/rainwoodman/MP-Gadget/}} and are detailed in Table \ref{tab:simulations}. We used a box size of $300$ comoving Mpc/$h$ with $512^3$ CDM particles.
 The CDM particles were initialised using a linear transfer function generated at $z=99$ with massive neutrinos using CAMB \citep{CAMB_neutrinos}. Each simulation has the same initial phases, ensuring the same distribution of late-time halos. We performed simulations with massless neutrinos, and a linear response simulation with the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV (and a normal neutrino hierarchy). All other simulations have a total neutrino mass of $0.4$~eV, and assume a degenerate neutrino hierarchy. This relatively high neutrino mass $0.4$~eV was chosen to make the different predictions of the linear response and hybrid methods for the neutrino power spectrum easier to visualize.
 
-We performed three simulations using these parameters and identical except for the neutrino simulation method. These simulations used the linear response method, particle neutrinos and our new hybrid implementation. We then performed a number of simulations designed to test the sensitivity of our hybrid method to numerical parameters. Our default hybrid neutrino simulation had neutrinos with an unperturbed velocity of $750$ (comoving) km/s followed by $512$ neutrino particles (matching the CDM) and a neutrino switch-on time of $z_\nu = 1$. Our modified simulations considered the effects of a neutrino switch-on time of $z_\nu = 4$, of only $256^3$ neutrino particles, and critical unperturbed velocities of $1000$ and $5000$ km/s. The simulation with a critical velocity of $5000$ km/s includes all the neutrino power in particles after the neutrino switch-on time and is useful as a comparison to the pure particle method. We finally performed a simulation with a critical velocity of $500$ km/s, which differed from the simulation with a critical neutrino velocity of $750$ (comoving) km/s by up to $20\%$.
+We performed three simulations using these parameters and identical except for the neutrino simulation method. These simulations used the linear response method, particle neutrinos and our new hybrid implementation. We then performed a number of simulations designed to test the sensitivity of our hybrid method to numerical parameters. Our default hybrid neutrino simulation had neutrinos with an unperturbed velocity of $850$ (comoving) km/s followed by $512$ neutrino particles (matching the CDM) and a neutrino switch-on time of $z_\nu = 1$. Our modified simulations considered the effects of a neutrino switch-on time of $z_\nu = 4$, of only $256^3$ neutrino particles, and critical unperturbed velocities of $1000$ and $5000$ km/s. The simulation with a critical velocity of $5000$ km/s includes all the neutrino power in particles after the neutrino switch-on time and is useful as a comparison to the pure particle method. We finally performed a simulation with a critical velocity of $500$ km/s, which differed from the simulation with a critical neutrino velocity of $850$ (comoving) km/s by up to $20\%$.
 
 \section{Results}
 \label{sec:results}
@@ -434,7 +439,7 @@ We performed three simulations using these parameters and identical except for t
 \includegraphics[trim={1.cm 0 1.5cm 0},clip,width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt1.pdf}
 \includegraphics[trim={1cm 0 1.5cm 0},clip, width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hybt2.pdf}
 \includegraphics[trim={1.5cm 0 0.5cm 0},clip, width=0.322\textwidth]{nuplots/dens-plt-b300p512nu0_4pt2.pdf}
-  \caption{Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<750$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the projected over-density.
+  \caption{Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<850$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the projected over-density.
   %No correction has been made for shot noise \yah{what would such a correction even mean for this kind of plot??}.
   The clustering of the hybrid particles is intermediate between that of the cold dark matter and the particle neutrinos. Structures have the same positions in all three panels. \yah{It would be super nice to show the density of linear-response neutrinos...} \spb{Not sure how to do that}}
   \label{fig:density_plot}
@@ -450,7 +455,7 @@ We performed three simulations using these parameters and identical except for t
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_lowmass-10.pdf}
-\caption{Ratio of the matter power spectrum with the minimal neutrino mass (MINNU: $M_\nu = 0.06$ eV) to the matter power spectrum with massless neutrinos at $z=0$. The linear response method is used, as it includes the effect of the neutrino hierarchy, significant at these masses.
+\caption{Ratio of the matter power spectrum with the minimal neutrino mass ($M_\nu = 0.06$ eV) to the matter power spectrum with massless neutrinos at $z=0$. The linear response method (MINNU) and particle method (MINNU-PART) are shown. At these low masses, the particle method is affected by shot noise.
 }
 \label{fig:minimal_mass}
 \end{figure}
@@ -483,9 +488,9 @@ Figure~\ref{fig:matter_power} shows the $z=0$ and $z=0.5$ matter power spectrum 
 
 The particle neutrino simulation contains $1024^3$ neutrino particles, $8\times$ the number of CDM particles. This high particle load increased the computational cost by a corresponding factor of $8$ (note that our simulation includes the short-range gravitational force for the neutrinos). A simulation with $512^3$ neutrino particles was not fully converged. We found that between $z=99$ and $z=49$ the simulation underestimated the growth of the matter power spectrum by approximately $1\%$, independently of scale. AHB13 avoided this discrepancy with linear theory by starting their simulations at a lower redshift ($z=49$), but this leads to inaccuracy in the CDM power spectrum \citep{Heitmann:2010}. A strength of our hybrid and linear response methods is that the particle neutrinos do not gravitate until late times, when the neutrino power spectrum is no longer shot noise dominated. To demonstrate this explicitly, we performed a hybrid simulation where all neutrinos are followed by the particle component (HYBALL in Table \ref{tab:simulations}, discussed in Section \ref{sec:check}). Thus this simulation is identical to the linear response simulation before the particle switch-on time of $z=1$ and identical to the particle simulation thereafter. Like the simulations shown in Figure \ref{fig:matter_power}, it produces a matter power spectrum in good agreement with CAMB.
 
-Figure \ref{fig:minimal_mass} shows the results of simulations with $M_\nu = 0.06$~eV $z=0$. These low neutrino masses will become increasingly important as the upper limit on $M_\nu$ is reduced. We show linear response and particle simulations, but omit a hybrid simulation as for this neutrino mass $ < 4\%$ of the neutrinos have an initial velocity greater than $850$ km/s. The linear response simulation agrees with linear theory for $k < 0.2$ h/Mpc, further demonstrating that our simulations are able to reproduce the results of linear theory on large scales even for the lowest neutrino mass allowed by oscillation experiments.
+Figure \ref{fig:minimal_mass} shows the results of simulations with $M_\nu = 0.06$~eV $z=0$. These low neutrino masses will become increasingly important as the upper limit on $M_\nu$ is reduced. We show linear response and particle simulations, but omit a hybrid simulation as for this neutrino mass $ < 4\%$ of the neutrinos have an initial velocity greater than $850$ km/s. The particle simulation neglects the contribution of the two light neutrino species, with masses $0.01$ and $10^-3$~eV respectively, as only one neutrino mass state can be followed in a particle simulation\footnote{The background evolution is however identical to the linear response simulation.}. The linear response simulation agrees with linear theory for $k < 0.2$ h/Mpc, further demonstrating that our simulations are able to reproduce the results of linear theory on large scales even for the lowest neutrino mass allowed by oscillation experiments.
 
-The particle simulation neglects the contribution of the two light neutrino species, with masses $0.01$ and $10^-3$~eV respectively, as only one neutrino mass state can be followed in a particle simulation\footnote{The background evolution is however identical to the linear response simulation.}. Ensuring that the neutrino power spectrum is not shot noise dominated at $z=99$ would require $2048^3$ for this neutrino mass, which is beyond our computational capabilities. The particle simulation is thus highly shot-noise dominated.
+There is a discrepancy between the particle simulation and the linear response simulation. We have verified that it is the particle neutrino simulation which is discrepant with linear theory. This discrepancy occurs because the particle neutrinos are strongly affected by shot-noise. Our particle simulation used $512^3$ particle neutrinos, matching the number of CDM particles. Ensuring that the neutrino power spectrum is not shot noise dominated at $z=99$ would require $2048^3$ particles for $M_\nu = 0.06$ eV, which is beyond our computational capabilities. The effect of shot noise causes the power particle and linear response power spectra to grow steadily more discrepant between $z=9$ and $z=1$, as the particle neutrinos continue to be shot noise dominated even at low redshift.
 
 \subsection{Neutrino Power}
 \label{sec:nupower}
@@ -519,14 +524,13 @@ Figure~\ref{fig:halomass} shows the halo mass functions for our particle, linear
   \label{fig:vcrit}
 \end{figure*}
 
-Figure~\ref{fig:neutrino_power} demonstrated that the hybrid neutrino method is capable of reproducing the neutrino power spectrum of a particle simulation, with substantially lower levels of shot noise. In this Section we show the sensitivity of our neutrino power spectrum measurement to various parameters of the hybrid model. In particular, we have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles (and thus the level of shot noise). The total matter power spectra for all these simulations agreed to within $0.5\%$. Figure~\ref{fig:vcrit} shows the neutrino power spectra of these simulations, compared to a hybrid simulation with the default parameters: neutrino switch-on time of $z=1$, $512^3$ neutrino particles and a critical neutrino velocity $v_\mathrm{crit} = 750$ km/s. Note that with these parameters the hybrid simulation also agrees well with CAMB for $k < 0.1$ h/Mpc.
+Figure~\ref{fig:neutrino_power} demonstrated that the hybrid neutrino method is capable of reproducing the neutrino power spectrum of a particle simulation, with substantially lower levels of shot noise. In this Section we show the sensitivity of our neutrino power spectrum measurement to various parameters of the hybrid model. In particular, we have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles (and thus the level of shot noise). The total matter power spectra for all these simulations agreed to $0.5\%$ for $k < 5$ h/Mpc. Figure~\ref{fig:vcrit} shows the neutrino power spectra of these simulations, compared to a hybrid simulation with the default parameters: neutrino switch-on time of $z=1$, $512^3$ neutrino particles and a critical neutrino velocity $v_\mathrm{crit} = 850$ km/s. Note that with these parameters the hybrid simulation also agrees well with CAMB for $k < 0.1$ h/Mpc.
 
-All simulations, including the purely particle simulation, agree to within $10\%$ for the neutrino power spectrum on scales larger than the mean inter-particle spacing of the simulation, $k < 2$ Mpc/h, while our preferred parameter ranges agree to $5\%$. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. Simulation outputs at $z > 0$ produce similar results\footnote{Output exactly at the neutrino switch-on time can appear less converged. Floating point round-off may cause the power spectrum routine to double-count particle neutrinos\yah{what does ``for numerical reasons" mean? And why is there an issue at the switch-on time??} \spb{fp-roundoff means that sometimes the snapshot happens before the switch-on time, sometimes after, which confuses the power spectrum generation routine a bit. This may not be worth mentioning. Or I could just move the switch-on time to, say, $z=1.1$.}.} In the HYBSING simulation we decreased the neutrino particle load by a factor of $8$, to $256^3$, changing the neutrino power spectrum by less than $1\%$ for $k < 1$ $h$/Mpc. This shows that we are converged with respect to mass resolution and that neutrino shot noise has negligible effect on our results. Note though that Figure \ref{fig:vcrit} shows that HYBSING produces $5\%$ less power for $k > 1$ $h$/Mpc, reflecting it's lower mass resolution.
+All simulations, including the purely particle simulation, agree to within $10\%$ for the neutrino power spectrum on scales larger than the mean inter-particle spacing of the simulation, $k < 2$ Mpc/h, while our preferred parameter ranges agree to $5\%$. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. Simulation outputs at $z > 0$ produce similar results\footnote{Output exactly at the neutrino switch-on time can appear less converged. Floating point round-off may cause the power spectrum routine to double-count particle neutrinos\yah{what does ``for numerical reasons" mean? And why is there an issue at the switch-on time??} \spb{fp-roundoff means that sometimes the snapshot happens before the switch-on time, sometimes after, which confuses the power spectrum generation routine a bit. This may not be worth mentioning.}.} In the HYBSING simulation we decreased the neutrino particle load by a factor of $8$, to $256^3$, changing the neutrino power spectrum by less than $1\%$ for $k < 1$ $h$/Mpc. This shows that we are converged with respect to mass resolution and that neutrino shot noise has negligible effect on our results. Note though that Figure \ref{fig:vcrit} shows that HYBSING produces $5\%$ less power for $k > 1$ $h$/Mpc, reflecting it's lower mass resolution.
 
-We can see the effect of changing the fraction of neutrino matter density in particles by comparing the default to the VCRIT and HYBALL simulations, which progressively increase the fraction of neutrinos in particles. Too small a value of $v_\mathrm{crit}$ will miss non-linear growth in neutrinos followed by the linear response model, while too large a value of $v_\mathrm{crit}$ risks being affected by shot noise. Both VCRIT ($v_\mathrm{crit} = 1000$ km/s) and HYBALL ($v_\mathrm{crit} = 5000$ km/s) produce a similar increase in the neutrino power spectrum in the quasilinear regime between $k = 0.1$ and $k = 0.5$ h/Mpc, which may suggest that our default value of $v_\mathrm{crit} = 750$ km/s is marginally too low \yah{so why not adopt a larger one by default? We say earlier that it is the lowest $v_{\rm crit}$ that is good, this contradicts it.}. \spb{Do this: adopt 800 km/s}
+We can see the effect of changing the fraction of neutrino matter density in particles by comparing the default to the VCRIT and HYBALL simulations, which progressively increase the fraction of neutrinos in particles. Too small a value of $v_\mathrm{crit}$ will miss non-linear growth in neutrinos followed by the linear response model, while too large a value of $v_\mathrm{crit}$ risks being affected by shot noise. As expected from Figure~\ref{fig:halofitvshell}, our default value of $850$ km/s is well-converged. Both the VCRIT ($v_\mathrm{crit} = 1000$ km/s) and HYBALL ($v_\mathrm{crit} = 5000$ km/s) simulations produce similar neutrino power spectra in the quasilinear regime between $k = 0.1$ and $k = 0.5$ h/Mpc to our default HYBRID simulation. \spb{Check again when simulation finishes}
 
-The effect of changing the initial neutrino switch-on time can be seen by comparing the NUTIME simulation to the HYBALL simulation.
-The NUTIME simulation has a neutrino switch-on time of $z=4$, while HYBALL uses the default switch-on time of $z=1$. Both of these simulations follow all the neutrino mass density in particles, like the PARTICLE simulation. We chose to use this configuration to test the desired switch-on time because it would maximize the effect of shot noise. The NUTIME and PARTICLE simulations produce about $5\%$ more power than HYBALL on large scales, and thus exceed the linear theory power from CAMB by the same amount. It is likely that the power in these simulations is being artificially increased by neutrino shot noise, and so a switch-on time of $z=1$ is recommended. \yah{I would not make recommendations, unless we did much more thorough tests}
+The effect of changing the initial neutrino switch-on time can be seen by comparing the NUTIME simulation to the HYBALL simulation. The NUTIME simulation has a neutrino switch-on time of $z=4$, while HYBALL uses the default switch-on time of $z=1$. Both of these simulations follow all the neutrino mass density in particles, like the PARTICLE simulation. We chose to use this configuration to test the desired switch-on time because it would maximize the effect of shot noise. The NUTIME and PARTICLE simulations produce about $5\%$ more power than HYBALL on large scales, and thus exceed the linear theory power from CAMB by the same amount, illustrating again that shot noise is indeed important. However, for $k > 0.4$ h/Mpc the NUTIME and HYBALL simulations agree well, demonstrating that a switch-on time of $z=1$ is sufficient, as expected theoretically.
 
 \section{Conclusions}
 \label{sec:conclusion}
@@ -534,19 +538,15 @@ The NUTIME simulation has a neutrino switch-on time of $z=4$, while HYBALL uses 
 We have extended the linear-response neutrino simulation method from \cite{AHB} to better account for non-linear growth in the neutrino component and thus reproduce the non-linear neutrino power spectrum as well as the non-linear matter power spectrum.
 Our improved method is a hybrid: initially fast-moving neutrinos are followed as before using a linear response method, while initially slow-moving neutrinos, which can be captured by CDM halos, are followed using particles at late times. We show that our new hybrid method reproduces the non-linear matter power of the linear response simulations, as expected from \cite{AHB}, while also reproducing the significantly large neutrino power spectrum seen in purely particle simulations at $z=0$. Because neutrinos are followed analytically at early times, the hybrid code retains the ability of our linear response method to include early-time relativistic effects and avoid the impact of shot noise. We show that it agrees well with CAMB when structure growth is linear. Since only a fraction of the neutrino matter density is followed by neutrinos, we show that converged results can be obtained with a relatively small neutrino particle load. Our simulation code is publicly available, both integrated into the simulation code MP-Gadget and as a series of patches to Gadget-2 \footnote{\url{https://github.com/sbird/kspace-neutrinos}}.
 
-We recommend that most simulators wishing to compare to observational surveys continue to use the linear response method, as it is computationally efficient and still reproduces well the properties of the total matter density, which are the directly observable quantities. However, for simulators wishing instead to investigate the structure of the neutrino component, our hybrid method provides much improved accuracy. Simulations using our method could be used to investigate, for example, the distribution of neutrino matter around collapsed objects \citep{FVN_2013}, neutrino wakes \citep{Inman_2015}, the neutrino bispectrum \citep{Furhrer_2015} or the distribution of massive neutrinos in cosmic voids \citep{Banerjee_2016}. We suggest a neutrino switch-on redshift $z=1$ and a critical neutrino velocity of $750-1000$ km/s, which gave the best results in our tests \yah{in my opinion, there are too few tests to make recommendations. I would rather emphasize that this method is versatile and that the detailed parameters could be adapted to problems of interest.}. We further suggest that most simulators use a mean interparticle spacing for the neutrino component double that for the CDM, and thus $1/8$th the number density, as this gave identical results in our tests with much smaller computational overhead. \yah{again, I am wary of making suggestions.}
+We recommend that most simulators wishing to compare to observational surveys continue to use the linear response method, as it is computationally efficient and still reproduces well the properties of the total matter density, which are the directly observable quantities. However, for simulators wishing instead to investigate the structure of the neutrino component, our hybrid method provides much improved accuracy. Simulations using our method could be used to investigate, for example, the distribution of neutrino matter around collapsed objects \citep{FVN_2013}, neutrino wakes \citep{Inman_2015}, the neutrino bispectrum \citep{Furhrer_2015} or the distribution of massive neutrinos in cosmic voids \citep{Banerjee_2016}. We showed that a neutrino switch-on redshift $z=1$ and a critical neutrino velocity of $850$ km/s include the majority of non-linear neutrino velocity shells, as well as showing good convergence properties for $M_\nu \leq 0.4$ eV.
 
-Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \citep{Calabrese_2017}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators.
+Our linear response simulations have computational costs similar to pure cold dark matter simulations. Our hybrid simulations required about $35\%$ more computational time, which is extremely reasonable. This also compares well to the extra cost of the particle simulations, which was a factor of $10$ for a fully converged simulation and a factor of $2$ if the neutrino particle load is the same as that for the CDM. Simulators may consider further reducing the computation cost of the hybrid simulations by reducing the neutrino particle load below that of the CDM. We found that in our simulations a particle load of $256^3$, $1/8$th that of CDM, gave identical results for the neutrino power spectrum.
 
-
-\yah{Perhaps we could make a strong point that for $M_\nu = 0.06$, the minimal mass, our hybrid method is the way to go?}
-
-\yah{Tinker suggests that we show some halo statistics, specifically mass and concentration relation. If this is too much extra work, I would suggest toning down all the ``recommendations", and just say that this is a proof of principle, and we'll test the method more extensively in upcoming work.}
+Finally, we note that cosmological surveys have now reached a level of sensitivity where even the minimal neutrino mass can substantially alter derived parameters \citep{Calabrese_2017}, and thus the inclusion of massive neutrinos (and radiation in the background) should become standard for all simulators. For these mass ranges including the neutrino mass hierarchy is important, and removing all neutrino particle shot noise prohibitively expensive. By contrast, our linear response or hybrid methods work very well in this mass regime.
 
 \section*{Acknowledgements}
 
 We thank Jeremy Tinker and Derek Inman for useful discussions.
-
 This research project was conducted using computational resources
 at the Maryland Advanced Research Computing Center (MARCC). SB was supported by NASA through
 Einstein Postdoctoral Fellowship Award Number PF5-160133.
