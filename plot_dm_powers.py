@@ -17,14 +17,14 @@ plt.style.use('anjalistyle')
 
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
-sims = ["b300p512nu0.4hyb", "b300p512nu0.4a","b300p512nu0.4p"]
-checksims = ["b300p512nu0.4hyb", "b300p512nu0.4p", "b300p512nu0.4hyb-all", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single"]
+sims = ["b300p512nu0.4hyb850", "b300p512nu0.4a","b300p512nu0.4p1024"]
+checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4p1024", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-nutime850", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single850"]
 zerosim = "b300p512nu0"
 lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
-lss = {"b300p512nu0.4p":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb":"-","b300p512nu0.4hyb-single":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime":":","b300p512nu0.4hyb-all":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
-alpha = {"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb-single":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
-labels = {"b300p512nu0.4p":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb":"HYBRID","b300p512nu0.4hyb-single":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-all":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
-colors = {"b300p512nu0.4p": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c',"b300p512nu0.4hyb-single":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-all": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728'}
+lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
+alpha = {"b300p512nu0.4p1024":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
+labels = {"b300p512nu0.4p1024":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
+colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728'}
 
 #new_colors = [,,, ,
 #              , '#8c564b', '#e377c2', '#7f7f7f',
@@ -229,6 +229,8 @@ def munge_scale(scale):
 #0.450869
 #vcrit = 750:
 #0.275691
+#vcrit = 850:
+#0.346203
 def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
@@ -296,12 +298,19 @@ def select_nu_power(scale, ss):
                 npart = 256
             #vcrit = 750
             nu_part_time = 0.5
-            part_prop = 0.275691
+            part_prop = 0.346203
 #             part_prop = 0.116826
             if re.search("vcrit",ss):
                 #vcrit = 1000
                 nu_part_time = 0.5
                 part_prop = 0.450869
+            if re.search("850",ss):
+                #vcrit = 850
+                nu_part_time = 0.5
+                part_prop = 0.346203
+            if re.search("nutime850", ss):
+                nu_part_time = 0.25
+                part_prop = 0.346203
             if re.search("all",ss) or re.search("nutime",ss):
                 #vcrit = 5000
                 part_prop = 1.
