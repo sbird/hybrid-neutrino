@@ -53,6 +53,7 @@
 \begin{document}
 
 \title{A Hybrid Method for Simulating Non-Linear Neutrino Structure}
+%\title{Converged Simulations for Non-Linear Neutrino Structure Using a Hybrid Method}
 \author[ S. Bird et al.]{  Simeon Bird$^1$\thanks{E-mail: sbird@ucr.edu}, Yacine Ali-Ha\"{\i}moud$^2$, Yu Feng$^3$, Jia Liu$^4$\vspace{1.5mm}\\
 $^1$Institution\\
 $^2$Center for Cosmology and Particle Physics, Department of Physics,
@@ -108,19 +109,14 @@ in a way both accurate and computationally inexpensive.
 If the simulation methods used are insufficiently accurate, experiments will measure incorrect values for the neutrino mass.
 Conversely, if simulation techniques are overly computationally intensive, the number of simulations which can be performed will be reduced, again impeding the accuracy of the cosmological parameter measurement.
 
-\cite{AHB}, hereafter AHB13, proposed modelling neutrinos using a perturbative linear response approximation \citep{Bond_1980, Ma_1994}, described in more detail in Section~\ref{sec:analytic}. The neutrino component is followed using first-order linear perturbation theory, clustering in a background potential generated from the fully non-linear clustering of the CDM particles. The main improvement of this method over earlier perturbation-based neutrino codes \citep{Brandbyge_2009} was the use of the full non-linear CDM potential. This makes it possible to achieve accurate results for any level of CDM clustering, as long as neutrinos themselves are still clustering linearly.
+\cite{AHB}, hereafter AHB13, proposed modelling neutrinos using a perturbative linear response approximation \citep{Bond_1980, Ma_1994}, described in more detail in Section~\ref{sec:analytic}. The neutrino component is followed using first-order linear perturbation theory, clustering in a background potential generated from the fully non-linear clustering of the CDM particles. The main improvement of this method over earlier perturbation-based neutrino codes \citep{Brandbyge_2009} was the use of the full non-linear CDM potential. This makes it possible to achieve accurate results for any level of CDM clustering, as long as the neutrino free-streaming scale is larger than the non-linear scale.
 The linear-response method is computationally efficient and accurately describes the effect of massive neutrinos on the growth of cold dark matter (CDM), computing the matter power spectrum $P(k)$ at around $1\%$ accuracy for $M_\nu \lesssim 0.6$ eV.
 Due to its minimal computational overhead,
-it has been used to investigate the combined effects of massive neutrinos and baryons \citep{Mummery_2017}, to constrain
-the neutrino mass using hydrodynamic simulations of large-scale structure \citep{McCarthy_2017, McCarthy_2018}.
+it has been used to investigate the combined effects of massive neutrinos and baryons \citep{Mummery_2017} and to constrain the neutrino mass using hydrodynamic simulations of large-scale structure \citep{McCarthy_2018, McCarthy_2017}.
 
-AHB13 found that this method did not reproduce the growth of the neutrino power seen in particle simulations for $M_\nu > 0.3$ eV  and $z < 0.5$, even though the neutrino free-streaming scale remains larger than the non-linear scale: $k_\mathrm{fs} < k_\mathrm{NL}$. However, massive neutrinos have velocities drawn from a Fermi-Dirac distribution. A subset of massive neutrinos have a low enough initial velocity that their free-streaming scale is smaller than the non-linear scale and thus cluster non-linearly. These neutrinos can dominate the clustering on small scales, even if they are a small fraction of the neutrino matter density, because linear growth is highly suppressed. In this paper, we present an extension of the linear-response method which allows to accurately model the neutrino power spectrum. \spb{Does the above rephrasing work for you?}
+However, AHB13 found that this method did not reproduce the growth of the neutrino power seen in particle simulations for $M_\nu > 0.3$ eV  and $z < 0.5$, even though the expected over-density remained less than unity. The linear response method becomes inaccurate when collisionless particles have a slow initial velocity. As the initial velocity of neutrinos follows a Fermi-Dirac distribution, there are massive neutrinos whose velocities are low enough to cluster non-linearly. These neutrinos can dominate the clustering on small scales, even if they are a small fraction of the neutrino matter density, because linear growth is highly suppressed. \spb{Does the above rephrasing work for you?}
 
-% This limitation is not restrictive: the neutrino power spectrum is not currently directly observable \citep[but see][]{Ptolemy}, and we expect that for most observables, the linear-response method of AHB13 is already sufficiently accurate. Nevertheless, it is possible that for some observables, a more accurate modeling of the neutrinos themselves might be needed. In this paper, we present an extension of the linear-response method which allows to accurately model the neutrino power spectrum.
-
-Our new method uses a hybrid approach, combining our earlier analytic framework for low neutrino masses and early times with a neutrino particle implementation for
-heavier neutrinos at late times. The particle neutrinos have velocities drawn from the slow-moving tail of the initial Fermi-Dirac distribution. They are thus relatively slow,
-even initially, and so mitigate the numerical problems that plague purely particle simulations. Our new method allows, for the first time, a single simulation code to produce a well-converged neutrino simulation, at any neutrino mass, which includes both early-time relativistic effects and late-time non-linear growth in the neutrino sector. We describe it in more detail in Section~\ref{sec:hybrid}.
+In this paper, we present an extension of the linear-response method which allows to accurately model neutrinos with low initial velocities, and thus reproduce the neutrino power spectrum from particle simulations. The neutrinos are split into two fast and slow components by their initial velocity. The slow component is followed using neutrino particles while the fast component is followed using the linear response approximation.  Note that the slow initial velocity of our particle neutrinos mitigates the numerical problems that plague purely particle simulations. Our new method allows, for the first time, a single simulation code to produce a well-converged neutrino simulation, at any neutrino mass, which includes late-time non-linear growth in the neutrino sector. We describe it in more detail in Section~\ref{sec:hybrid}.
 
 We provide an improved public implementation of our neutrino simulation
 method\footnote{The latest version may be found here: \url{https://github.com/sbird/kspace-neutrinos/}}.
@@ -132,8 +128,7 @@ results and compare them against other methods in Section \ref{sec:results}. We 
 \section{Methods}
 \label{sec:methods}
 
-In this Section we describe various methods to follow the evolution of neutrinos. Subsection \ref{sec:particle} describes our implementation of particle neutrinos, the earliest and most widely used neutrino simulation method. Section \ref{sec:analytic} reviews the linear-response approximation. Finally, Section \ref{sec:hybrid} describes our new method, which combines the best features of both methods.
-
+In this Section we describe our simulation techniques. Section~\ref{sec:particle} describes our implementation of particle neutrinos, the earliest and most widely used neutrino simulation method. Section \ref{sec:analytic} reviews the linear-response approximation. Section \ref{sec:hybrid} describes our hybrid technique, which builds on both earlier methods. Finally, Section~\ref{sec:simulations} details the parameters of our simulations.
 
 \subsection{Particle Neutrinos}
 \label{sec:particle}
@@ -413,7 +408,7 @@ HYBALL    &     0.4             &   Hybrid      & 512       & 5000 & $z_\nu = 1$
 \end{center}
 \caption{Table of simulations performed. All simulations have a box of $300$ Mpc/h
 and $512^3$ CDM particles. NH denotes a normal hierarchy for the neutrino masses.
-For $M_\nu = 0.4$ eV, the fraction of neutrinos slower than critical velocities of $750$, $850$, $1000$, $5000$ km/s is $0.276$, $???$, $0.451$ and $1$ respectively. \yah{are names necessary, or can we go with S1, S2, etc...?} \spb{I always find names easier to follow...}}
+For $M_\nu = 0.4$ eV, the fraction of neutrinos slower than critical velocities of $750$, $850$, $1000$, $5000$ km/s is $0.276$, $0.346$, $0.451$ and $1$ respectively. \yah{are names necessary, or can we go with S1, S2, etc...?} \spb{I always find names easier to follow...}}
 \label{tab:simulations}
 \end{table}
 
@@ -627,7 +622,7 @@ In the simulations presented here we use both the full Hubble function
 and obtain $\frac{d \log D(a)}{d \log a}$ by numerically solving
 the linear growth equation \citep{Peebles:1993}:
 \begin{equation}
-\frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{a \,D(a)}{H(a)} \left(\Omega_\mathrm{CDM} + \Omega_\mathrm{b}\right)= 0\,.
+\frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{H_0^2\,D(a)}{a^2 H(a)} \left(\Omega_\mathrm{CDM} + \Omega_\mathrm{b}\right)= 0\,.
 \end{equation}
 The initial conditions for this differential equation are set at $z \gg 100$ corresponding
 to the growing mode in a matter-radiation universe \citep{Groth:1975}:
