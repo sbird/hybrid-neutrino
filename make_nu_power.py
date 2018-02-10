@@ -16,6 +16,9 @@ def sptostr(sp):
 def compute_power(output, Nmesh=1024, species=2, spec2 = None):
     """Compute the compensated power spectrum from a catalogue."""
     catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
+    sp = sptostr(species)
+    sp2 = sptostr(spec2)
+    outfile = path.join(output,"../power-"+sp+sp2+"-%.4f.txt" % catnu.attrs["Time"][0])
     catnu.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
@@ -25,10 +28,8 @@ def compute_power(output, Nmesh=1024, species=2, spec2 = None):
     else:
         pknu = FFTPower(catnu, mode='1d', Nmesh=1024)
         power = pknu.power
-    sp = sptostr(species)
-    sp2 = sptostr(spec2)
-    numpy.savetxt(path.join(output,"../power-"+sp+sp2+"- %.4f.txt" % catnu.attrs["Time"][0]),numpy.array([power['k'], power['power'].real,power['modes']]).T)
-    return pknu
+    numpy.savetxt(outfile,numpy.array([power['k'], power['power'].real,power['modes']]).T)
+    return power
 
 def all_compute(directory):
     """Do computation for all snapshots in a directory"""
