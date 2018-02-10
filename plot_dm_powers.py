@@ -22,12 +22,12 @@ checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4p1024", "b
 zerosim = "b300p512nu0"
 lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
 lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
-alpha = {"b300p512nu0.4p1024":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
-labels = {"b300p512nu0.4p1024":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
-colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728'}
+alpha = {"b300p512nu0.4p1024":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
+labels = {"b300p512nu0.4p1024":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb":"VCRITLO", "b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
+colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728',"b300p512nu0.4hyb":'#8c564b'}
 
 #new_colors = [,,, ,
-#              , '#8c564b', '#e377c2', '#7f7f7f',
+#              ,  '#7f7f7f',
 #              '#bcbd22', '#17becf']
 scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
 scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
