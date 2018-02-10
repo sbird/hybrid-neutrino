@@ -19,6 +19,8 @@ def compute_power(output, Nmesh=1024, species=2, spec2 = None):
     sp = sptostr(species)
     sp2 = sptostr(spec2)
     outfile = path.join(output,"../power-"+sp+sp2+"-%.4f.txt" % catnu.attrs["Time"][0])
+    if path.isfile(outfile):
+        return
     catnu.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')

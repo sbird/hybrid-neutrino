@@ -258,11 +258,9 @@ The approximation in Eq.~\ref{eq:phases} allows us to store only the one-dimensi
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
   \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods.
-  Shot noise has been subtracted from the neutrino power spectrum. For the hybrid simulation, only the correlation between the
-  cold dark matter and slow neutrino particles is shown.
-  The cross-correlation is unity for scales where the neutrino power is not dominated by shot noise (vertical dotted line),
-  and $\sim 0.9$ for all scales larger than the mean interparticle spacing of the simulation. This justifies the
-  approximation, used in the linear response method, that neutrinos and CDM are completely correlated.
+  The vertical grey line shows the scale where shot noise, which has been subtracted, begins to dominate.
+  For the hybrid simulation, only the correlation between the cold dark matter and slow neutrino particles is shown.
+  The cross-correlation is close to $> 0.8$ when shot noise is small, justifying the approximation that neutrinos and CDM are completely correlated.
   }
   \label{fig:cross-corr}
 \end{figure}
@@ -453,12 +451,12 @@ We performed three simulations set up identically, except for the neutrino simul
   \label{fig:neutrino_power}
 \end{figure*}
 
-\begin{figure}
-\includegraphics[width=0.45\textwidth]{nuplots/pks_nu_rel-1.pdf}
-  \caption{The ratio of the neutrino power spectrum for simulations using linear response (LINRESP) and particle (PARTICLE) methods to the hybrid simulation (HYBRID) at $z=0$. Also shown is the linear theory neutrino power spectrum from CAMB. We have subtracted shot noise from the particle and hybrid simulations.}
-  \label{fig:rel_neutrino_power}
-\end{figure}
-
+% \begin{figure}
+% \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_rel-1.pdf}
+%   \caption{The ratio of the neutrino power spectrum for simulations using linear response (LINRESP) and particle (PARTICLE) methods to the hybrid simulation (HYBRID) at $z=0$. Also shown is the linear theory neutrino power spectrum from CAMB. We have subtracted shot noise from the particle and hybrid simulations.}
+%   \label{fig:rel_neutrino_power}
+% \end{figure}
+% 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-split-1.pdf}
   \caption{The neutrino power spectrum for the hybrid simulation (HYBRID) at $z=0$, split into fast (analytic) and slow (particle) neutrino components. Shot noise has been subtracted at the level shown by the grey line.}
@@ -503,19 +501,19 @@ Both particle and hybrid methods show sharply increased neutrino power on small 
 \label{sec:check}
 
 \begin{figure*}
-  \includegraphics[width=0.45\textwidth]{nuplots/pks-cknu-1.pdf}
+  \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel2-1.pdf}
   \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel-1.pdf}
-\caption{(Left) The effect of changing our hybrid model parameters on the neutrino power spectrum at $z=0$. We have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles. We show the linear theory power spectrum from CAMB for comparison. We have subtracted shot noise at the level shown by the dashed grey curve. (Right) Ratio of neutrino power spectra to the results of the default hybrid simulation parameters (HYBRID). Data has been smoothed with at $15$-point Hanning filter to reduce numerical noise.}
+\caption{(Left) The effect of changing our hybrid model parameters on the neutrino power spectrum at $z=0$. We have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles. We show the linear theory power spectrum from CAMB for comparison. We have subtracted shot noise at the level shown by the dashed grey curve. (Right) Ratio of neutrino power spectra to the results of the default hybrid simulation parameters (HYBRID). Power spectra have been smoothed with an 11-pt rolling average to reduce scatter.}
   \label{fig:vcrit}
 \end{figure*}
-
-As Figure~\ref{fig:rel_neutrino_power} shows, the particle and hybrid simulations differ quantitatively by $10\%$ at $k=1$ $h$/Mpc, with the hybrid simulation producing more power. This difference is consistent with the expected effect of increased mass resolution in the hybrid simulation. The particle simulation also produces $5\%$ more power than the hybrid simulation for $k < 0.1$ $h$/Mpc (in moderately better agreement with CAMB). Figure \ref{fig:vcrit} shows this excess is not present in the HYBALL simulation, which is identical to the particle simulation for $z < 1$. This may indicate it is due to the dynamical effects of neutrino particle shot noise at early times.
 
 Figure~\ref{fig:neutrino_power} demonstrated that the hybrid neutrino method is capable of reproducing the neutrino power spectrum of a particle simulation, with substantially lower levels of shot noise. In this Section we show the sensitivity of our neutrino power spectrum measurement to various parameters of the hybrid model. In particular, we have varied the neutrino switch-on time, the critical neutrino velocity and the number of neutrino particles (and thus the level of shot noise). The total matter power spectra for all these simulations agreed to $0.5\%$ for $k < 5$ h/Mpc. Figure~\ref{fig:vcrit} shows the neutrino power spectra of these simulations, compared to a hybrid simulation with the default parameters: neutrino switch-on time of $z=1$, $512^3$ neutrino particles and a critical neutrino velocity $v_\mathrm{crit} = 850$ km/s.
 
 All simulations, including the purely particle simulation, agree to within $10\%$ for the neutrino power spectrum on scales larger than the mean inter-particle spacing of the simulation, $k < 2$ Mpc/h, while our preferred parameter ranges agree to $5\%$. We consider this an acceptable degree of convergence for a quantity which is less than $1\%$ of the total matter density. Simulation outputs at $z > 0$ produce similar results\footnote{Output exactly at the neutrino switch-on time can appear less converged. Floating point round-off may cause the power spectrum routine to double-count particle neutrinos\yah{what does ``for numerical reasons" mean? And why is there an issue at the switch-on time??} \spb{fp-roundoff means that sometimes the snapshot happens before the switch-on time, sometimes after, which confuses the power spectrum generation routine a bit. This may not be worth mentioning.}.} In the HYBSING simulation we decreased the neutrino particle load by a factor of $8$, to $256^3$, changing the neutrino power spectrum by less than $1\%$ for $k < 1$ $h$/Mpc. This shows that we are converged with respect to mass resolution and that neutrino shot noise has negligible effect on our results. Note though that Figure \ref{fig:vcrit} shows that HYBSING produces $5\%$ less power for $k > 1$ $h$/Mpc, reflecting it's lower mass resolution.
 
 We can see the effect of changing the fraction of neutrino matter density in particles by comparing the default to the VCRIT and HYBALL simulations, which progressively increase the fraction of neutrinos in particles. Too small a value of $v_\mathrm{crit}$ will miss non-linear growth in neutrinos followed by the linear response model, while too large a value of $v_\mathrm{crit}$ risks being affected by shot noise. As expected from Figure~\ref{fig:halofitvshell}, our default value of $850$ km/s is well-converged. Both the VCRIT ($v_\mathrm{crit} = 1000$ km/s) and HYBALL ($v_\mathrm{crit} = 5000$ km/s) simulations produce similar neutrino power spectra in the quasilinear regime between $k = 0.1$ and $k = 0.5$ h/Mpc to our default HYBRID simulation. \spb{Check again when simulation finishes}
+
+As Figure~\ref{fig:vcrit} shows, the particle and hybrid simulations differ quantitatively by $10\%$ at $k=1$ $h$/Mpc, with the hybrid simulation producing more power. This difference is consistent with the expected effect of increased mass resolution in the hybrid simulation. The particle simulation also produces $5\%$ more power than the hybrid simulation for $k < 0.1$ $h$/Mpc (in moderately better agreement with CAMB). Figure \ref{fig:vcrit} shows this excess is not present in the HYBALL simulation, which is identical to the particle simulation for $z < 1$. This may indicate it is due to the dynamical effects of neutrino particle shot noise at early times.
 
 The effect of changing the initial neutrino switch-on time can be seen by comparing the NUTIME simulation to the HYBALL simulation. The NUTIME simulation has a neutrino switch-on time of $z=4$, while HYBALL uses the default switch-on time of $z=1$. Both of these simulations follow all the neutrino mass density in particles, like the PARTICLE simulation. We chose to use this configuration to test the desired switch-on time because it would maximize the effect of shot noise. The NUTIME and PARTICLE simulations produce about $5\%$ more power than HYBALL on large scales, and thus exceed the linear theory power from CAMB by the same amount, illustrating again that shot noise is indeed important. However, for $k > 0.4$ h/Mpc the NUTIME and HYBALL simulations agree well, demonstrating that a switch-on time of $z=1$ is sufficient, as expected theoretically.
 

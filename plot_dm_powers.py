@@ -18,19 +18,20 @@ plt.style.use('anjalistyle')
 datadir = os.path.expanduser("~/data/hybrid-kspace2")
 savedir = "nuplots/"
 sims = ["b300p512nu0.4hyb850", "b300p512nu0.4a","b300p512nu0.4p1024"]
-checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4p1024", "b300p512nu0.4hyb-nutime", "b300p512nu0.4hyb-nutime850", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single850"]
+checksims2 = ["b300p512nu0.4hyb850", "b300p512nu0.4p", "b300p512nu0.4p1024", "b300p512nu0.4hyb-nutime"]
+checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4hyb-nutime850", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single850"]
 zerosim = "b300p512nu0"
 lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
-lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
-alpha = {"b300p512nu0.4p1024":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
-labels = {"b300p512nu0.4p1024":"PARTICLE", "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb":"VCRITLO", "b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
-colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb":'#2ca02c', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#2ca02c',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728',"b300p512nu0.4hyb":'#8c564b'}
+lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4p":"-.","b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
+alpha = {"b300p512nu0.4p1024":1,"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
+labels = {"b300p512nu0.4p1024":"2xPARTICLE","b300p512nu0.4p":"PARTICLE",  "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb":"VCRITLO", "b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
+colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4p":"#7f7f7f","b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#7f7f7f',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728',"b300p512nu0.4hyb":'#8c564b'}
 
 #new_colors = [,,, ,
 #              ,  '#7f7f7f',
 #              '#bcbd22', '#17becf']
-scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
-scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
+scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.3333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
+scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.3333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
 
 def HMFFromFOF(foftable, h0=False, bins='auto'):
     """Print a conventionally normalised halo mass function from the FOF tables.
@@ -74,47 +75,25 @@ def HMFFromFOF(foftable, h0=False, bins='auto'):
         dndm /= hub**4
     return Mcent, dndm
 
-def smooth(x,window_len=15,window='hanning'):
-    """smooth the data using a window with requested size.
-
-    This method is based on the convolution of a scaled window with the signal.
-    The signal is prepared by introducing reflected copies of the signal
-    (with the window size) in both ends so that transient parts are minimized
-    in the begining and end part of the output signal.
+def smooth(x,window_len=11):
+    """smooth the data using a moving average.
 
     input:
         x: the input signal
         window_len: the dimension of the smoothing window; should be an odd integer
-        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
-            flat window will produce a moving average smoothing.
 
     output:
         the smoothed signal
-
-    example:
-
-    t=linspace(-2,2,0.1)
-    x=sin(t)+randn(len(t))*0.1
-    y=smooth(x)
-
-    see also:
-
-    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
-    scipy.signal.lfilter
-
-    TODO: the window parameter could be the window itself if an array instead of a string
-    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
     """
-    if window_len<3:
-        return x
-    s=np.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
-    #print(len(s))
-    if window == 'flat': #moving average
-        w=np.ones(window_len,'d')
-    else:
-        w=eval('np.'+window+'(window_len)')
-    y=np.convolve(w/w.sum(),s,mode='valid')
-    return y[int((window_len-1)/2):int(-(window_len-1)/2)]
+    out = np.zeros_like(x)
+    diff = (window_len-1)//2
+    for i in range(0,diff+1):
+        out[i] = np.mean(x[:i+diff])
+    for i in range(diff+1,len(x)-diff):
+        out[i] = np.mean(x[i-1-diff:i+diff])
+    for i in range(len(x)-diff,len(x)):
+        out[i] = np.mean(x[i-1-diff:])
+    return out
 
 def plot_image(sim,snap, dataset=1, colorbar=False):
     """Make a pretty picture of the mass distribution."""
@@ -131,17 +110,17 @@ def plot_image(sim,snap, dataset=1, colorbar=False):
     plt.savefig(os.path.join(savedir, "dens-plt-"+munge_scale(sim)+"t"+str(dataset)+".pdf"))
     plt.clf()
 
-def load_genpk(path,box):
+def load_genpk(path):
     """Load a GenPk format power spectum, plotting the DM and the neutrinos (if present)
     Does not plot baryons."""
     #Load DM P(k)
     matpow=np.loadtxt(path)
-    scale=2*math.pi/box
+    scale = 1e3
     #Adjust Fourier convention to match CAMB.
     simk=matpow[1:,0]*scale
-    Pk=matpow[1:,1]/scale**3*(2*math.pi)**3
-    return modecount_rebin(simk, Pk, matpow[1:,2],minmodes=30)
-#     return (simk,Pk)
+    Pk=matpow[1:,1] /scale**3 #*(2*math.pi)**3
+#     return modecount_rebin(simk, Pk, matpow[1:,2],minmodes=15)
+    return (simk,Pk)
 
 def get_nu_power(filename):
     """Reads the neutrino power spectrum.
@@ -221,23 +200,13 @@ def munge_scale(scale):
     """Make the scale param be a string suitable for printing"""
     return re.sub(r"\.","_",str(scale))
 
-#vcrit = 300:
-#0.0328786
-#vcrit = 500:
-#0.116826
-#vcrit = 1000:
-#0.450869
-#vcrit = 750:
-#0.275691
-#vcrit = 850:
-#0.346203
-def get_hyb_nu_power(nu_filename, genpk_neutrino, box, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False):
+def get_hyb_nu_power(nu_filename, genpk_neutrino, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
     (k_sl, pk_sl) = get_nu_power(nu_filename)
     ii = np.where(k_sl != 0.)
     if scale < nu_part_time:
         return k_sl[ii], pk_sl[ii], np.zeros_like(pk_sl[ii])
-    (k_part,pk_part)=load_genpk(genpk_neutrino,box)
+    (k_part,pk_part)=load_genpk(genpk_neutrino)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
     shot=(300/npart)**3*np.ones(np.size(pk_part_r))
@@ -267,18 +236,21 @@ def plot_single_redshift(scale):
 
 def plot_crosscorr(scale):
     """Plot the crosscorrelation coefficient as a function of k for neutrinos and DM."""
-    cc_sims = ["b300p512nu0.4p","b300p512nu0.4hyb"]
+    cc_sims = ["b300p512nu0.4p1024","b300p512nu0.4hyb850"]
+    shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":0.345*(300/512)**3}
     for ss in cc_sims:
-        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
-        (_, pk_nu) = load_genpk(genpk_neutrino,300)
-        genpk_dm = os.path.join(os.path.join(datadir,ss),"output/PK-DM-PART_00"+scale_to_snap[scale])
-        (_, pk_dm) = load_genpk(genpk_dm,300)
-        genpk_cross = os.path.join(os.path.join(datadir,ss),"output/PK-DMxnu-PART_00"+scale_to_snap[scale])
-        (k_cross, pk_cross) = load_genpk(genpk_cross,300)
-        shot=(300/512.)**3*np.ones_like(pk_nu)
-        corr_coeff = pk_cross / np.sqrt(pk_dm* (pk_nu -shot))
+        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
+        (_, pk_nu) = load_genpk(genpk_neutrino)
+        genpk_dm = os.path.join(os.path.join(datadir,ss),"output/power-DM-%.4f.txt" % scale)
+        (_, pk_dm) = load_genpk(genpk_dm)
+        genpk_cross = os.path.join(os.path.join(datadir,ss),"output/power-DMnu-%.4f.txt" % scale)
+        (k_cross, pk_cross) = load_genpk(genpk_cross)
+        shot=shots[ss]*np.ones_like(pk_nu)
+        pksq = pk_dm * (pk_nu - shot)
+        corr_coeff = pk_cross / np.sqrt(pksq)
         plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
-    plt.axvline(x=0.8, ls=":", color="grey")
+    plt.axvline(x=1.2, ls=":", color="grey")
+    plt.ylim(0,1.1)
     plt.legend(frameon=False, loc=0,fontsize=12)
     plt.xlabel(r"k (h/Mpc)")
     plt.ylabel(r"Cross-correlation coefficient")
@@ -286,11 +258,21 @@ def plot_crosscorr(scale):
     plt.savefig(os.path.join(savedir, "corr_coeff-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
+#vcrit = 300:
+#0.0328786
+#vcrit = 500:
+#0.116826
+#vcrit = 1000:
+#0.450869
+#vcrit = 750:
+#0.275691
+#vcrit = 850:
+#0.346203
 def select_nu_power(scale, ss):
     """Get the neutrino power spectrum that is wanted"""
     sdir = os.path.join(os.path.join(datadir, ss),"output")
     matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
+    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
     try:
         try:
             npart = 512
@@ -298,39 +280,42 @@ def select_nu_power(scale, ss):
                 npart = 256
             #vcrit = 750
             nu_part_time = 0.5
-            part_prop = 0.346203
+            part_prop = 0.275691
 #             part_prop = 0.116826
             if re.search("vcrit",ss):
                 #vcrit = 1000
                 nu_part_time = 0.5
                 part_prop = 0.450869
-            if re.search("850",ss):
+            elif re.search("nutime850", ss):
+                nu_part_time = 0.25
+                part_prop = 0.346203
+            elif re.search("850",ss):
                 #vcrit = 850
                 nu_part_time = 0.5
                 part_prop = 0.346203
-            if re.search("nutime850", ss):
-                nu_part_time = 0.25
-                part_prop = 0.346203
-            if re.search("all",ss) or re.search("nutime",ss):
+            elif re.search("all",ss) or re.search("nutime",ss):
                 #vcrit = 5000
                 part_prop = 1.
                 nu_part_time = 0.5
                 if re.search("all",ss):
                     nu_part_time = 0.25
-            (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
+            (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
         except (IOError,FileNotFoundError):
             if not re.search("a$",ss):
                 print("Problem",genpk_neutrino)
             (k, pk_nu) = get_nu_power(matpow[0])
             shot = np.zeros_like(k)
     except IndexError:
-        (k, pk_nu) = load_genpk(genpk_neutrino,300)
+        (k, pk_nu) = load_genpk(genpk_neutrino)
         #So it matches the binning of the lin resp code.
         rebinned=scipy.interpolate.interpolate.interp1d(k, pk_nu, fill_value='extrapolate')
         k = np.concatenate([[2*math.pi/300,], k])
         pk_nu = rebinned(k)
         #Shot noise
-        shot=(300/512.)**3*np.ones_like(pk_nu)
+        if re.search("1024",ss):
+            shot=(300/1024.)**3*np.ones_like(pk_nu)
+        else:
+            shot=(300/512.)**3*np.ones_like(pk_nu)
         pk_nu -=shot
     return (k, pk_nu, shot)
 
@@ -342,8 +327,8 @@ def plot_nu_single_redshift_split(scale,ss,fn="nu-split"):
     #Plot split power.
     sdir = os.path.join(os.path.join(datadir, ss),"output")
     matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
-    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/PK-nu-PART_00"+scale_to_snap[scale])
-    (k, pk_nu_slow, pk_nu_fast) = get_hyb_nu_power(matpow[0], genpk_neutrino, 300, npart=512, scale=scale, split=True)
+    genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
+    (k, pk_nu_slow, pk_nu_fast) = get_hyb_nu_power(matpow[0], genpk_neutrino, npart=512, scale=scale, split=True)
     plt.loglog(k, pk_nu_slow, ls="-.",label=r"Slow $\nu$", color="blue")
     plt.loglog(k, pk_nu_fast, ls=":",label=r"Fast $\nu$", color="black")
     plt.loglog(np.concatenate([[0.005,],k]), np.concatenate([[shot[0],],shot]), color="lightgrey", ls=":")
@@ -380,7 +365,7 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
                 plt.loglog(MMa, dndm, ls=lss[ss], label=labels[ss], color=colors[ss])
         except bigfile.pyxbigfile.Error:
             pass
-    plt.xlabel("Halo Mass ($M_\odot$)")
+    plt.xlabel(r"Halo Mass ($M_\odot$)")
     if rel:
         plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls="-",label="Watson",color="black")
         plt.ylabel(r"dn/dM (ratio)")
@@ -450,8 +435,8 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
         pkfilt = smooth(pk_nu/rebinned(k))
         plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
     plt.ylim(ymin,ymax)
-    plt.xlim(0.01, 10)
-    plt.legend(frameon=False, loc=0,fontsize=12)
+    plt.xlim(0.01, 5)
+    plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P}_\nu(k)$ ratio")
     plt.tight_layout()
@@ -535,25 +520,27 @@ def plot_fermi_dirac(Mnu, zz):
     plt.clf()
 
 if __name__ == "__main__":
-#     plot_image(zerosim,8,1)
-#     plot_image(sims[2],8,1)
-#     plot_image(sims[2],8,2, colorbar=True)
-#     plot_image(sims[0],8,1)
-#     plot_image(sims[0],8,2)
+    plot_image(zerosim,8,1)
+    plot_image(sims[2],8,1)
+    plot_image(sims[2],8,2, colorbar=True)
+    plot_image(sims[0],8,1)
+    plot_image(sims[0],8,2)
     plot_fermi_dirac(0.4,0)
-    for sc in (0.02, 0.100, 0.200, 0.333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
         plot_hmf_rel_one(sc)
-        plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb")
+        plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
+        plot_nu_single_redshift(sc,checksims2,fn="cknu2")
         plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
         plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
         plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
-        plot_nu_single_redshift_rel_one(sc,psims=checksims[1:],pzerosim=checksims[0],fn="ckrel",ymin=0.88,ymax=1.1)
-        plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False)
+        plot_nu_single_redshift_rel_one(sc,psims=checksims[:],pzerosim=checksims[0],fn="ckrel",ymin=0.89,ymax=1.1)
+        plot_nu_single_redshift_rel_one(sc,psims=checksims2[:],pzerosim=checksims2[0],fn="ckrel2",ymin=0.89,ymax=1.1)
+        plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False,fn="rel0")
         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
         plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
         plot_single_redshift_rel_camb(sc)
