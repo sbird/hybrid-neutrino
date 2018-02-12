@@ -54,10 +54,10 @@
 
 \title{A Hybrid Method for Simulating Non-Linear Neutrino Structure}
 %\title{Converged Simulations for Non-Linear Neutrino Structure Using a Hybrid Method}
-\author[ S. Bird et al.]{  Simeon Bird$^1$\thanks{E-mail: sbird@ucr.edu}, Yacine Ali-Ha\"{\i}moud$^2$, Yu Feng$^3$, Jia Liu$^4$\vspace{1.5mm}\\
-$^1$Institution\\
+\author[ S. Bird et al.]{Simeon Bird$^1$\thanks{E-mail: sbird@ucr.edu}, Yacine Ali-Ha\"{\i}moud$^2$, Yu Feng$^3$, Jia Liu$^4$\vspace{1.5mm}\\
+$^1$UC Riverside, Riverside, CA  and Johns Hopkins University, Baltimore, MD\\
 $^2$Center for Cosmology and Particle Physics, Department of Physics,
-New York University, New York, NY 10003, USA\\
+New York University, New York, NY\\
 $^3$Institution\\
 $^4$Institution}
 
@@ -70,8 +70,8 @@ $^4$Institution}
 \maketitle
 
 \begin{abstract}
-\yah{I would present this paper as a ``proof of concept" for the hybrid method, and defer a thorough convergence test to future work (as a referee, I would definitely ask us to do more quantitative tests). Unless of course it is easy to do more tests :-)}
-
+We present an improved method for simulating massive neutrinos in cosmological structure formation simulations, together with an easy to use public implementation.
+Our method builds on our earlier linear response approximation, and preserves its good behaviour at early times and in the linear regime, while better following the non-linear clustering of neutrinos on small scales. Massive neutrinos are split into initially ``fast'' and ``slow'' components. The fast component is followed with a modified linear response approximation, which solves the linearized Boltzmann equation analytically. The slow component, which may cluster non-linearly, is followed using neutrino particles included in the initial conditions. Until a neutrino switch-on time, these particles act as passive tracers, thus avoiding the worst effects of particle shot noise. We show that our hybrid method matches (and for small neutrino masses, exceeds) the accuracy of neutrino particle simulations with substantially lower particle load.
 \end{abstract}
 
 \begin{keywords}
