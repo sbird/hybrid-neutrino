@@ -24,7 +24,7 @@ zerosim = "b300p512nu0"
 lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
 lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4p":"-.","b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
 alpha = {"b300p512nu0.4p1024":1,"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
-labels = {"b300p512nu0.4p1024":"2xPARTICLE","b300p512nu0.4p":"PARTICLE",  "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBSING","b300p512nu0.4hyb":"VCRITLO", "b300p512nu0.4hyb-vcrit":"VCRIT","b300p512nu0.4hyb-nutime":"HYBALL","b300p512nu0.4hyb-nutime850":"NUTIME","b300p512nu0.06a":"MINNU", "b300p512nu0.06p":"MINNU-PART"}
+labels = {"b300p512nu0.4p1024":"PARTICLE-1024","b300p512nu0.4p":"PARTICLE",  "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBRID-256","b300p512nu0.4hyb":"HYBRID-v750", "b300p512nu0.4hyb-vcrit":"HYBRID-v1000","b300p512nu0.4hyb-nutime":"HYBRID-v5000","b300p512nu0.4hyb-nutime850":"HYBRID-z4","b300p512nu0.06a":"LINRESP-MINNU", "b300p512nu0.06p":"PARTICLE-MINNU"}
 colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4p":"#7f7f7f","b300p512nu0.4a":'#1f77b4', "b300p512nu0.4hyb850":'#2ca02c',"b300p512nu0.4hyb-single850":'#7f7f7f',"b300p512nu0.4hyb-vcrit":'#bcbd22',"b300p512nu0.4hyb-nutime": '#ff7f0e',"b300p512nu0.4hyb-nutime850": '#e377c2',"b300p512nu0.06a":'#1f77b4',"b300p512nu0.06p": '#d62728',"b300p512nu0.4hyb":'#8c564b'}
 
 #new_colors = [,,, ,
@@ -101,11 +101,11 @@ def plot_image(sim,snap, dataset=1, colorbar=False):
     cat = BigFileCatalog(pp, dataset=str(dataset), header='Header')
     mesh = cat.to_mesh(Nmesh=512)
     plt.clf()
-    plt.imshow(np.log10(mesh.preview(axes=(0, 1))/512), extent=(0,300,0,300), vmin=-0.5, vmax=1)
+    plt.imshow(np.log10(mesh.preview(axes=(0, 1))/512), extent=(0,3,0,3), vmin=-0.2, vmax=0.2)
     if colorbar:
         plt.colorbar()
-    plt.xlabel("x (Mpc/h)")
-    plt.ylabel("y (Mpc/h)")
+    plt.xlabel("x (100 Mpc/h)")
+    plt.ylabel("y (100 Mpc/h)")
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "dens-plt-"+munge_scale(sim)+"t"+str(dataset)+".pdf"))
     plt.clf()
@@ -507,7 +507,7 @@ def plot_fermi_dirac(Mnu, zz):
         ff[i] = fd / (1.5 * 1.20206)
     plt.plot(xx, ff, "-", label="Cumulative F-D distribution", color="blue")
     plt.plot(xx, fdk(xx/nu_v), "--", label="F-D distribution", color="black")
-    plt.fill_between(xx, 0, ff, where=xx < 750, facecolor='grey', interpolate=True, alpha=0.5)
+    plt.fill_between(xx, 0, ff, where=xx < 850, facecolor='grey', interpolate=True, alpha=0.5)
     plt.text(400, 0.02, "Slow")
     plt.text(2000, 0.5, "Fast")
     plt.ylim(0,1)
