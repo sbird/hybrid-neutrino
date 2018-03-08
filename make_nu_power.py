@@ -13,6 +13,30 @@ def sptostr(sp):
         return "DM"
     return ""
 
+def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = None):
+    """Compute the compensated power spectrum from a catalogue."""
+    sp = sptostr(species)
+    sp2 = sptostr(spec2)
+    outfile = path.join(output,"../power-fast-"+sp+sp2+"-%.4f.txt" % catnu.attrs["Time"][0])
+    if path.isfile(outfile):
+        return
+    catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
+    catics = BigFileCatalog(ICS, dataset=str(species)+'/', header='Header')
+    icids = np.argsort(catics["ID"])
+    fast = (((catics['Velocity'][icds]**2).sum())**0.5 < vthresh)
+    ids = np.argsort(catnu["ID"])
+    ((catnu[ids])[fast]).to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
+    if spec2 is not None:
+        catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
+        catcdm.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
+        pkcross = FFTPower(catnu, mode='1d', Nmesh=1024,second = catcdm)
+        power = pkcross.power
+    else:
+        pknu = FFTPower(catnu, mode='1d', Nmesh=1024)
+        power = pknu.power
+    numpy.savetxt(outfile,numpy.array([power['k'], power['power'].real,power['modes']]).T)
+    return power
+
 def compute_power(output, Nmesh=1024, species=2, spec2 = None):
     """Compute the compensated power spectrum from a catalogue."""
     catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
