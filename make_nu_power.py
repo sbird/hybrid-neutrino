@@ -69,7 +69,7 @@ def all_fast_compute(directory):
     ics = glob.glob(path.join(directory, "ICS/*"))
     for ss in snaps:
         compute_fast_power(ss,ics)
-        compute_fast_power(ss,ics, species=1,spec2=2)
+        compute_fast_power(ss,ics, spec2=1)
 
 if __name__ == "__main__":
     all_fast_compute(sys.argv[1])
