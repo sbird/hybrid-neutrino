@@ -17,22 +17,20 @@ def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = 
     """Compute the compensated power spectrum from a catalogue."""
     sp = sptostr(species)
     sp2 = sptostr(spec2)
+    catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
     outfile = path.join(output,"../power-fast-"+sp+sp2+"-%.4f.txt" % catnu.attrs["Time"][0])
     if path.isfile(outfile):
         return
-    catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
     catics = BigFileCatalog(ICS, dataset=str(species)+'/', header='Header')
-    icids = np.argsort(catics["ID"])
-    fast = (((catics['Velocity'][icds]**2).sum())**0.5 < vthresh)
-    ids = np.argsort(catnu["ID"])
-    ((catnu[ids])[fast]).to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
+    fast = numpy.sum(catics['Velocity']**2, axis=1) > vthresh**2/catics.attrs["Time"]**3
+    fastids = catics["ID"][fast]
+    select = numpy.isin(catnu["ID"], fastids)
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
-        catcdm.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
-        pkcross = FFTPower(catnu, mode='1d', Nmesh=1024,second = catcdm)
+        pkcross = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh,second = catcdm)
         power = pkcross.power
     else:
-        pknu = FFTPower(catnu, mode='1d', Nmesh=1024)
+        pknu = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh)
         power = pknu.power
     numpy.savetxt(outfile,numpy.array([power['k'], power['power'].real,power['modes']]).T)
     return power
@@ -65,5 +63,13 @@ def all_compute(directory):
         compute_power(ss,species=1)
         compute_power(ss,species=1,spec2=2)
 
+def all_fast_compute(directory):
+    """Do computation for all snapshots in a directory"""
+    snaps = glob.glob(path.join(directory, "output/PART_*"))
+    ics = glob.glob(path.join(directory, "ICS/*"))
+    for ss in snaps:
+        compute_fast_power(ss,ics)
+        compute_fast_power(ss,ics, species=1,spec2=2)
+
 if __name__ == "__main__":
-    all_compute(sys.argv[1])
+    all_fast_compute(sys.argv[1])
