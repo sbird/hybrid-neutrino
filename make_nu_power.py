@@ -22,11 +22,17 @@ def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = 
     if path.isfile(outfile):
         return
     catics = BigFileCatalog(ICS, dataset=str(species)+'/', header='Header')
-    fast = numpy.sum(catics['Velocity']**2, axis=1) > vthresh**2/catics.attrs["Time"]**3
+    fast = (catics['Velocity']**2).sum(axis=1) > vthresh**2/catics.attrs["Time"]**3
     fastids = catics["ID"][fast]
-    select = catnu["ID"].map_blocks(numpy.isin, fastids, dtype=numpy.bool,chunks = catnu["ID"].chunks)
+    #Note: map_blocks runs elementwise over blocks.
+    #So we need to pre-compute fastids: if we do not we will
+    #end up checking whether elements in a block of catnu["ID"]
+    #are in the equivalent block in fastids.
+    select = catnu["ID"].map_blocks(numpy.isin, fastids.compute(), dtype=numpy.bool,chunks = catnu["ID"].chunks)
+    catnu[select].to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
+        catcdm.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
         pkcross = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh,second = catcdm)
         power = pkcross.power
     else:
