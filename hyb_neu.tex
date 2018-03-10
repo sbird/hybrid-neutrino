@@ -79,7 +79,6 @@ Our method builds on our earlier linear response approximation, and preserves it
 
 \section{Introduction}
 
-\spb{Implement numerical derivative of CAMB transfer in MP-GenIC.}
 \spb{Add cross-corr of fast neutrinos from particle sim with CDM.}
 %Neutrinos have mass. Neutrino mass is important because. Neutrinos affect structure. In order to measure the mass accurately with structure we need to know precisely how neutrinos affect structure.
 %The structure in question is non-linear structure. We thus need to run simulations. This paper is about a method to put neutrinos into structure simulations.
@@ -228,7 +227,7 @@ where the first piece corresponds to the propagation of initial perturbations fr
 %&=& - \frac{1}{k \Delta s} \int d^3 u  \frac{d f^0}{du} j_1(u k \Delta s) \nonumber\\
 = \int d^3 u ~ f^0(\bs{u})~\rme^{- i \bs{u} \cdot \bs{k} \Delta s}. \label{eq:I(k)}
 \earr
-%Note that the initial conditions piece is negligibly small in most situations.
+% Note that the initial conditions piece is much smaller than the propagation term for our massive neutrino simulations.
 %where in the last line we have integrated by parts.
 %If, moreover, $f^0(\bs{u}) = f^0(u)$ is isotropic, the latter expression simplifies to
 %\beq
@@ -435,9 +434,9 @@ We saw in Section \ref{sec:single-bin} that we expect the LRA to be accurate for
 \beq
 P(u < 100 ~\textrm{km/s}) \approx 6.7 \times 10^{-4} \left(\frac{m_{\nu}}{0.1~\textrm{eV}}\right)^3.
 \eeq
-Therefore, by treating \emph{all} neutrinos with the linear-response approximation at $z \geq 1$, we underestimate the clustering of at most $\sim 0.1\%$ of the neutrinos, given current upper bounds to their masses. Even assuming that these slow neutrinos cluster as strongly as the CDM (which is of course a large over-estimate), the maximum fractional error on the total matter power spectrum should not be larger than $\sim 0.1\% \times 10 f_{\nu}$, where $f_\nu \approx 2\% (M_\nu/0.3 \textrm{eV})$ is the fraction of matter in neutrinos, and the factor of 10 accounts for the cumulative effect from the time neutrinos become non-relativistic, see e.g.~\cite{Lesgourgues_2006}. We see that this error should be very small, so we deem it safe to use the method of AHB13 (the LRA applied to \emph{all} neutrinos) for $z \geq 1$, i.e.~to set $z_\nu = 1$. Of course, this may be not be enough if one requires a high-precision calculation of the clustering of neutrinos themselves, but this caveat also applies to particle-based methods, which would model the slow neutrinos with a very small number of particles, if resolving them at all (for instance, the method of \cite{Banerjee_2018} does not resolve neutrino velocities below several hundred km/s in their default setup, even for neutrino masses as low as $M_\nu = 0.15$ eV).
-
-\spb{Softened this sentence a bit: if these $0.1\%$ of neutrinos cluster $100$ times more than the others, they can still have a $10\%$ effect on the neutrino power spectrum, so it is not a priori clear that the error is small.} \yah{Re-``hardenened" the sentence but made it more quantitative; let me know if the argument is convincing.}
+Therefore, by treating \emph{all} neutrinos with the linear-response approximation at $z \geq 1$, we underestimate the clustering of at most $\sim 0.1\%$ of the neutrinos, given current upper bounds to their masses.
+% Even assuming that these slow neutrinos cluster as strongly as the CDM (which is of course a large over-estimate), the maximum fractional error on the total matter power spectrum should not be larger than $\sim 0.1\% \times 10 f_{\nu}$, where $f_\nu \approx 2\% (M_\nu/0.3 \textrm{eV})$ is the fraction of matter in neutrinos, and the factor of 10 accounts for the cumulative effect from the time neutrinos become non-relativistic, see e.g.~\cite{Lesgourgues_2006}.
+We see that this error should be very small, so we deem it safe to use the method of AHB13 (the LRA applied to \emph{all} neutrinos) for $z \geq 1$, i.e.~to set $z_\nu = 1$.\footnote{Note that the particle based method of \cite{Banerjee_2018} does not resolve neutrino velocities below several hundred km/s at all in their default setup, even for neutrino masses as low as $M_\nu = 0.15$ eV).}
 
 We also saw in Section \ref{sec:validity} that the LRA is accurate at $z = 0$ for $u_0 \gtrsim 800$ km/s. To be conservative, we use a default neutrino critical velocity of $850$ km/s for $0 \leq z \leq z_\nu$. For reference, the fraction of slow neutrinos is $P(u < 850 ~\textrm{km/s}) \approx [0.04, 0.20, 0.42]$, respectively, for  $m_{\nu} = [0.05, 0.1, 0.15]$ eV.
 
@@ -625,11 +624,10 @@ We performed a number of simulations designed to test the sensitivity of our hyb
 \label{sec:results}
 
 \begin{figure*}
-%\includegraphics[trim={1.cm 0 1.5cm 0},clip,width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t1.pdf}
-%\includegraphics[trim={1cm 0 1.5cm 0},clip, width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t2.pdf}
-%\includegraphics[trim={1.5cm 0 0.5cm 0},clip, width=0.322\textwidth]{nuplots/dens-plt-b300p512nu0_4p1024t2.pdf}
-\includegraphics[width = \textwidth]{nuplots/slices.pdf}
-  \caption{\yah{Suggestion for the plot, to maximize information content -- labels take up a lot of space for no good reason.}Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<850$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the over-density projected throughout the box.
+\includegraphics[trim={1.5cm 0 3.3cm 0},clip,width=0.29\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t1.pdf}
+\includegraphics[trim={1.5cm 0 3.3cm 0},clip, width=0.29\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t2.pdf}
+\includegraphics[trim={1.5cm 0 0.5cm 0},clip, width=0.36\textwidth]{nuplots/dens-plt-b300p512nu0_4p1024t2.pdf}
+\caption{Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<850$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the over-density projected throughout the box.
   The clustering of the hybrid particles is intermediate between that of the cold dark matter and the particle neutrinos. Colour scale has been truncated for the CDM for clarity. Structures have the same positions in all three panels.
   }
   \label{fig:density_plot}
@@ -782,11 +780,8 @@ Note that the critical velocity used in MP-Gadget should match that set in the i
 \hline
 KspaceTransferFunction   & CMB transfer functions, used to compute the neutrino the neutrino integration. \\
 TimeTransfer             & Scale factor of the CMB transfer functions. \\
-InputSpectrumUnitLengthincm   & Units of the CAMB transfer function in cm. \yah{In cm?!?} \\
-&\spb{Yes, I know. No, I can't practically change it.}\\
+InputSpectrumUnitLengthincm   & Units of the CAMB transfer function in cm. \\
 MNue, MNum, MNut &  Three neutrino masses. The measured mass splittings are not enforced. \\
-&\yah{Why label them by the flavors since we know these are \emph{not} the mass eigenstates?} \\
-&\spb{That's a fair point, but it would be a big pain to change them now!}\\
 Vcrit            & Critical velocity below which the neutrinos are particles, if hybrid neutrinos are on. \\
 NuPartTime       & Scale factor at which the particle neutrinos start to gravitate, if hybrid neutrinos are on. \\
 HybridNeutrinosOn       & Switch to enable hybrid neutrinos. \\
