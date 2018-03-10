@@ -6,7 +6,7 @@
 %\documentclass[useAMS, usenatbib, usegraphicx, twocolumn]{mnras}
 
 %[YAH commented out, my editor didn't like it...]
-\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}]{hyperref}
+\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}, draft]{hyperref}
 
 % \newcommand{\eprint}[1]{\href{http://arxiv.org/abs/#1}{#1}}
 % \newcommand{\adsurl}[1]{\href{#1}{ADS}}
@@ -34,7 +34,7 @@
 \newcommand{\bfA}{\boldsymbol{A}}
 \newcommand{\bfr}{\boldsymbol{r}}
 \newcommand{\bfV}{\boldsymbol{V}}
-\newcommand{\bs}{\mathbf}
+\newcommand{\bs}{\boldsymbol}
 \newcommand{\mH}{\mathcal{H}}
 
 \newcommand{\natu}{Nature (London)}
@@ -162,7 +162,7 @@ This article is organized as follows. In Section \ref{sec:lin_resp}, we review t
 %the Fourier transform of the unperturbed neutrino distribution function in momentum space, normalized so
 %that $\mathcal{I}(0) = 1$ \citep{Brandenberger_1987, Bertschinger_Watts_1988},
 %\begin{equation}
-%\mathcal{I}[X; f_0] \equiv \frac{\int dq~ j_0(q X) q^2 f_0(q) }{\int dq ~q^2 f_0(q)}. \label{eq:I.def}
+%\mathcal{I}[X; f^0] \equiv \frac{\int dq~ j_0(q X) q^2 f^0(q) }{\int dq ~q^2 f^0(q)}. \label{eq:I.def}
 %\end{equation}
 %
 %The first term of Eq.~\ref{eq:P-final} represents a contribution from the initial conditions. In practice
@@ -208,14 +208,14 @@ For a non-relativistic particle, the geodesic equation is $\dot{\bs{u}} = - a^2 
 \dot{f} + \bs{u} \cdot \bs{\nabla}_{\bs{x}} f - a^2 \bs{\nabla}_{\bs{x}} \phi \cdot \bs{\nabla}_{\bs{u}} f = 0. \label{eq:Vlasov}
 \eeq
 %The particle or $N$-body method solves the Vlasov equation numerically by effectively discretizing $f$.
-The linear-response method consists in solving for $f$ to linear order in the gravitational potential. Specifically, it is the first order in an expansion in the small parameter $\epsilon \sim a^2 \phi/u^2$. We denote by $f_0(\bs{u})$ the unperturbed, homogenous (but not necessarily isotropic) phase-space density, which integrates to unity. Linearizing Eq.~\eqref{eq:Vlasov} and taking its Fourier transform, we get, denoting by $\bs{k}$ the comoving wavenumber,
+The linear-response method consists in solving for $f$ to linear order in the gravitational potential. Specifically, it is the first order in an expansion in the small parameter $\epsilon \sim a^2 \phi/u^2$. We denote by $f^0(\bs{u})$ the unperturbed, homogenous (but not necessarily isotropic) phase-space density, which integrates to unity. Linearizing Eq.~\eqref{eq:Vlasov} and taking its Fourier transform, we get, denoting by $\bs{k}$ the comoving wavenumber,
 \beq
-\dot{f} + i (\bs{k} \cdot \bs{u}) f = i a^2 \phi ~ \bs{k} \cdot \nabla_{\bs{u}} f_0. \label{eq:Boltz-Fourier}
+\dot{f} + i (\bs{k} \cdot \bs{u}) f = i a^2 \phi ~ \bs{k} \cdot \bs{\nabla}_{\bs{u}} f^0. \label{eq:Boltz-Fourier}
 \eeq
 Given initial conditions at $s_i$, this has an explicit integral solution,
 \barr
 f(s, \bs{k}, \bs{u}) &=& \rme^{- i(\bs{k} \cdot \bs{u}) (s - s_i)} f(s_i, \bs{k}, \bs{u}) \nonumber\\
-&+& i \bs{k} \cdot \nabla_{\bs{u}} f_0 \int_{s_i}^s d s' \rme^{- i \bs{k} \cdot \bs{u} (s - s')} a'^2 \phi(s', \bs{k}).~~~
+&+& i \bs{k} \cdot \bs{\nabla}_{\bs{u}} f^0 \int_{s_i}^s d s' \rme^{- i \bs{k} \cdot \bs{u} (s - s')} a'^2 \phi(s', \bs{k}).~~~
 \earr
 The overdensity is then obtained by integrating over velocities. Using Poisson's equation, $k^2 \phi = - \frac32 H_0^2 \Omega_M a^{-1} \delta_M$, where $\delta_M$ is the total matter overdensity, we arrive at
 \barr
@@ -224,31 +224,31 @@ The overdensity is then obtained by integrating over velocities. Using Poisson's
 \earr
 where the first piece corresponds to the propagation of initial perturbations from $s_i$ to $s$, and the kernel $\mathcal{I}$ is the Fourier transform of the unperturbed phase-space density \citep{Brandenberger_1987, Bertschinger_Watts_1988}:
 \barr
-\mathcal{I}(\bs{k}\Delta s ) % &\equiv& - \frac{i}{k^2 \Delta s} \int d^3 u  ~\bs{k} \cdot \nabla_{\bs{u}} f_0 ~\rme^{- i \bs{u} \cdot \bs{k} \Delta s} \nonumber\\
-%&=& - \frac{1}{k \Delta s} \int d^3 u  \frac{d f_0}{du} j_1(u k \Delta s) \nonumber\\
-= \int d^3 u ~ f_0(\bs{u})~\rme^{- i \bs{u} \cdot \bs{k} \Delta s}. \label{eq:I(k)}
+\mathcal{I}(\bs{k}\Delta s ) % &\equiv& - \frac{i}{k^2 \Delta s} \int d^3 u  ~\bs{k} \cdot \nabla_{\bs{u}} f^0 ~\rme^{- i \bs{u} \cdot \bs{k} \Delta s} \nonumber\\
+%&=& - \frac{1}{k \Delta s} \int d^3 u  \frac{d f^0}{du} j_1(u k \Delta s) \nonumber\\
+= \int d^3 u ~ f^0(\bs{u})~\rme^{- i \bs{u} \cdot \bs{k} \Delta s}. \label{eq:I(k)}
 \earr
-Note that the initial conditions piece is negligibly small in most situations.
+%Note that the initial conditions piece is negligibly small in most situations.
 %where in the last line we have integrated by parts.
-If, moreover, $f_0(\bs{u}) = f_0(u)$ is isotropic, the latter expression simplifies to
-\beq
-\mathcal{I}(k\Delta s ) = \int 4 \pi u^2 d u ~ f_0(u)~ j_0(u k \Delta s), \label{eq:I(k)-iso}
-\eeq
-where $j_0$ is the zeroth-order spherical Bessel function.
+%If, moreover, $f^0(\bs{u}) = f^0(u)$ is isotropic, the latter expression simplifies to
+%\beq
+%\mathcal{I}(k\Delta s ) = \int 4 \pi u^2 d u ~ f^0(u)~ j_0(u k \Delta s), \label{eq:I(k)-iso}
+%\eeq
 
-\subsection{Practical simplification}
 
-Since we cannot afford to store the full three-dimensional matter density field as a function of time, we must simplify Eq.~\eqref{eq:delta-phi} further for practical applications. Following AHB13, we approximate
-\begin{equation}
- \delta_M(s', \bs{k}) \approx \sqrt{P_M(s', k)/P_M(s, k)}~ \delta_M(s, \bs{k})\,,
- \label{eq:phases}
-\end{equation}
-in the integral. In practice, we store the one-dimensional matter power spectrum at even intervals $\Delta a = 0.01$, and then interpolate it when required\footnote{The code actually provides the CDM power spectrum. We estimate the matter power spectrum by adding the neutrino power from the previous timestep. It would be possible to iterate this procedure, but in practice it is always immediately converged to a high degree of accuracy, see Appendix B of AHB13.}. \spb{I have become concerned about this argument, because I think that section 2.3 shows exactly that this approximation is NOT good in some regimes! We should talk in Pittsburgh.}
-
+%\subsection{Practical simplification}
+%
+%Since we cannot afford to store the full three-dimensional matter density field as a function of time, we must simplify Eq.~\eqref{eq:delta-phi} further for practical applications. Following AHB13, we approximate
+%\begin{equation}
+% \delta_M(s', \bs{k}) \approx \sqrt{P_M(s', k)/P_M(s, k)}~ \delta_M(s, \bs{k})\,,
+% \label{eq:phases}
+%\end{equation}
+%in the integral. In practice, we store the one-dimensional matter power spectrum at even intervals $\Delta a = 0.01$, and then interpolate it when required\footnote{The code actually provides the CDM power spectrum. We estimate the matter power spectrum by adding the neutrino power from the previous timestep. It would be possible to iterate this procedure, but in practice it is always immediately converged to a high degree of accuracy, see Appendix B of AHB13.}. \spb{I have become concerned about this argument, because I think that section 2.3 shows exactly that this approximation is NOT good in some regimes! We should talk in Pittsburgh.}
+%
 % \spb{I don't like this segment, because it makes the same conclusion as in section 2.3.2, but much less convincingly. Also we made a similar argument in AHB13, so it is duplicative.}
-% We denote by $u_0$ the characteristic velocity of $f_0$, defined as
+% We denote by $u_0$ the characteristic velocity of $f^0$, defined as
 % \beq
-% u_0 \equiv \left(\int 4 \pi du~ f_0(u)\right)^{-1/2},
+% u_0 \equiv \left(\int 4 \pi du~ f^0(u)\right)^{-1/2},
 % \eeq
 % and the free-streaming scale
 % \barr
@@ -261,8 +261,8 @@ in the integral. In practice, we store the one-dimensional matter power spectrum
 % \eeq
 % regardless of the detailed evolution of $\delta_M$.
 % Therefore, provided the non-linear scale is smaller than the free-streaming scale, we may safely use Eq.~\eqref{eq:phases} on all scales: it is accurate on linear scales, and does not affect the asymptotic value \eqref{eq:delta-small} of the perturbation on scales smaller than the free-streaming scale.
-
-% The non-linear scale $k_{\rm nl}$ is defined such as the variance of the matter perturbation per logarithmic $k$-interval, $\Delta_M^2(k)$, is greater than unity for $k > k_{\rm nl}$. It is approximately given by \yah{I am roughly fitting Figure 1 of AHB130, please check that this figure is actually correct!}
+%
+%% The non-linear scale $k_{\rm nl}$ is defined such as the variance of the matter perturbation per logarithmic $k$-interval, $\Delta_M^2(k)$, is greater than unity for $k > k_{\rm nl}$. It is approximately given by \yah{I am roughly fitting Figure 1 of AHB130, please check that this figure is actually correct!}
 % \beq
 % k_{\rm nl}(z) \approx 0.2~50^{z/4}~ h ~ \textrm{Mpc}^{-1}.
 % \eeq
@@ -272,107 +272,147 @@ in the integral. In practice, we store the one-dimensional matter power spectrum
 %
 %The first piece in Eq.~\eqref{eq:delta-phi} corresponds to the free propagation of initial perturbations between times $s_i$ and $s$. The second piece corresponds to the sourcing of perturbations by gravitational potentials. For early enough initial conditions, the former is negligible relative to the latter. \yah{To quantify better.}
 %%, and we shall drop it in what follows. We do not actually drop it
-This approximation is certainly accurate on linear scales, where modes are decoupled. AHB13 argued further that it does not affect the asymptotic small-scale behaviour, where early-time contributions to Eq.~\eqref{eq:delta-phi} are suppressed. Thus all that is needed is the present-day phase information and, as a consequence, this approximation ought to be reasonably accurate on all scales.
-We can further check it's consistency using a particle neutrino simulation. Eq.~\eqref{eq:phases} implies that the cross-correlation between neutrinos and CDM is unity. Figure \ref{fig:cross-corr} shows the cross-correlation coefficient between neutrino particles and CDM in a particle simulation and in our new hybrid method, demonstrating that it is indeed close to unity as long as the neutrino power spectrum is not dominated by particle shot noise. \yah{I am not sure this plot is the best way to validate this approximation (but perhaps it can serve another purpose). First, Eq.~\eqref{eq:phases} \emph{implies}, but is \emph{not equivalent} to a unit cross-correlation coefficient. Therefore, showing that this coefficient is unity is a consistency check at best, but does not fully validate the approximation. Second, the approximation only applies to LRA neutrinos, \emph{not} to the slow neutrinos, so showing their correlation coefficient (green line) is not relevant for this specific point (unless you wanted to make another point?). Since the red curve contains the slow neutrinos as well, which we do not expect to have a unit correlation, it is not unexpected that it falls below unity (and it is hard to quantify by how much we expect it to do so). What would have been a good check is to show the cross-correlation of fast neutrinos only (from the particle sims), but this is probably not easily extracted. All in all, I think that the agreement with Banerjee et al. is sufficient to validate both layers of approximation, linear response \emph{and} phase approximation.}
-\spb{I agree that this plot is mostly a consistency check, but I think it is a valuable one that many people will ask for. I might be able to extract just the initially fast neutrinos from the particle simulation using the IDs and initial velocities, as well, so I'll try that. Showing the full particle distribution is still relevant for the LRA only simulations though.}
 
-
-\begin{figure}
-\includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
-  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods.
-  The vertical grey line shows the scale where shot noise, which has been subtracted, begins to dominate.
-  For the hybrid simulation, only the correlation between the cold dark matter and slow neutrino particles is shown.
-  The cross-correlation is close to $> 0.8$ when shot noise is small, justifying the approximation that neutrinos and CDM are completely correlated.
-  }
-  \label{fig:cross-corr}
-\end{figure}
 
 \subsection{Regime of validity} \label{sec:validity}
 
-In AHB13, the linear-response approximation was used for the \emph{entire} phase-space of neutrinos. Yet, this approximation should eventually break down below some critical velocity $u_{\rm crit}$, as the behaviour of neutrinos approaches that of the CDM. In this section we estimate $u_{\rm crit}$. Whenever required, we use the non-linear matter power spectrum estimated by \textsc{class} \citep{Lesgourgues_11, Blas_11} with the \textsc{halofit} approximation \citep{Smith_2003}.
+In AHB13, the linear-response approximation was used for the \emph{entire} phase-space of neutrinos. Yet, this approximation should eventually break down below some critical velocity $v_{\rm crit}$, as the behaviour of neutrinos approaches that of the CDM. In this section we estimate $v_{\rm crit}$. Whenever required, we use the non-linear matter power spectrum estimated by \textsc{class} \citep{Lesgourgues_11, Blas_11} with the \textsc{halofit} approximation \citep{Smith_2003}.
+
+
+\subsubsection{Single velocity bin} \label{sec:single-bin}
+
+
+Let us consider a non-isotropic unperturbed phase-space distribution centered at a velocity bin $\bs{u}_0$:
+\beq
+f^0_{\bs{u}_0}(\bs{u}) \equiv \delta_{\rm D}(\bs{u}- \bs{u}_0).
+\eeq
+%\spb{I think that the difference between this and eq. 9 is not important: all it is is changing the order of integration between s' and u, which should not make a difference for uniformly continuous functions like these (unless there is a subtlety of the Bessel function at $x=0$ I am missing). I also don't see a physical reason why dropping isotropy should make this difference. So I think the important thing is actually \eqref{eq:phases}.}
+Note that this is equivalent to the multi-fluid approach of \cite{Dupuy_14}. Inserting this distribution into Eqs.~\eqref{eq:delta-phi}--\eqref{eq:I(k)} and neglecting the initial condition piece, we obtain the overdensity
+\barr
+\delta_{\bs{u}_0}(s, \bs{k}) = \frac32 H_0^2 \Omega_M \int_{s_i}^s ds' (s - s') a' \rme^{- i \bs{u}_0 \cdot \bs{k} (s - s')} \delta_{\rm M}(s', \bs{k}).
+\earr
+The dimensionless power spectrum\footnote{The dimensionless power spectrum $\Delta^2(k)$ is related to the usual power spectrum $P(k)$ through $\Delta^2(k) = k^3 P(k)/(2 \pi^2)$.} of $\delta_{\bs{u}_0}$ is then anisotropic, and given by
+\barr
+\Delta^2_{\bs{u}_0}(s, \bs{k}) =\left(\frac32 H_0^2 \Omega_M\right)^2 \iint_{s_i}^s ds' ds'' (s - s') a' (s - s'') a'' \nonumber\\
+\rme^{i \bs{u}_0 \cdot \bs{k} (s'' - s')} \Delta^2_M(s', s'', k), \label{eq:P_u0}
+\earr
+where $\Delta^2_M(s', s'', k)$ is the unequal-time dimensionless matter power spectrum, defined as
+\barr
+\langle \delta_M^*(s',\bs{k}')\delta_M(s'',\bs{k})\rangle \equiv \frac{(2 \pi)^6}{4 \pi k^3} \Delta^2_M(s', s'', k) \delta_{\rm D}(\bs{k}' - \bs{k}).
+\earr
+We can equivalently rewrite it in terms of the unequal-time correlation coefficient $c_M$, defined as
+\beq
+\Delta^2_M(s', s'', k) \equiv c_M(s', s'', k) \Delta_M(s', k) \Delta_M(s'', k),
+\eeq
+and such that $|c_M(s, s', k)| \leq 1$, and $c_M(s, s, k) = 1$. The variance per $k$-interval is obtained by averaging $\Delta^2_{\bs{u}_0}(\bs{k})$ over the orientations of $\bs{k}$, which is equivalent to averaging over the orientations of $\bs{u}_0$:
+%We are interested in the real-space variance, obtained by integrating over wavenumbers. In particular,
+\barr
+&&\langle \Delta^2_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}} = \langle \Delta^2_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{u}_0} = \left(\frac32 H_0^2 \Omega_M\right)^2  \nonumber\\
+&&\times \iint_{s_i}^s ds' ds'' (s - s') a' (s - s'') a'' c_M(s', s'', k) \nonumber\\
+&&~~~~~~~~~ j_0[u_0 k (s'' - s')]~  \Delta_M (s', k) \Delta_M(s'', k), \label{eq:P_u0-av}
+\earr
+where $j_0$ is the zeroth-order spherical Bessel function.
+%Note that it is straightforward to show that this is always greater than the power spectrum per velocity shell, $P_{u_0}(k)$, which we computed in the previous section.
+\yah{If we could prove that this integral is bounded by the $c_M = 1$ limit it would save us all the discussion below... Couldn't figure it out.}
+
+There is no simple approximation for the unequal-time correlation coefficient, which makes this integral difficult to evaluate in full generality. To simplify it, let us first note that on linear scales, $c_M \approx 1$. Secondly, on scales smaller than the free-streaming scale, i.e. $k u_0 (ds/d\ln a) \gg 1$, the spherical Bessel function oscillates on a timescale much shorter than the rest of the integrand, and may be approximated as $j_0[u_0 k (s'' - s')] \approx \frac{\pi}{u_0 k} \delta_{\rm D}(s'' - s')$. This selects mostly the equal-time correlation coefficient, equal to unity whether the matter field is linear or not. It also implies that the power per $k$ interval is proportional to $u_0^{-1}$ in this regime.
+%\barr
+%\langle P_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}} (k \gg k_{\rm fs})&\approx& \frac{\pi}{2 u_0 k} \left(\frac32 H_0^2 \Omega_M \right)^2 \nonumber\\
+%&\times&\left[\int_{s_i}^s ds' (s - s') a' \sqrt{P_M(s', k)} \right]^2.~~~
+%\earr
+Explicitly, the non-linear scale is approximately
+ \beq
+ k_{\rm nl}(z) \approx 0.2~50^{z/4}~ h ~ \textrm{Mpc}^{-1},
+ \eeq
+while the free-streaming scale is
+\beq
+k_{\rm fs} \equiv \frac{a^2 H}{u_0} \approx 0.2 ~a^ {-1/2}\frac{300~ \textrm{km/s}}{u_0} ~ h ~ \textrm{Mpc}^{-1},
+\eeq
+where the last approximation holds during matter domination, $z \gtrsim 0.3$. We see that the free-streaming scale is larger than the non-linear scale for $u_0$ greater than a few hundred km/s, at $z = 0$ and for $u_0 \gtrsim 100$ km/s at $z = 1$. Provided $u_0$ is large enough one can therefore approximate $c_M = 1$ to compute Eq.~\eqref{eq:P_u0-av} on all scales.
+
+We show $\langle \Delta^2_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}}$ in Fig.~\ref{fig:halofitvshell}, at $z = 0$ and 1. We see that at $z = 1$, it is less than unity on all scales for $u_0 \gtrsim 100$ km/s. On the other hand, at redshift 0, only neutrinos faster than $\sim 800$ km/s are statistically unclustered. These unperturbed velocities therefore provide thresholds above which we expect the LRA to be accurate.
+
+\yah{note that I changed the velocities plotted, so it is valid to use the $c_M = 1$ approximation for all}.
+
+
+\begin{figure*}
+\includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z1.pdf}
+\includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z0.pdf}
+\caption{Angle-averaged power per logarithmic $k$-interval, in the linear-response approximation, for an unperturbed phase-space density $f^0(\bs{u}) = \delta_{\rm D}(\bs{u}- \bs{u}_0)$. The curves are labeled by the unperturbed velocity $u_0$. At redshift 1 (left panel), we see that particles with unperturbed velocities as low as $\sim 100$ km/s do not strongly cluster on all scales. At redshift 0 (right panel), particles with unperturbed velocities $u_0 \gtrsim 800$ km/s do not strongly cluster on all scales.}
+\label{fig:halofitvshell}
+\end{figure*}
+
 
 \subsubsection{Single velocity shell}
 
-\spb{I think the main difference between this and 2.3 is the use of approximation \eqref{eq:phases}. But I did not realise this initially and may still be confused. I would like to unify the two sections as I do not like making the reader understand intermediate incorrect results, but we should discuss this in Pittsburgh.}
+%\spb{I think the main difference between this and 2.3 is the use of approximation \eqref{eq:phases}. But I did not realise this initially and may still be confused. I would like to unify the two sections as I do not like making the reader understand intermediate incorrect results, but we should discuss this in Pittsburgh.}
 
-We first consider an isotropic unperturbed distribution that is peaked at a narrow velocity shell, i.e.~
+To confirm our estimates from the single velocity bin case, we now consider a single velocity \emph{shell}, so that we can compare our results to existing numerical results. We therefore consider the following isotropic unperturbed distribution, which is the average of the single-bin distribution over the direction of $\bs{u}_0$:
 \beq
-f_0(u) = \frac1{4 \pi u_0^2} \delta_{\rm D}(u- u_0).
+f^0_{u_0}(u) \equiv \langle f_{\bs{u}_0}^0 (\bs{u}) \rangle_{\hat{u}_0} = \frac1{4 \pi u_0^2} \delta_{\rm D}(u- u_0).
 \eeq
-Inserting this distribution into Eqs.~\eqref{eq:delta-phi}--\eqref{eq:I(k)} with the approximation \eqref{eq:phases}, and neglecting the initial condition piece we obtain the overdensity
+In the LRA, the resulting overdensity is (neglecting the initial condition piece)
 \barr
-\delta_{u_0}(s, \bs{k}) &\approx& \int_{s_i}^s ds' a' \sin[k u_0 (s - s')]
-\left(\frac{P_M(s', k)}{P_M(s, k)}\right)^{1/2} \nonumber\\
-&&\times \frac32 \frac{H_0^2 \Omega_M}{k u_0} \delta_M(s, \bs{k}),
+&&\delta_{u_0}(\bs{k}) = \langle \delta_{\bs{u}_0}(\bs{k}) \rangle_{\hat{u}_0} \nonumber\\
+&&= \frac32 H_0^2 \Omega_M \int_{s_i}^s ds' (s - s') a' j_0[u_0 k (s - s')] \delta_{\rm M}(s', \bs{k}).~~~~~ \label{eq:delta-shell}
 \earr
-implying a power spectrum
+We denote the corresponding dimensionless power spectrum by $\Delta^2_{u_0}(k)$. Let us first point out that the inequality $|\delta_{\bs{u}_0} - \langle \delta_{\bs{u}_0}(\bs{k}) \rangle_{\hat{u}_0}|^2 \geq 0$ implies $\Delta^2_{u_0} \leq \langle \Delta^2_{\bs{u}_0} \rangle_{\hat{u}_0}$. Hence, imposing that $\langle \Delta^2_{\bs{u}_0} \rangle_{\hat{u}_0} \leq 1$ is a more stringent and relevant requirement than imposing $\Delta^2_{u_0} \leq 1$; in fact, we will see that the latter inequality can be amply satisfied even in regimes where the LRA fails.
+
+Before computing the power spectrum, it is useful to simplify Eq.~\eqref{eq:delta-shell} further. In the linear regime, the matter overdensity is proportional to the direction-independent (but $k$-dependent) growth rate, so that
+\beq
+\delta_M(s', \bs{k}) \approx \left(\frac{P_M(s', k)}{P_M(s, k)}\right)^{1/2} \delta_M(s, \bs{k}). \label{eq:phases}
+\eeq
+On scales smaller than the free-streaming scale, the rapidly oscillating spherical Bessel function selects mostly times $s' \approx s$ in the integral of Eq.~\eqref{eq:delta-shell}. Hence, once again, provided $k_{\rm fs} \lesssim k_{\rm nl}$, the approximation Eq.~\eqref{eq:phases} leads to an accurate $\delta_{u_0}$ on all scales. While we made a similar argument to compute $\langle \Delta^2_{\bs{u}_0} \rangle_{\hat{u}_0}$ earlier, we stress that here, the argument applies to the overdensity field itself, rather than its power spectrum.
+
+Inserting the approximation \eqref{eq:phases} into Eq.~\eqref{eq:delta-shell}, we find the power spectrum
 \barr
-P_{u_0}(s, k)&\approx& \left(\frac32 \frac{H_0^2 \Omega_M}{k u_0}\right)^2\nonumber\\
-&\times& \left[\int_{s_i}^s ds' a' \sin[k u_0 (s - s')] \sqrt{P_M(s', k)} \right]^2. ~~~~~
+\Delta^2_{u_0}(s, k)&\approx& \left(\frac32 \frac{H_0^2 \Omega_M}{k u_0}\right)^2\nonumber\\
+&\times& \left[\int_{s_i}^s ds' a' \sin[k u_0 (s - s')] \Delta_M(s', k) \right]^2. ~~~~~
 \earr
 We compare this approximation with the shot-noise-reduced $N$-body simulations of \cite{Banerjee_2018}, hereafter B18. In this work, massive neutrinos were simulated with the $N$-body method, but with optimized initial conditions in order to reduce shot noise: instead of assigning neutrinos with a random velocity direction at each grid point, $12 ~N_{\rm side}^2$ particles are assigned to each grid point, with an isotropic velocity distribution using the \textsc{healpix} algorithm \citep{Healpix}. Specifically, we compare to the simulation \texttt{LU\_SH10\_NS2} of B18, for which $48 \times 128^3$ neutrino particles were used per velocity shell, for 10 shells ranging from 495 km/s to 5773 km/s, corresponding to a total of approximately $1000^3$ neutrino particles.
 
-The comparison with B18 is shown in Fig.~\ref{fig:simvshell}. On large enough scales, we find that the power spectra computed with both methods agree very well (up to sample-variance deviations on scales comparable to the box size of B18). For unperturbed velocities $u_0 \gtrsim 800$ km/s, the results of B18 show clear evidence of residual shot noise, and start deviating from ours at increasingly large scales as the velocity is increased. Only for the smallest velocity bin considered in B18, $u_0 = 495$ km/s, do we find that our results under-estimate the non-linear clustering of neutrinos, by a factor no larger than 2, for scales $k \gtrsim 0.1~h$ Mpc$^{-1}$. \spb{My initial reading of this segment was that it implies that the comparison to Banerjee results is not convincing, because it uses this isotropic shell formalism, which we show to be inaccurate later. We should re-word this so that is less confusing!}
-This comparison indicates that the LRA, \emph{as well as} the additional approximation \eqref{eq:phases}, are accurate for $u_0 \gtrsim 800$ km/s at $z = 0$.
+The comparison with B18 is shown in Fig.~\ref{fig:simvshell}. On large enough scales, we find that the power spectra computed with both methods agree very well (up to sample-variance deviations on scales comparable to the box size of B18). For unperturbed velocities $u_0 \gtrsim 800$ km/s, the results of B18 show clear evidence of residual shot noise, and start deviating from ours at increasingly large scales as the velocity is increased. However, they agree very well with our results on all scales where shot noise is subdominant. Only for the smallest velocity shell considered in B18, $u_0 = 495$ km/s, do we find that our results under-estimate the non-linear clustering of neutrinos, by a factor no larger than 2, for scales $k \gtrsim 0.1~h$ Mpc$^{-1}$. This departure occurs despite the fact that $\Delta^2_{u_0}$ is at most $\sim 0.05$, which again emphasizes that the perturbation of a velocity shell is not a good indicator of the validity of the LRA.
+%\spb{My initial reading of this segment was that it implies that the comparison to Banerjee results is not convincing, because it uses this isotropic shell formalism, which we show to be inaccurate later. We should re-word this so that is less confusing!}
+The excellent agreement of our results with their numerical counterparts corroborates our previous finding that the LRA is accurate for $u_0 \gtrsim 800$ km/s at $z = 0$. Since the free-streaming scale corresponding to $u_0 \gtrsim 800$ km/s is well in the linear regime, we are justified a posteriori in using Eq.~\eqref{eq:phases}. We will check explicitly later on that neutrinos with $u_0 \gtrsim 800$ km/s are very well correlated with the matter field, as is implied by this approximation.
 
 
 \begin{figure}
   \includegraphics[width=0.45\textwidth]{nuplots/banerjee_lin_resp.pdf}
-  \caption{Power per logarithmic $k$-interval in different velocity shells at $z = 0$, in the linear-response approximation (LRA, solid), and from the simulations of \protect \cite{Banerjee_2018} (dashed). The agreement is excellent for $u_0 \gtrsim 800$ km/s, except for departures at small scale clearly due to residual shot noise in the particle simulations. Only for the lowest velocity shell shown does the LRA noticeably underestimate clustering.
+  \caption{Power per logarithmic $k$-interval in different velocity shells at $z = 0$, in the linear-response approximation (LRA, solid), and from the simulations of \protect \cite{Banerjee_2018} (dashed). The agreement is excellent for $u_0 \gtrsim 800$ km/s, except for departures at small scales clearly due to residual shot noise in the particle simulations. Only for the lowest velocity shell shown does the LRA noticeably underestimate clustering.
   %\spb{I would like to include both plots: this one shows us that the particles and analytics match up to 800 km/s. The other shows us that we would expect them to match, because we are in a regime where perturbation theory works.}
   }
   \label{fig:simvshell}
 \end{figure}
 
 
-\subsubsection{Single velocity bin} \label{sec:single-bin}
+\subsection{Application to fast massive neutrinos}
 
-We notice in Fig.~\ref{fig:simvshell} that even for the lowest velocity shell, for which the LRA underestimates the correct clustering, the power per logarithmic $k$-interval remains significantly below unity. The power per shell is therefore not a good indicator of non-linear clustering, and below we study the clustering of individual velocity \emph{bins}, i.e.~for a non-isotropic unperturbed phase-space distribution of the form
-\beq
-f_0(\bs{u}) = \delta_{\rm D}(\bs{u}- \bs{u}_0).
-\eeq
-\spb{I think that the difference between this and eq. 9 is not important: all it is is changing the order of integration between s' and u, which should not make a difference for uniformly continuous functions like these (unless there is a subtlety of the Bessel function at $x=0$ I am missing). I also don't see a physical reason why dropping isotropy should make this difference. So I think the important thing is actually \eqref{eq:phases}.}
-Note that this is equivalent to the multi-fluid approach of \cite{Dupuy_14}. Inserting this distribution into Eqs.~\eqref{eq:delta-phi}--\eqref{eq:I(k)} and neglecting the initial condition piece, we obtain the overdensity
+Having established the regime of validity of the LRA, we may now apply it to arbitrary phase-space densities, provided they are restircted to velocities $u \geq v_{\rm crit}$. In addition, since in the regime of validity of the LRA, the free-streaming scale is larger than the non-linear scale, we may also safely make the approximation \eqref{eq:phases} in the integral \eqref{eq:delta-phi}.
+
+Let us apply the LRA to a truncated Fermi-Dirac distribution, which describes the unperturbed velocity distribution of neutrinos faster than $v_{\rm crit}$:
+%Once the slow neutrinos are followed as particles, the LRA is applied only to ``fast'' neutrinos, that is, the portion of the neutrino phase space with unperturbed velocities higher than the cutoff velocity.
+%The unperturbed density of these particles is given by the truncated Fermi-Dirac distribution:
+\begin{equation}
+f^0(u) \propto \Theta(u - v_{\rm crit}) \left(\rme^{m_\nu u/ \left(k_\mathrm{B} T_\nu\right)} + 1 \right)^{-1},
+\end{equation}
+where $\Theta$ is the Heaviside function (or an infinitesimally smoothed version of it, so that $f^0$ is differentiable), $m_\nu$ is the mass of a single neutrino or antineutrino, $k_\mathrm{B}$ is the Boltzmann constant in eV/K and $T_\nu \approx 1.97$ K is the temperature of the cosmic neutrino background. The normalization is again such that $\int d^3 u f^0(u) = 1$. The kernel in Eq.~\eqref{eq:delta-phi} is therefore given by
 \barr
-\delta_{\bs{u}_0}(s, \bs{k}) = \frac32 H_0^2 \Omega_M \int_{s_i}^s ds' (s - s') a' \rme^{- i \bs{u}_0 \cdot \bs{k} (s - s')} \delta_{\rm M}(s', \bs{k}).
+\mathcal{I}(\kappa) = \frac{\int_{q_c}^{\infty} dq~ j_0\left(\kappa \frac{T_\nu}{m_\nu}q\right)~ q^2 /(\rme^q + 1) }{\int_{q_c}^{\infty} dq ~q^2/(\rme^q + 1)}, \ \ \ q_c \equiv \frac{m_\nu v_{\rm crit}}{T_\nu}.
 \earr
-The power spectrum of $\delta_{\bs{u}_0}$ is then
-\barr
-P_{\bs{u}_0}(s, \bs{k}) =\left(\frac32 H_0^2 \Omega_M\right)^2 \iint_{s_i}^s ds' ds'' (s - s') a' (s - s'') a'' \nonumber\\
-\rme^{i \bs{u}_0 \cdot \bs{k} (s'' - s')} P_M(s', s'', k), \label{eq:P_u0}
-\earr
-where the unequal-time power spectrum is
-\beq
-\langle \delta_M^*(s',\bs{k}')\delta_M(s'',\bs{k})\rangle \equiv (2 \pi)^3 P_M(s', s'', k) \delta_{\rm D}(\bs{k}' - \bs{k}).
-\eeq
-We are interested in the real-space variance, obtained by integrating over wavenumbers. In particular, the variance per $k$-interval is obtained by averaging $P_{\bs{u}_0}(\bs{k})$ over the orientations of $\bs{k}$:
-\barr
-\langle P_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}} = \left(\frac32 H_0^2 \Omega_M\right)^2 \iint_{s_i}^s ds' ds'' (s - s') a' (s - s'') a'' \nonumber\\
-j_0[u_0 k (s'' - s')]~ P_M(s', s'', k). \label{eq:P_u0-av}
-\earr
-Note that it is straightforward to show that this is always greater than the power spectrum per velocity shell, $P_{u_0}(k)$, which we computed in the previous section.
+We use the following asymptotic expansion for the integral:
+\begin{align}
+ \int^\infty_{q_\mathrm{c}} \frac{j_0(qX)}{e^q + 1} q^2 dq &= - \sum^{\infty}_{n=1} (-1)^n \frac{\rme^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X),\\
+ I_n(q_\mathrm{c},X) &= \left(n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2\right) \frac{\sin(q_\mathrm{c} X)}{X} \nonumber \\
+ &+ \left(2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2\right) \cos(q_\mathrm{c} X),
+\end{align}
+We have checked that this expansion is converged to within an absolute error of $< 10^{-4}$ for $n_\mathrm{max} = 20$. We show the kernel $\mathcal{I}$ for different values of $v_{\rm crit}$ in Fig.~\ref{fig:kernel}.
 
-On linear scales
-\beq
-P_M(s', s'', k) \approx \sqrt{P_M(s', k)P_M(s'', k)}. \label{eq:P-unequal}
-\eeq
-On scales smaller than the free-streaming scale, we may approximate $j_0[u_0 k (s'' - s')] \approx \frac{\pi}{2 u_0 k} \delta_{\rm D}(s'' - s')$, implying
-\barr
-\langle P_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}} (k \gg k_{\rm fs})&\approx& \frac{\pi}{2 u_0 k} \left(\frac32 H_0^2 \Omega_M \right)^2 \nonumber\\
-&\times&\left[\int_{s_i}^s ds' (s - s') a' \sqrt{P_M(s', k)} \right]^2.~~~
-\earr
-Therefore, provided the free-streaming scale is larger than the non-linear scale, we may use Eq.~\eqref{eq:P-unequal} in all cases to compute Eq.~\eqref{eq:P_u0-av}.
-
-We show in Fig.~\ref{fig:halofitvshell} the resulting power per logarithmic $k$-interval, $\Delta^2(k, u_0) = k^3/(2\pi^2)\langle P_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}} $, at $z = 0$ and 1. We see that at $z = 1$, $\Delta^2(k, u_0)$ is less than unity on all scales for $u_0 \gtrsim 100$ km/s. On the other hand, at redshift 0, only neutrinos faster than $\sim 800$ km/s are statistically unclustered. This explains the deviation of LRA from the numerical results of B18 found in the previous section for the lowest velocity shell.
-
-
-\begin{figure*}
-\includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z1.pdf}
-\includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z0.pdf}
-\caption{Angle-averaged power per logarithmic $k$-interval, in the linear-response approximation, for an unperturbed phase-space density $f_0(\bs{u}) = \delta_{\rm D}(\bs{u}- \bs{u}_0)$. The curves are labeled by the unperturbed velocity $u_0$. At redshift 1 (left panel), we see that particles with unperturbed velocities as low as $\sim 100$ km/s do not strongly cluster on all scales. At redshift 0 (right panel), particles with unperturbed velocities $u_0 \gtrsim 800$ km/s do not strongly cluster on all scales.}
-\label{fig:halofitvshell}
-\end{figure*}
-
+\begin{figure}
+\includegraphics[width=0.43\textwidth]{nuplots/kernel.pdf}
+%\includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z0.pdf}
+\caption{Kernel $\mathcal{I}(k \Delta s)$ defined in Eqs.~\eqref{eq:delta-phi}, \eqref{eq:I(k)} for a truncated Fermi-Dirac distribution restricted to $u \geq v_{\rm crit}$, for several values of $m_\nu v_{\rm crit}/T_\nu$. }
+\label{fig:kernel}
+\end{figure}
 
 
 \section{Hybrid method} \label{sec:hybrid}
@@ -395,9 +435,16 @@ We saw in Section \ref{sec:single-bin} that we expect the LRA to be accurate for
 \beq
 P(u < 100 ~\textrm{km/s}) \approx 6.7 \times 10^{-4} \left(\frac{m_{\nu}}{0.1~\textrm{eV}}\right)^3.
 \eeq
-Therefore, by treating \emph{all} neutrinos with the linear-response approximation at $z \geq 1$, we underestimate the clustering of at most $\sim 0.1\%$ of the neutrinos, given current upper bounds to their masses. The from inaccurately following this small fraction of neutrino density should also be small, so we deem it safe to use the method of AHB13 (the LRA applied to \emph{all} neutrinos) for $z \geq 1$, i.e.~to set $z_\nu = 1$. \spb{Softened this sentence a bit: if these $0.1\%$ of neutrinos cluster $100$ times more than the others, they can still have a $10\%$ effect on the neutrino power spectrum, so it is not a priori clear that the error is small.}
+Therefore, by treating \emph{all} neutrinos with the linear-response approximation at $z \geq 1$, we underestimate the clustering of at most $\sim 0.1\%$ of the neutrinos, given current upper bounds to their masses. Even assuming that these slow neutrinos cluster as strongly as the CDM (which is of course a large over-estimate), the maximum fractional error on the total matter power spectrum should not be larger than $\sim 0.1\% \times 10 f_{\nu}$, where $f_\nu \approx 2\% (M_\nu/0.3 \textrm{eV})$ is the fraction of matter in neutrinos, and the factor of 10 accounts for the cumulative effect from the time neutrinos become non-relativistic, see e.g.~\cite{Lesgourgues_2006}. We see that this error should be very small, so we deem it safe to use the method of AHB13 (the LRA applied to \emph{all} neutrinos) for $z \geq 1$, i.e.~to set $z_\nu = 1$. Of course, this may be not be enough if one requires a high-precision calculation of the clustering of neutrinos themselves, but this caveat also applies to particle-based methods, which would model the slow neutrinos with a very small number of particles, if resolving them at all (for instance, the method of \cite{Banerjee_2018} does not resolve neutrino velocities below several hundred km/s in their default setup, even for neutrino masses as low as $M_\nu = 0.15$ eV).
+
+\spb{Softened this sentence a bit: if these $0.1\%$ of neutrinos cluster $100$ times more than the others, they can still have a $10\%$ effect on the neutrino power spectrum, so it is not a priori clear that the error is small.} \yah{Re-``hardenened" the sentence but made it more quantitative; let me know if the argument is convincing.}
 
 We also saw in Section \ref{sec:validity} that the LRA is accurate at $z = 0$ for $u_0 \gtrsim 800$ km/s. To be conservative, we use a default neutrino critical velocity of $850$ km/s for $0 \leq z \leq z_\nu$. For reference, the fraction of slow neutrinos is $P(u < 850 ~\textrm{km/s}) \approx [0.04, 0.20, 0.42]$, respectively, for  $m_{\nu} = [0.05, 0.1, 0.15]$ eV.
+
+In addition to the LRA, we use the approximation \eqref{eq:phases} in Eq.~\eqref{eq:delta-phi}, whose regime of validity we have shown to be broader than that of the LRA. This means that to compute the density field of fast neutrinos, we only require the current 3-dimensional matter density field, as well as the one-dimensional matter power spectrum as a fucntion of time. In practice, we store the latter at even intervals $\Delta a = 0.01$, and then interpolate it when required\footnote{The code actually provides the CDM power spectrum. We estimate the matter power spectrum by adding the neutrino power from the previous timestep. It would be possible to iterate this procedure, but in practice it is always immediately converged to a high degree of accuracy, see Appendix B of AHB13.}.
+
+
+
 
 To summarize, our default parameters are $z_\nu = 1$ and $v_{\rm crit} = 850$ km/s. These parameters can be adjusted and optimized depending on the desired observable. The standard particle technique for all neutrinos corresponds to $z_\nu \rightarrow \infty$ and $v_{\rm crit} \rightarrow \infty$. The method of AHB13 corresponds to $z_\nu \rightarrow 0$ or $v_{\rm crit} \rightarrow 0$.
 
@@ -426,7 +473,7 @@ Finally, just like in AHB13, we solve for the evolution of neutrinos and CDM sim
 %We expect the linear response approximation to be accurate for a given neutrino velocity shell as long
 %as we are in a regime where the neutrino over-density in that shell remains less than unity, and thus described by perturbation theory. Figure~\ref{fig:halofitvshell} shows the expected neutrino power spectrum in a variety of velocity shells. Note that changing the neutrino mass populates each velocity shell with a different number of neutrinos, but does not alter the shell's evolution.
 %
-%We used {\small HALOFIT} \cite{Smith_2003} to obtain approximate matter power spectra until $z=0$. We used these power spectra to evaluate Eq.~\ref{eq:delta-phi}, setting the unperturbed velocity distribution to a delta function, $f_0(v) = \delta(v)$. \spb{Yacine: is this what you did?} We then computed the expected dimensionless power spectrum for each velocity shell. This provides an estimate for which velocity shells will be affected by non-linear growth. Eq.~\ref{eq:delta-phi} is expected to be accurate for a dimensionless overdensity less than unity, $\Delta_\nu^2 < 1$. We see that at $z=0$ the over-density is unity in a unperturbed velocity shell of $700 - 800$ km/s. Initially slower neutrinos will have over-densities significantly altered by non-linear gravitational clustering, and so would not follow the expected linear response power spectra in Figure~\ref{fig:halofitvshell}. Thus we would expect the linear response approximation to be accurate in shells with $v \leq 800$ km/s.
+%We used {\small HALOFIT} \cite{Smith_2003} to obtain approximate matter power spectra until $z=0$. We used these power spectra to evaluate Eq.~\ref{eq:delta-phi}, setting the unperturbed velocity distribution to a delta function, $f^0(v) = \delta(v)$. \spb{Yacine: is this what you did?} We then computed the expected dimensionless power spectrum for each velocity shell. This provides an estimate for which velocity shells will be affected by non-linear growth. Eq.~\ref{eq:delta-phi} is expected to be accurate for a dimensionless overdensity less than unity, $\Delta_\nu^2 < 1$. We see that at $z=0$ the over-density is unity in a unperturbed velocity shell of $700 - 800$ km/s. Initially slower neutrinos will have over-densities significantly altered by non-linear gravitational clustering, and so would not follow the expected linear response power spectra in Figure~\ref{fig:halofitvshell}. Thus we would expect the linear response approximation to be accurate in shells with $v \leq 800$ km/s.
 %
 %Figure~\ref{fig:simvshell} validates our expectation using the neutrino velocity shell simulations of \cite{Banerjee_2018}. In these simulations, neutrinos are initialised in a variety of velocity bins, each of which we can compare to the expectation of our linear response approximation. We see that, as expected from Figure~\ref{fig:halofitvshell}, and excluding particle shot noise in the higher velocity shells, our linear response approximation is a good match for all shells with $v_\mathrm{crit} \geq 838$ km/s. To be conservative, we
 %thus use a default neutrino critical velocity of $850$ km/s.
@@ -445,31 +492,14 @@ Finally, just like in AHB13, we solve for the evolution of neutrinos and CDM sim
 %with the particle neutrino method. The effects of other cutoff velocities are discussed in Section~\ref{sec:results}.
 %The critical redshift at which particle neutrinos switched on was set at $z=1$, for similar reasons.
 
-\subsection{Linear-response kernel for truncated Fermi-Dirac distribution} \label{sec:kernel}
 
-Once the slow neutrinos are followed as particles, the LRA is applied only to ``fast'' neutrinos, that is, the portion of the neutrino phase space with unperturbed velocities higher than the cutoff velocity.
-The unperturbed density of these particles is given by the truncated Fermi-Dirac distribution:
-\begin{equation}
-f_0(u) \propto \Theta(u - v_{\rm crit}) \left(\rme^{m_\nu u/ \left(k_\mathrm{B} T_\nu\right)} + 1 \right)^{-1},
-\end{equation}
-where $\Theta$ is the Heaviside function (or an infinitesimally smoothed version of it, so that $f_0$ is differentiable), $m_\nu$ is the mass of a single neutrino or antineutrino, $k_\mathrm{B}$ is the Boltzmann constant in eV/K and $T_\nu \approx 1.97$ K is the temperature of the cosmic neutrino background. The normalization is again such that $\int d^3 u f_0(u) = 1$. The kernel in Eq.~\eqref{eq:delta-phi} is therefore given by
-\barr
-\mathcal{I}(\kappa) = \frac{\int_{q_c}^{\infty} dq~ j_0\left(\kappa \frac{T_\nu}{m_\nu}q\right)~ q^2 /(\rme^q + 1) }{\int_{q_c}^{\infty} dq ~q^2/(\rme^q + 1)}, \ \ \ q_c \equiv \frac{m_\nu v_{\rm crit}}{T_\nu}.
-\earr
-We use the following asymptotic expansion for the integral:
-\begin{align}
- \int^\infty_{q_\mathrm{c}} \frac{j_0(qX)}{e^q + 1} q^2 dq &= - \sum^{\infty}_{n=1} (-1)^n \frac{\rme^{-n q_\mathrm{c}}}{(n^2+X^2)^2} I_n(q_\mathrm{c},X),\\
- I_n(q_\mathrm{c},X) &= \left(n^2 + n^3 q_\mathrm{c} + n q_\mathrm{c} X^2 - X^2\right) \frac{\sin(q_\mathrm{c} X)}{X} \nonumber \\
- &+ \left(2n + n^2 q_\mathrm{c} + q_\mathrm{c} X^2\right) \cos(q_\mathrm{c} X),
-\end{align}
-We have checked that this expansion is converged to within an absolute error of $< 10^{-4}$ for $n_\mathrm{max} = 20$.
 
 \subsection{Initialization of the ``slow'' neutrinos}
 
 We could in principle generate slow neutrino particles at the cutoff redshift $z_\nu$, using the LRA to compute the initial neutrino overdensities and bulk velocities, as a function of their thermal velocity $\bs{u}_0$.
  %, the cutoff redshift after which some neutrinos are not followed accurately with the linear response approximation.
 %We would then use the linear-response approximation. Doing so accurately would require computing neutrino perturbations as a function of their thermal velocity.
-%We would use Eq.~\eqref{eq:delta-phi} and its time derivative for $f_0(u)$ given by narrow distributions around velocity bins $u_i$\footnote{This would be equivalent to the multi-fluid method of \citealt{Dupuy_14}}.
+%We would use Eq.~\eqref{eq:delta-phi} and its time derivative for $f^0(u)$ given by narrow distributions around velocity bins $u_i$\footnote{This would be equivalent to the multi-fluid method of \citealt{Dupuy_14}}.
 Instead, we chose to generate slow neutrino particles at the initial simulation redshift $z_i = 99$, and follow them as tracer particles until $z_\nu$. Their trajectories are thus computed using the $N$-body technique in the total matter potential, comprising CDM and linear-response neutrinos. However, they are not used to compute the potential until after $z_\nu$\footnote{Note that the hybrid method of \cite{Brandbyge_2010} creates neutrino particles dynamically during the simulation, rather than initially treating them as tracers.}. The increased particle load still imposes some numerical overhead over the pure linear-response method, but allows for accurate ``initial" conditions for slow-neutrino particles at $z_\nu$.
 
 In our tests, before $z_\nu$, hybrid particle simulations were about $35\%$ slower than pure LRA simulations, while a pure particle simulation was about $150\%$ slower with the same particle load.
@@ -595,10 +625,11 @@ We performed a number of simulations designed to test the sensitivity of our hyb
 \label{sec:results}
 
 \begin{figure*}
-\includegraphics[trim={1.cm 0 1.5cm 0},clip,width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t1.pdf}
-\includegraphics[trim={1cm 0 1.5cm 0},clip, width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t2.pdf}
-\includegraphics[trim={1.5cm 0 0.5cm 0},clip, width=0.322\textwidth]{nuplots/dens-plt-b300p512nu0_4p1024t2.pdf}
-  \caption{Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<850$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the over-density projected throughout the box.
+%\includegraphics[trim={1.cm 0 1.5cm 0},clip,width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t1.pdf}
+%\includegraphics[trim={1cm 0 1.5cm 0},clip, width=0.31\textwidth]{nuplots/dens-plt-b300p512nu0_4hyb850t2.pdf}
+%\includegraphics[trim={1.5cm 0 0.5cm 0},clip, width=0.322\textwidth]{nuplots/dens-plt-b300p512nu0_4p1024t2.pdf}
+\includegraphics[width = \textwidth]{nuplots/slices.pdf}
+  \caption{\yah{Suggestion for the plot, to maximize information content -- labels take up a lot of space for no good reason.}Projected density plots at $z=0$. \emph{Left}: CDM. \emph{Middle}: Neutrino particles from the hybrid simulation, with unperturbed velocity $<850$ (comoving) km/s. \emph{Right}: Neutrino particles from the pure particle simulation, i.e. including neutrinos from all unperturbed velocities. Colours show $\log (1+ \delta)$ in dimensionless units, where $\delta$ is the over-density projected throughout the box.
   The clustering of the hybrid particles is intermediate between that of the cold dark matter and the particle neutrinos. Colour scale has been truncated for the CDM for clarity. Structures have the same positions in all three panels.
   }
   \label{fig:density_plot}
@@ -607,7 +638,8 @@ We performed a number of simulations designed to test the sensitivity of our hyb
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_rel-10.pdf}
 \includegraphics[width=0.45\textwidth]{nuplots/pks_rel-0_66670.pdf}
-  \caption{Ratio of matter power spectrum with massive neutrinos ($M_\nu = 0.4$ eV) to matter power spectrum with massless neutrinos. Figure shows hybrid (\texttt{HYBRID}), linear response (\texttt{LINRESP}), and particle (\texttt{PARTICLE-1024}) methods at $z=0$ (left) and $z=0.5$ (right). All three simulation methods agree with $\sim 0.1$\%, \yah{For the $P(k)$ itself, not the suppression, I presume? To clarify.} \spb{It is the same!} in agreement with AHB13. Achieving convergence for the particle neutrino method required a large number of neutrino particles, and thus almost an order of magnitude more CPU time, as discussed in Section~\ref{sec:matterpower}.}
+  \caption{Ratio of matter power spectrum with massive neutrinos ($M_\nu = 0.4$ eV) to matter power spectrum with massless neutrinos. Figure shows hybrid (\texttt{HYBRID}), linear response (\texttt{LINRESP}), and particle (\texttt{PARTICLE-1024}) methods at $z=0$ (left) and $z=0.5$ (right). All three simulation methods agree with $\sim 0.1$\%, %\yah{For the $P(k)$ itself, not the suppression, I presume? To clarify.} \spb{It is the same!}
+in agreement with AHB13. Achieving convergence for the particle neutrino method required a large number of neutrino particles, and thus almost an order of magnitude more CPU time, as discussed in Section~\ref{sec:matterpower}.}
   \label{fig:matter_power}
 \end{figure*}
 
@@ -641,8 +673,32 @@ For $M_\nu = 0.06$ eV, there is a discrepancy between the particle simulation an
 
 Figure~\ref{fig:halomass} shows the halo mass functions for our particle, linear response and hybrid simulations. Only CDM particles contribute to the halo mass, for ease of comparison. We show also a mass function model from \cite{Watson_2013}, with $\sigma_8 = 0.7372$, matching the linear power spectrum amplitude for the massive neutrino model. We also set $\Omega_M = \Omega_\mathrm{CDM} + \Omega_b$ (ie, excluding the neutrino component), as recommended by \cite{FVN_2014}. All curves are normalised by a mass function model from \cite{Watson_2013} corresponding to our $M_\nu = 0$ cosmology, with $\sigma_8 = 0.8375$. We choose \cite{Watson_2013} because their calibration simulations use a friends-of-friends mass function with a linking length of $0.2$, as do our simulations. A model is used instead of a simulation to reduce scatter from Poisson noise, and $z=0.2$ is used instead of $z=0$ for the same reason. The simulated mass functions agree very well with each other. Small differences are visible in the largest halo mass bins, where the total number of halos in the box is small and small changes in mass distribution can move a halo to an adjacent bin. There is also a $5\%$ scatter between individual mass bins, due to Poisson noise in the halo catalogue from our finite box. This scatter is the same for all our simulations as we have used the same initial particle realisation in each case. Our simulations agree with the mass function model as well as expected given our small box. We defer a more detailed analysis with more sophisticated halo finders and larger boxes to future work.
 
-\subsection{Neutrino Power}
+\subsection{Clustering of neutrinos}
 \label{sec:nupower}
+
+\subsubsection{Correlation of fast neutrinos with the matter field}
+
+In addition to the LRA, we make the additional approximation \eqref{eq:phases} in the linear-repsonse integral, so that we need not keep track of the history of the full 3-dimensional matter density field. This approximation implies that fast neutrinos are completely correlated with the matter (hence dark matter). We have checked this explicitly by computing the cross-correlation coefficient of fast neutrinos with the CDM in our particle simulation, which we show in Fig.~\ref{fig:cross-corr}. We see that indeed, fast neutrinos are very well correlated with the CDM \yah{Expand as seen fit.}
+
+%This approximation is certainly accurate on linear scales, where modes are decoupled. AHB13 argued further that it does not affect the asymptotic small-scale behaviour, where early-time contributions to Eq.~\eqref{eq:delta-phi} are suppressed. Thus all that is needed is the present-day phase information and, as a consequence, this approximation ought to be reasonably accurate on all scales.
+%We can further check it's consistency using a particle neutrino simulation. Eq.~\eqref{eq:phases} implies that the cross-correlation between neutrinos and CDM is unity. Figure \ref{fig:cross-corr} shows the cross-correlation coefficient between neutrino particles and CDM in a particle simulation and in our new hybrid method, demonstrating that it is indeed close to unity as long as the neutrino power spectrum is not dominated by particle shot noise.
+
+%\yah{I am not sure this plot is the best way to validate this approximation (but perhaps it can serve another purpose). First, Eq.~\eqref{eq:phases} \emph{implies}, but is \emph{not equivalent} to a unit cross-correlation coefficient. Therefore, showing that this coefficient is unity is a consistency check at best, but does not fully validate the approximation. Second, the approximation only applies to LRA neutrinos, \emph{not} to the slow neutrinos, so showing their correlation coefficient (green line) is not relevant for this specific point (unless you wanted to make another point?). Since the red curve contains the slow neutrinos as well, which we do not expect to have a unit correlation, it is not unexpected that it falls below unity (and it is hard to quantify by how much we expect it to do so). What would have been a good check is to show the cross-correlation of fast neutrinos only (from the particle sims), but this is probably not easily extracted. All in all, I think that the agreement with Banerjee et al. is sufficient to validate both layers of approximation, linear response \emph{and} phase approximation.}
+%\spb{I agree that this plot is mostly a consistency check, but I think it is a valuable one that many people will ask for. I might be able to extract just the initially fast neutrinos from the particle simulation using the IDs and initial velocities, as well, so I'll try that. Showing the full particle distribution is still relevant for the LRA only simulations though.}
+
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
+  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods.
+  The vertical grey line shows the scale where shot noise, which has been subtracted, begins to dominate.
+  For the hybrid simulation, only the correlation between the cold dark matter and slow neutrino particles is shown.
+  The cross-correlation is close to $> 0.8$ when shot noise is small, justifying the approximation that neutrinos and CDM are completely correlated.
+  }
+  \label{fig:cross-corr}
+\end{figure}
+
+
+\subsubsection{Neutrino power spectrum}
 
 \begin{figure*}
 \includegraphics[width=0.45\textwidth]{nuplots/pks-nu-1.pdf}
