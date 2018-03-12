@@ -13,6 +13,10 @@ def sptostr(sp):
         return "DM"
     return ""
 
+def wrapper(a, b):
+    "Wrap np.isin so we can specify arguments more explicitly"""
+    return numpy.isin(a,b,assume_unique=True,invert=True)
+
 def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = None):
     """Compute the compensated power spectrum from a catalogue."""
     sp = sptostr(species)
@@ -22,13 +26,13 @@ def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = 
     if path.isfile(outfile):
         return
     catics = BigFileCatalog(ICS, dataset=str(species)+'/', header='Header')
-    fast = (catics['Velocity']**2).sum(axis=1) > vthresh**2/catics.attrs["Time"]**3
-    fastids = catics["ID"][fast]
+    fast = (catics['Velocity']**2).sum(axis=1) < vthresh**2/catics.attrs["Time"]**3
+    fastids = catics["ID"][fast].compute().sort()
     #Note: map_blocks runs elementwise over blocks.
     #So we need to pre-compute fastids: if we do not we will
     #end up checking whether elements in a block of catnu["ID"]
     #are in the equivalent block in fastids.
-    select = catnu["ID"].map_blocks(numpy.isin, fastids.compute(), dtype=numpy.bool,chunks = catnu["ID"].chunks)
+    select = catnu["ID"].map_blocks(wrapper, fastids, dtype=numpy.bool,chunks = catnu["ID"].chunks)
     catnu[select].to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
