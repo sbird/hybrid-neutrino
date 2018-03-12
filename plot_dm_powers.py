@@ -235,7 +235,7 @@ def plot_single_redshift(scale):
     plt.clf()
 
 def plot_crosscorr(scale):
-    """Plot the crosscorrelation coefficient as a function of k for neutrinos and DM."""
+    """Plot the cross-correlation coefficient as a function of k for neutrinos and DM."""
     cc_sims = ["b300p512nu0.4p1024","b300p512nu0.4hyb850"]
     shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":0.345*(300/512)**3}
     for ss in cc_sims:
