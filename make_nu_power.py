@@ -17,7 +17,16 @@ def sptostr(sp):
 def wrapper(a, b):
     "Wrap np.isin so we can specify arguments more explicitly"""
     t1 = timeit.default_timer()
-    data= numpy.isin(a,b,assume_unique=True,invert=True)
+    #Use binary search as logN
+    ind = numpy.searchsorted(b,a, side='left')
+    try:
+        data = (b[ind] != a)
+    except IndexError:
+        #This happens when the insertion point is at the end of the array
+        i2 = numpy.where(ind >= numpy.shape(b))
+        #In this case we assign a new value inside the array, since isin is definitely false.
+        ind[i2] -=1
+        data = (b[ind] != a)
     t2 = timeit.default_timer()
     print("t: ",t2-t1, "shape: ",numpy.shape(a), numpy.shape(b) )
     return data
