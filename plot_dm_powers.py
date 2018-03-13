@@ -538,6 +538,7 @@ if __name__ == "__main__":
     plot_image(sims[0],8,1)
     plot_image(sims[0],8,2)
     plot_fermi_dirac(0.4,0)
+    plot_crosscorr(1)
     for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
         plot_hmf_rel_one(sc)
@@ -545,7 +546,6 @@ if __name__ == "__main__":
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_nu_single_redshift(sc,checksims2,fn="cknu2")
-        plot_crosscorr(sc)
         plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
         plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
