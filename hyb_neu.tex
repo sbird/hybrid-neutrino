@@ -311,7 +311,6 @@ and such that $|c_M(s, s', k)| \leq 1$, and $c_M(s, s, k) = 1$. The variance per
 \earr
 where $j_0$ is the zeroth-order spherical Bessel function.
 %Note that it is straightforward to show that this is always greater than the power spectrum per velocity shell, $P_{u_0}(k)$, which we computed in the previous section.
-\yah{If we could prove that this integral is bounded by the $c_M = 1$ limit it would save us all the discussion below... Couldn't figure it out.}
 
 There is no simple approximation for the unequal-time correlation coefficient, which makes this integral difficult to evaluate in full generality. To simplify it, let us first note that on linear scales, $c_M \approx 1$. Secondly, on scales smaller than the free-streaming scale, i.e. $k u_0 (ds/d\ln a) \gg 1$, the spherical Bessel function oscillates on a timescale much shorter than the rest of the integrand, and may be approximated as $j_0[u_0 k (s'' - s')] \approx \frac{\pi}{u_0 k} \delta_{\rm D}(s'' - s')$. This selects mostly the equal-time correlation coefficient, equal to unity whether the matter field is linear or not. It also implies that the power per $k$ interval is proportional to $u_0^{-1}$ in this regime.
 %\barr
@@ -329,9 +328,6 @@ k_{\rm fs} \equiv \frac{a^2 H}{u_0} \approx 0.2 ~a^ {-1/2}\frac{300~ \textrm{km/
 where the last approximation holds during matter domination, $z \gtrsim 0.3$. We see that the free-streaming scale is larger than the non-linear scale for $u_0$ greater than a few hundred km/s, at $z = 0$ and for $u_0 \gtrsim 100$ km/s at $z = 1$. Provided $u_0$ is large enough one can therefore approximate $c_M = 1$ to compute Eq.~\eqref{eq:P_u0-av} on all scales.
 
 We show $\langle \Delta^2_{\bs{u}_0}(s, \bs{k})\rangle_{\hat{k}}$ in Fig.~\ref{fig:halofitvshell}, at $z = 0$ and 1. We see that at $z = 1$, it is less than unity on all scales for $u_0 \gtrsim 100$ km/s. On the other hand, at redshift 0, only neutrinos faster than $\sim 800$ km/s are statistically unclustered. These unperturbed velocities therefore provide thresholds above which we expect the LRA to be accurate.
-
-\yah{note that I changed the velocities plotted, so it is valid to use the $c_M = 1$ approximation for all}.
-
 
 \begin{figure*}
 \includegraphics[width=0.47\textwidth]{nuplots/lin_resp_z1.pdf}
