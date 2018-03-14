@@ -236,19 +236,6 @@ def plot_single_redshift(scale):
 
 def plot_crosscorr(scale):
     """Plot the cross-correlation coefficient as a function of k for neutrinos and DM."""
-    cc_sims = ["b300p512nu0.4p1024","b300p512nu0.4hyb850"]
-    shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":0.345*(300/512)**3, "b300p512nu0.4p":(300/512)**3}
-    for ss in cc_sims:
-        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
-        (_, pk_nu) = load_genpk(genpk_neutrino)
-        genpk_dm = os.path.join(os.path.join(datadir,ss),"output/power-DM-%.4f.txt" % scale)
-        (_, pk_dm) = load_genpk(genpk_dm)
-        genpk_cross = os.path.join(os.path.join(datadir,ss),"output/power-DMnu-%.4f.txt" % scale)
-        (k_cross, pk_cross) = load_genpk(genpk_cross)
-        shot = shots[ss]*np.ones_like(pk_nu)
-        pksq = pk_dm * (pk_nu - shot)
-        corr_coeff = pk_cross / np.sqrt(pksq)
-        plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
     cc_fast_sims = ["b300p512nu0.4p1024", ] #,"b300p512nu0.4p"]
     shots = {"b300p512nu0.4p1024": 300**3/(1024**3 - 371714852), "b300p512nu0.4p":300**3/(512 - 46462529)}
     for ss in cc_fast_sims:
@@ -262,9 +249,22 @@ def plot_crosscorr(scale):
         pksq = pk_dm * (pk_nu - shot)
         corr_coeff = pk_cross / np.sqrt(pksq)
         plt.semilogx(k_cross, corr_coeff, ls="-.",label="PARTICLE 1024 (fast)", color="blue")
-    plt.axvline(x=1.2, ls=":", color="grey")
-    plt.ylim(0,1.3)
-    plt.legend(frameon=False, loc='upper left',fontsize=12)
+    cc_sims = ["b300p512nu0.4p1024","b300p512nu0.4hyb850"]
+    shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":0.345*(300/512)**3, "b300p512nu0.4p":(300/512)**3}
+    for ss in cc_sims:
+        genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
+        (_, pk_nu) = load_genpk(genpk_neutrino)
+        genpk_dm = os.path.join(os.path.join(datadir,ss),"output/power-DM-%.4f.txt" % scale)
+        (_, pk_dm) = load_genpk(genpk_dm)
+        genpk_cross = os.path.join(os.path.join(datadir,ss),"output/power-DMnu-%.4f.txt" % scale)
+        (k_cross, pk_cross) = load_genpk(genpk_cross)
+        shot = shots[ss]*np.ones_like(pk_nu)
+        pksq = pk_dm * (pk_nu - shot)
+        corr_coeff = pk_cross / np.sqrt(pksq)
+        plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
+    plt.axvline(x=1.2, ls="-", color="black")
+    plt.ylim(0.75,1.05)
+    plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel(r"k (h/Mpc)")
     plt.ylabel(r"Cross-correlation coefficient")
     plt.tight_layout()
