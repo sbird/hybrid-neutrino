@@ -6,7 +6,7 @@
 %\documentclass[useAMS, usenatbib, usegraphicx, twocolumn]{mnras}
 
 %[YAH commented out, my editor didn't like it...]
-\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure}]{hyperref}
+\usepackage[pdftitle={A hybrid particle-analytic method for non-linear neutrino structure, draft}]{hyperref}
 
 % \newcommand{\eprint}[1]{\href{http://arxiv.org/abs/#1}{#1}}
 % \newcommand{\adsurl}[1]{\href{#1}{ADS}}
@@ -226,7 +226,7 @@ where the first piece corresponds to the propagation of initial perturbations fr
 %&=& - \frac{1}{k \Delta s} \int d^3 u  \frac{d f^0}{du} j_1(u k \Delta s) \nonumber\\
 = \int d^3 u ~ f^0(\bs{u})~\rme^{- i \bs{u} \cdot \bs{k} \Delta s}. \label{eq:I(k)}
 \earr
-% Note that the initial conditions piece is much smaller than the propagation term for our massive neutrino simulations.
+Note that the initial conditions piece is much smaller than the propagation term for our massive neutrino simulations.
 %where in the last line we have integrated by parts.
 %If, moreover, $f^0(\bs{u}) = f^0(u)$ is isotropic, the latter expression simplifies to
 %\beq
@@ -284,7 +284,6 @@ Let us consider a non-isotropic unperturbed phase-space distribution centered at
 \beq
 f^0_{\bs{u}_0}(\bs{u}) \equiv \delta_{\rm D}(\bs{u}- \bs{u}_0).
 \eeq
-%\spb{I think that the difference between this and eq. 9 is not important: all it is is changing the order of integration between s' and u, which should not make a difference for uniformly continuous functions like these (unless there is a subtlety of the Bessel function at $x=0$ I am missing). I also don't see a physical reason why dropping isotropy should make this difference. So I think the important thing is actually \eqref{eq:phases}.}
 Note that this is equivalent to the multi-fluid approach of \cite{Dupuy_14}. Inserting this distribution into Eqs.~\eqref{eq:delta-phi}--\eqref{eq:I(k)} and neglecting the initial condition piece, we obtain the overdensity
 \barr
 \delta_{\bs{u}_0}(s, \bs{k}) = \frac32 H_0^2 \Omega_M \int_{s_i}^s ds' (s - s') a' \rme^{- i \bs{u}_0 \cdot \bs{k} (s - s')} \delta_{\rm M}(s', \bs{k}).
@@ -514,7 +513,7 @@ For ease of comparison with particle simulations, the simulations presented in t
 Our simulations were run with MP-Gadget\footnote{\url{https://github.com/rainwoodman/MP-Gadget/}}. Our implementation of particle neutrinos includes several novel features improving accuracy.
 In \cite{Bird_2012} we disabled the short-range tree force for the neutrino particles, leaving them affected only by the long-range particle-mesh force. Since the purpose of this work is to follow the non-linear small-scale evolution of the neutrinos accurately, we enable the short-range tree force in this work. The timestep for the short-range force of the neutrino particles is set based on their acceleration, with the same criterion that is used for CDM \citep{Springel_2005}. However, the time between computation of long-range particle-mesh forces is computed without reference to the neutrino particles, as in \cite{Viel_2010} and \cite{Bird_2012}. In Gadget this timestep is set by particle displacements, so that no particle moves more than a fraction of a grid cell in a single timestep. The inclusion of neutrinos would make it extremely small.
 
-We found that the large velocity of neutrino particles caused severe numerical issues in Gadget, manifesting as frequent hangs when walking the short-range gravitational force tree. We traced these problems to an optimisation introduced in Gadget-3. In order to avoid the overhead of regenerating the force tree every timestep, the force tree persists over short timesteps. Particle motion is accounted for by moving tree nodes according to the average velocity of particles within each node. Neutrino particles have large random thermal velocities, which cause them to frequently move from one force node to another. It is thus not sufficient to account for particle motion by moving the node of the force tree, and one must instead perform a full rebuild of the force tree on every timestep. We found that a more frequent rebuilding of the force tree improves the accuracy of the simulation even without neutrino particles, and thus we have made rebuilding the force tree each timestep the default behaviour in MP-Gadget. We implemented a number of optimizations in the tree build code to avoid it dominating the cost of the simulation.
+We found that the large velocity of neutrino particles caused severe numerical issues in Gadget, manifesting as frequent hangs when walking the short-range gravitational force tree. We traced these problems to an optimisation introduced in Gadget-3. In order to avoid the overhead of regenerating the force tree every timestep, the force tree persists over short timesteps. Particle motion is accounted for by moving tree nodes according to the average velocity of particles within each node. Neutrino particles have large random thermal velocities, which cause them to frequently move from one force node to another. It is thus not sufficient to account for particle motion by moving the node of the force tree, and one must instead perform a full rebuild of the force tree on every timestep. We found that a more frequent rebuilding of the force tree improves the accuracy of the simulation even without neutrino particles, and thus we have made rebuilding the force tree each timestep the default behaviour in MP-Gadget. We implemented a number of optimizations in the tree build code to avoid it dominating the cost of the simulation; in our hybrid simulation the tree build stage was $11\%$ of the total walltime.
 
 \subsection{Suite of simulations}
 
@@ -605,7 +604,7 @@ We ran a suite of simulations listed in Table \ref{tab:simulations}, all of them
 
 In addition to a simulation with massless neutrinos (\texttt{CDM}), we perfomed a suite of simulations including massive neutrinos with three different methods: pure linear-response method as in AHB13 (prefix \texttt{LINRESP}), pure particle method (prefix \texttt{PARTICLE}) and hybrid method (prefix \texttt{HYBRID}). The simulations \texttt{LINRESP-MINNU} and \texttt{PARTICLE-MINNU} use the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV, and assume a normal neutrino hierarchy, i.e., specifically, account for two massive neutrinos with masses ($0.009$, $0.05$) eV. All other simulations assume three degenerate neutrinos with total mass $M_\nu = 0.4$~eV. This relatively high neutrino mass was chosen to enhance any deviations between different simulation methods.
 
-We find that achieving the same accuracy as the LRA for the matter power spectrum with the pure particle simulation requires $1024^3$ neutrino particles for a neutrino mass $M_\nu = 0.4$ eV. A simulation with a neutrino particle load of $512^3$ neutrino particles, equal to the CDM particle load, showed a $1\%$ discrepancy with linear theory.
+We found that a neutrino particle simulation with a neutrino particle load of $512^3$ neutrino particles, equal to the CDM particle load, was affected by shot noise and showed a $1\%$ discrepancy with linear theory. Achieving the same accuracy as the LRA for the matter power spectrum with the pure particle simulation requires $1024^3$ neutrino particles for a neutrino mass $M_\nu = 0.4$ eV.
 
 %We performed simulations with massless neutrinos, and a pure linear-response and pure particle simulation with the minimal neutrino mass allowed by oscillation experiments, $M_\nu = 0.06$ eV (and a normal neutrino hierarchy)   %make the different predictions of the linear response and hybrid methods for the neutrino power spectrum easier to visualize.
 
@@ -677,7 +676,7 @@ We further show the cross-correlation between the CDM and the ``fast'' and ``slo
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{nuplots/corr_coeff-1.pdf}
-  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods. The cross-correlation between ``fast'' neutrino particles and dark matter in the particle simulation is shown separately. For the hybrid simulation, only the correlation between the cold dark matter and slow neutrino particles is shown. The vertical black line shows the scale where shot noise dominates the particle simulation.
+  \caption{The cross-correlation coefficient between neutrinos and dark matter using the particle and hybrid simulation methods. Shot noise has been subtracted from the neutrino power spectrum. The cross-correlation between ``fast'' neutrino particles and dark matter in the particle simulation is shown separately. For the hybrid simulation, only the correlation between the cold dark matter and slow neutrino particles is shown. The vertical black line shows the scale where shot noise dominates the particle simulation.
   }
   \label{fig:cross-corr}
 \end{figure}
@@ -706,7 +705,7 @@ We further show the cross-correlation between the CDM and the ``fast'' and ``slo
 
 \begin{figure}
   \includegraphics[width=0.45\textwidth]{nuplots/pks_nu_ckrel-1.pdf}
-  \caption{Neutrino power spectra from various hybrid simulations compared to the results of the default hybrid simulation (\texttt{HYBRID}). \texttt{HYBRID} has a cut-off velocity of $850$ km/s, a neutrino switch-on time of $z=1$ and $512^3$ neutrino particles. Other simulations shown have neutrino cut-off velocities of $1000$ km/s \texttt{HYBRID-v1000} and $750$ km/s (\texttt{HYBRID-v750}), a switch-on time of $z=4$  (\texttt{HYBRID-z4}) and $256^3$ neutrino particles (\texttt{HYBRID-256}). Power spectra have been smoothed with an 11-pt rolling average to reduce scatter and shot noise has been subtracted.}
+  \caption{Neutrino power spectra from various hybrid simulations compared to the results of the default hybrid simulation (\texttt{HYBRID}). \texttt{HYBRID} has a cut-off velocity of $850$ km/s, a neutrino switch-on time of $z=1$ and $512^3$ neutrino particles. Other simulations shown have neutrino cut-off velocities of $1000$ km/s \texttt{HYBRID-v1000} and $750$ km/s (\texttt{HYBRID-v750}), a switch-on time of $z=4$  (\texttt{HYBRID-z4}) and $256^3$ neutrino particles (\texttt{HYBRID-256}). The ratio has been smoothed with an 11-pt rolling average to reduce mode-to-mode scatter and shot noise has been subtracted.}
   \label{fig:vcrit}
 \end{figure}
 
@@ -829,8 +828,7 @@ the linear growth equation \citep{Peebles:1993}:
 \begin{equation}
 \frac{d}{da}\left(a^3 H(a) \frac{d D(a)}{da}\right) - \frac{3}{2} \frac{H_0^2\,D(a)}{a^2 H(a)} \left(\Omega_\mathrm{CDM} + \Omega_\mathrm{b}\right)= 0\,.
 \end{equation}
-The initial conditions for this differential equation are set at $z \gg 100$ corresponding
-to the growing mode in a matter-radiation universe \citep{Groth:1975}:
+The initial conditions for this differential equation are equal to the growing mode (and derivative) in a matter-radiation universe, set at $z \gg 100$ \citep{Groth:1975}:
 \begin{equation}
   D(a_i) = \Omega_\gamma + \Omega_\nu + \frac{3}{2} \left(\Omega_\mathrm{CDM} + \Omega_\mathrm{b}\right) a_i\,.
 \end{equation}
