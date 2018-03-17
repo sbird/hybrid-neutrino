@@ -360,13 +360,15 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
     sdir = os.path.join(os.path.join(datadir, pzerosim),"output")
     foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
     (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
-    scale_sigma8_0 = {0.02: 0.0219, 0.1: 0.1087, 0.2:0.2164, 0.333:0.3561, 0.5:0.516, 0.6667: 0.6505, 0.8333: 0.7567, 1:0.8375}
-    scale_sigma8_mnu = {0.02: 0.0204, 0.1: 0.986, 0.2:0.1943, 0.333:0.3173, 0.5:0.4572, 0.6667: 0.5746, 0.8333: 0.6669, 1:0.7372}
+    scale_sigma8_0 = {0.02: 0.0219, 0.1: 0.1087, 0.2:0.2164, 0.3333:0.3561, 0.5:0.516, 0.6667: 0.6505, 0.8333: 0.7567, 1:0.8375}
+    scale_sigma8_mnu = {0.02: 0.0204, 0.1: 0.986, 0.2:0.1943, 0.3333:0.3173, 0.5:0.4572, 0.6667: 0.5746, 0.8333: 0.6669, 1:0.7372}
     mf = halo_mass_function.HaloMassFunction.watson_FOF
     h0 = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_0[1], mass_function=mf)
     hmnu = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288-0.4/96.14/0.7**2,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_mnu[1],mass_function=mf)
     if not rel:
         plt.loglog(MMz, dndmz, ls="-", label=r"$M_\nu = 0$", color="black")
+    else:
+        plt.semilogx(MMz, dndmz/0.7**4/h0.dndm(MMz*0.7), ls="-", label=r"$M_\nu = 0$", color="black")
     for ss in sims:
         sdir = os.path.join(os.path.join(datadir, ss),"output")
         foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
@@ -380,11 +382,11 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
             pass
     plt.xlabel(r"Halo Mass ($M_\odot$)")
     if rel:
-        plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls="-",label="Watson",color="black")
+        plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls=":",label="Watson HMF",color="grey")
         plt.ylabel(r"dn/dM (ratio)")
     else:
         plt.ylabel(r"dn/dM ($M^{-1}_\odot \mathrm{Mpc}^{-3}$)")
-#     plt.ylim(0.,1.5)
+    plt.ylim(0.,1.5)
     plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "hmf-"+munge_scale(scale)+".pdf"))
@@ -540,7 +542,7 @@ if __name__ == "__main__":
     plot_image(sims[0],8,2)
     plot_fermi_dirac(0.4,0)
     plot_crosscorr(1)
-    for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
         plot_hmf_rel_one(sc)
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
