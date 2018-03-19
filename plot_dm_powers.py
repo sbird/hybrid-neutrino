@@ -362,7 +362,7 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
     (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
     scale_sigma8_0 = {0.02: 0.0219, 0.1: 0.1087, 0.2:0.2164, 0.3333:0.3561, 0.5:0.516, 0.6667: 0.6505, 0.8333: 0.7567, 1:0.8375}
     scale_sigma8_mnu = {0.02: 0.0204, 0.1: 0.986, 0.2:0.1943, 0.3333:0.3173, 0.5:0.4572, 0.6667: 0.5746, 0.8333: 0.6669, 1:0.7372}
-    mf = halo_mass_function.HaloMassFunction.watson_FOF
+    mf = halo_mass_function.HaloMassFunction.tinker_200
     h0 = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_0[1], mass_function=mf)
     hmnu = halo_mass_function.HaloMassFunction(1/scale-1, omega_m=0.288-0.4/96.14/0.7**2,omega_b=0.0454,hubble=0.7,ns=0.97,omega_l=0.712,sigma8=scale_sigma8_mnu[1],mass_function=mf)
     if not rel:
@@ -451,6 +451,7 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
         plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
     plt.ylim(ymin,ymax)
     plt.xlim(0.01, 5)
+    plt.text(1, 1.07,"z="+str(np.round(1/scale-1,2)))
     plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P}_\nu(k)$ ratio")
