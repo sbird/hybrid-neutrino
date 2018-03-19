@@ -7,7 +7,7 @@ import numpy as np
 import scipy.interpolate
 import scipy.signal
 import bigfile
-import halo_mass_function
+# import halo_mass_function
 import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
@@ -514,15 +514,17 @@ def plot_fermi_dirac(Mnu, zz):
     Argument is total neutrino mass."""
     tnu = 2.7255 * (4/11.)**(1./3) * 1.00328
     bolevk = 8.61734e-5
-    nu_v = bolevk * tnu/ (Mnu/3) * (1+zz) * 2.99792e5
-    fdk = lambda x: x*x/(np.exp(x)+1)
-    xx = np.arange(0, 9*nu_v,10)
-    ff = np.zeros_like(xx, dtype=np.float64)
-    for i in range(np.size(xx)):
-        (fd, _) = scipy.integrate.quad(fdk, 0, xx[i]/nu_v)
-        ff[i] = fd / (1.5 * 1.20206)
-    plt.plot(xx, ff, "-", label="Cumulative F-D distribution", color="blue")
-    plt.plot(xx, fdk(xx/nu_v), "--", label="F-D distribution", color="black")
+    colors = ["#8c564b", "blue"]
+    for j, Mm in enumerate(Mnu):
+        nu_v = bolevk * tnu/ (Mm/3) * (1+zz) * 2.99792e5
+        fdk = lambda x: x*x/(np.exp(x)+1)
+        xx = np.arange(0, 9*nu_v,50)
+        ff = np.zeros_like(xx, dtype=np.float64)
+        for i in range(np.size(xx)):
+            (fd, _) = scipy.integrate.quad(fdk, 0, xx[i]/nu_v)
+            ff[i] = fd / (1.5 * 1.20206)
+        plt.plot(xx, ff, "-", label=r"Cum. F-D: $M_\nu = "+str(Mm)+"$ eV", color=colors[j %len(colors)])
+    plt.plot(xx, fdk(xx/nu_v), "--", label=r"F-D: $M_\nu = "+str(Mnu[-1])+"$ eV", color="black")
     plt.fill_between(xx, 0, ff, where=xx < 850, facecolor='grey', interpolate=True, alpha=0.5)
     plt.text(400, 0.02, "Slow")
     plt.text(2000, 0.5, "Fast")
@@ -541,7 +543,7 @@ if __name__ == "__main__":
     plot_image(sims[2],8,2, colorbar=True)
     plot_image(sims[0],8,1)
     plot_image(sims[0],8,2)
-    plot_fermi_dirac(0.4,0)
+    plot_fermi_dirac([0.15, 0.4],0)
     plot_crosscorr(1)
     for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
