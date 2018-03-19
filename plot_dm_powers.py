@@ -382,7 +382,7 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
             pass
     plt.xlabel(r"Halo Mass ($M_\odot$)")
     if rel:
-        plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls=":",label="Watson HMF",color="grey")
+        plt.semilogx(MMz,hmnu.dndm(MMz*0.7)/h0.dndm(MMz*0.7),ls=":",label="Tinker HMF",color="grey")
         plt.ylabel(r"dn/dM (ratio)")
     else:
         plt.ylabel(r"dn/dM ($M^{-1}_\odot \mathrm{Mpc}^{-3}$)")
