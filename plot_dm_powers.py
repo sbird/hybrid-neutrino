@@ -249,8 +249,8 @@ def plot_crosscorr(scale):
         pksq = pk_dm * (pk_nu - shot)
         corr_coeff = pk_cross / np.sqrt(pksq)
         plt.semilogx(k_cross, corr_coeff, ls="-.",label="PARTICLE 1024 (fast)", color="blue")
-    cc_sims = ["b300p512nu0.4p1024","b300p512nu0.4hyb850"]
-    shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":0.345*(300/512)**3, "b300p512nu0.4p":(300/512)**3}
+    cc_sims = ["b300p512nu0.4hyb850","b300p512nu0.4p1024"]
+    shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":(300/512)**3, "b300p512nu0.4p":(300/512)**3}
     for ss in cc_sims:
         genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
         (_, pk_nu) = load_genpk(genpk_neutrino)
