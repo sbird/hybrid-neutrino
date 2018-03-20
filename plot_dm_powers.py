@@ -247,7 +247,10 @@ def plot_crosscorr(scale):
         (k_cross, pk_cross) = load_genpk(genpk_cross)
         shot = shots[ss]*np.ones_like(pk_nu)
         pksq = pk_dm * (pk_nu - shot)
+        pksq[np.where(pksq <=0)] = shots[ss] * 0.03
         corr_coeff = pk_cross / np.sqrt(pksq)
+        ii = np.where(k_cross > 1)
+        corr_coeff[ii] = smooth(corr_coeff[ii])
         plt.semilogx(k_cross, corr_coeff, ls="-.",label="PARTICLE 1024 (fast)", color="blue")
     cc_sims = ["b300p512nu0.4hyb850","b300p512nu0.4p1024"]
     shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":(300/512)**3, "b300p512nu0.4p":(300/512)**3}
@@ -260,10 +263,14 @@ def plot_crosscorr(scale):
         (k_cross, pk_cross) = load_genpk(genpk_cross)
         shot = shots[ss]*np.ones_like(pk_nu)
         pksq = pk_dm * (pk_nu - shot)
+        pksq[np.where(pksq <=0)] = shots[ss] * 0.03
         corr_coeff = pk_cross / np.sqrt(pksq)
+        ii = np.where(k_cross > 1)
+        corr_coeff[ii] = smooth(corr_coeff[ii])
         plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
     plt.axvline(x=1.2, ls="-", color="black")
     plt.ylim(0.75,1.05)
+    plt.xlim(0.01, 10)
     plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel(r"k (h/Mpc)")
     plt.ylabel(r"Cross-correlation coefficient")
