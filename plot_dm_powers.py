@@ -367,6 +367,35 @@ def plot_hmf_rel_one(scale, psims=sims, pzerosim = zerosim, rel=True):
     sdir = os.path.join(os.path.join(datadir, pzerosim),"output")
     foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
     (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
+    if not rel:
+        plt.loglog(MMz, dndmz, ls="-", label=r"$M_\nu = 0$", color="black")
+    for ss in sims:
+        sdir = os.path.join(os.path.join(datadir, ss),"output")
+        foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
+        try:
+            (MMa, dndm) = HMFFromFOF(foftable, bins = 40)
+            if rel:
+                plt.semilogx(MMa, dndm/dndmz, ls=lss[ss], label=labels[ss], color=colors[ss])
+            else:
+                plt.loglog(MMa, dndm, ls=lss[ss], label=labels[ss], color=colors[ss])
+        except bigfile.pyxbigfile.Error:
+            pass
+    plt.xlabel(r"Halo Mass ($M_\odot$)")
+    if rel:
+        plt.ylabel(r"dn/dM (ratio)")
+    else:
+        plt.ylabel(r"dn/dM ($M^{-1}_\odot \mathrm{Mpc}^{-3}$)")
+    plt.ylim(0.9,1.1)
+    plt.legend(frameon=False, loc='lower left',fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(savedir, "hmf-"+munge_scale(scale)+".pdf"))
+    plt.clf()
+
+def plot_hmf_rel_tinker(scale, psims=sims, pzerosim = zerosim, rel=True):
+    """Plot the halo mass function relative to analytic."""
+    sdir = os.path.join(os.path.join(datadir, pzerosim),"output")
+    foftable = os.path.join(sdir,"PIG_00"+scale_to_snap[scale])
+    (MMz, dndmz) = HMFFromFOF(foftable, bins=40)
     scale_sigma8_0 = {0.02: 0.0219, 0.1: 0.1087, 0.2:0.2164, 0.3333:0.3561, 0.5:0.516, 0.6667: 0.6505, 0.8333: 0.7567, 1:0.8375}
     scale_sigma8_mnu = {0.02: 0.0204, 0.1: 0.986, 0.2:0.1943, 0.3333:0.3173, 0.5:0.4572, 0.6667: 0.5746, 0.8333: 0.6669, 1:0.7372}
     mf = halo_mass_function.HaloMassFunction.tinker_200
@@ -554,7 +583,7 @@ if __name__ == "__main__":
     plot_crosscorr(1)
     for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
 #     for sc in (0.6667, 0.8333, 1):
-        plot_hmf_rel_one(sc)
+        plot_hmf_rel_one(sc, psims=sims[1:], pzerosim=sims[0])
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
@@ -566,7 +595,8 @@ if __name__ == "__main__":
         plot_nu_single_redshift_rel_one(sc,psims=checksims[:],pzerosim=checksims[0],fn="ckrel",ymin=0.89,ymax=1.1)
         plot_nu_single_redshift_rel_one(sc,psims=checksims2[:],pzerosim=checksims2[0],fn="ckrel2",ymin=0.89,ymax=1.1)
         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False,fn="rel0")
-        plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.99,ymax=1.01,fn="ckrel")
+        plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.999,ymax=1.001,fn="ckrelh")
+        plot_single_redshift_rel_one(sc,psims=checksims2,pzerosim=checksims2[0],camb=False,ymin=0.995,ymax=1.005,fn="ckrel2h")
         plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc,ymin=0.95, ymax=1.05)
