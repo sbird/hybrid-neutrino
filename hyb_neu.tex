@@ -506,7 +506,7 @@ For ease of comparison with particle simulations, the simulations presented in t
 \section{Simulations} \label{sec:simulations}
 
 
-\subsection{Improvements to the particle-neutrino implementation in \gadget}
+\subsection{Improvements to the particle neutrino implementation}
 
 Our simulations were run with MP-\gadget\footnote{\url{https://github.com/rainwoodman/MP-Gadget/}}. Our implementation of particle neutrinos includes several novel features improving accuracy.
 In \cite{Bird_2012} we disabled the short-range tree force for the neutrino particles, leaving them affected only by the long-range particle-mesh force. Since the purpose of this work is to follow the non-linear small-scale evolution of the neutrinos accurately, we enable the short-range tree force in this work. The timestep for the short-range force of the neutrino particles is set based on their acceleration, with the same criterion that is used for CDM \citep{Springel_2005}. However, the time between computation of long-range particle-mesh forces is computed without reference to the neutrino particles, as in \cite{Viel_2010} and \cite{Bird_2012}. In \gadget this timestep is set by particle displacements, so that no particle moves more than a fraction of a grid cell in a single timestep. The inclusion of neutrinos would make it extremely small.
