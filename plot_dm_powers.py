@@ -577,8 +577,6 @@ if __name__ == "__main__":
     plot_fermi_dirac([0.15, 0.4],0)
     plot_crosscorr(1)
     for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
-#     for sc in (0.6667, 0.8333, 1):
-        plot_hmf_rel_one(sc, psims=sims[1:], pzerosim=sims[0])
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
@@ -597,6 +595,8 @@ if __name__ == "__main__":
         plot_nu_single_redshift_rel_camb(sc,ymin=0.95, ymax=1.05)
         plot_single_redshift(sc)
     #This will only work with the full simulation data
+    for sc in (0.6667, 0.8333, 1):
+        plot_hmf_rel_one(sc, psims=sims[1:], pzerosim=sims[0])
     plot_image(zerosim,8,1)
     plot_image(sims[2],8,1)
     plot_image(sims[2],8,2, colorbar=True)
