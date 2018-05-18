@@ -581,7 +581,7 @@ if __name__ == "__main__":
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_nu_single_redshift(sc,checksims2,fn="cknu2")
-        plot_single_redshift_rel_one(sc,ymin=0.6,ymax=1.)
+        plot_single_redshift_rel_one(sc,psims=sims + [checksims2[1],], ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
         plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
         plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
