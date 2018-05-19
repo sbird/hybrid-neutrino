@@ -75,7 +75,7 @@ def HMFFromFOF(foftable, h0=False, bins='auto'):
         dndm /= hub**4
     return Mcent, dndm
 
-def smooth(x,window_len=11):
+def smooth(x,window_len=4):
     """smooth the data using a moving average.
 
     input:
@@ -122,7 +122,7 @@ def load_genpk(path):
 #     return modecount_rebin(simk, Pk, matpow[1:,2],minmodes=15)
     return (simk,Pk)
 
-def get_nu_power(filename):
+def get_nu_power(filename, modes=None):
     """Reads the neutrino power spectrum.
     Format is: ( k, P_nu(k) ).
     Units are: 1/L, L^3, where L is
@@ -132,6 +132,8 @@ def get_nu_power(filename):
     k = data[:,0]
     #Convert fourier convention to CAMB.
     pnu = data[:,1]
+    if modes is not None:
+        (k, pnu) = modecount_rebin(k, pnu, modes,minmodes=30)
     return (k, pnu)
 
 def get_camb_nu_power(matpow, transfer):
@@ -200,9 +202,9 @@ def munge_scale(scale):
     """Make the scale param be a string suitable for printing"""
     return re.sub(r"\.","_",str(scale))
 
-def get_hyb_nu_power(nu_filename, genpk_neutrino, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False):
+def get_hyb_nu_power(nu_filename, genpk_neutrino, part_prop=0.116826, npart=512, nu_part_time=0.5, scale=1., split=False, modes=None):
     """Get the total matter power spectrum when some of it is in particles, some analytic."""
-    (k_sl, pk_sl) = get_nu_power(nu_filename)
+    (k_sl, pk_sl) = get_nu_power(nu_filename, modes = modes)
     ii = np.where(k_sl != 0.)
     if scale < nu_part_time:
         return k_sl[ii], pk_sl[ii], np.zeros_like(pk_sl[ii])
@@ -291,6 +293,15 @@ def plot_crosscorr(scale):
 def select_nu_power(scale, ss):
     """Get the neutrino power spectrum that is wanted"""
     sdir = os.path.join(os.path.join(datadir, ss),"output")
+    #Get the modes (hack as we didn't save them before)
+    try:
+        mpk = glob.glob(os.path.join(sdir,"powerspectrum-"+str(scale)+"*.txt"))
+        mat = np.loadtxt(mpk[0])
+        ii = np.where(mat[:,2] > 0)
+        modes = mat[:,2][ii]
+    except IndexError:
+        modes = None
+    #Get neutrino power
     matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
     genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
     try:
@@ -319,11 +330,11 @@ def select_nu_power(scale, ss):
                 nu_part_time = 0.5
                 if re.search("all",ss):
                     nu_part_time = 0.25
-            (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale)
+            (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale, modes=modes)
         except (IOError,FileNotFoundError):
             if not re.search("a$",ss):
                 print("Problem",genpk_neutrino)
-            (k, pk_nu) = get_nu_power(matpow[0])
+            (k, pk_nu) = get_nu_power(matpow[0], modes=modes)
             shot = np.zeros_like(k)
     except IndexError:
         (k, pk_nu) = load_genpk(genpk_neutrino)
@@ -346,9 +357,14 @@ def plot_nu_single_redshift_split(scale,ss,fn="nu-split"):
     plt.loglog(k, pk_nu,ls="-", label=labels[ss], color=colors[ss])
     #Plot split power.
     sdir = os.path.join(os.path.join(datadir, ss),"output")
+    #Get the modes (hack as we didn't save them before)
+    mpk = glob.glob(os.path.join(sdir,"powerspectrum-"+str(scale)+"*.txt"))
+    mat = np.loadtxt(mpk[0])
+    ii = np.where(mat[:,2] > 0)
+    modes = mat[:,2][ii]
     matpow = glob.glob(os.path.join(sdir,"powerspectrum-nu-"+str(scale)+"*.txt"))
     genpk_neutrino = os.path.join(os.path.join(datadir,ss),"output/power-nu-%.4f.txt" % scale)
-    (k, pk_nu_slow, pk_nu_fast) = get_hyb_nu_power(matpow[0], genpk_neutrino, npart=512, scale=scale, split=True)
+    (k, pk_nu_slow, pk_nu_fast) = get_hyb_nu_power(matpow[0], genpk_neutrino, npart=512, scale=scale, split=True,modes=modes)
     plt.loglog(k, pk_nu_slow, ls="-.",label=r"Slow $\nu$", color="blue")
     plt.loglog(k, pk_nu_fast, ls=":",label=r"Fast $\nu$", color="black")
     plt.loglog(np.concatenate([[0.005,],k]), np.concatenate([[shot[0],],shot]), color="lightgrey", ls=":")
@@ -574,31 +590,31 @@ def plot_fermi_dirac(Mnu, zz):
     plt.clf()
 
 if __name__ == "__main__":
-    plot_fermi_dirac([0.15, 0.4],0)
-    plot_crosscorr(1)
+#     plot_fermi_dirac([0.15, 0.4],0)
+#     plot_crosscorr(1)
     for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_nu_single_redshift(sc,checksims2,fn="cknu2")
-        plot_single_redshift_rel_one(sc,psims=sims + [checksims2[1],], ymin=0.6,ymax=1.)
+#         plot_single_redshift_rel_one(sc,psims=sims + [checksims2[1],], ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
-        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
+#         plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
         plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
         plot_nu_single_redshift_rel_one(sc,psims=checksims[:],pzerosim=checksims[0],fn="ckrel",ymin=0.89,ymax=1.1)
         plot_nu_single_redshift_rel_one(sc,psims=checksims2[:],pzerosim=checksims2[0],fn="ckrel2",ymin=0.89,ymax=1.1, camb=True)
-        plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False,fn="rel0")
-        plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.999,ymax=1.001,fn="ckrelh")
-        plot_single_redshift_rel_one(sc,psims=checksims2,pzerosim=checksims2[0],camb=False,ymin=0.995,ymax=1.005,fn="ckrel2h")
-        plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
-        plot_single_redshift_rel_camb(sc)
+#         plot_single_redshift_rel_one(sc,psims=[sims[1],sims[2]],pzerosim=sims[0],ymin=0.98,ymax=1.02,camb=False,fn="rel0")
+#         plot_single_redshift_rel_one(sc,psims=checksims,pzerosim=checksims[0],camb=False,ymin=0.999,ymax=1.001,fn="ckrelh")
+#         plot_single_redshift_rel_one(sc,psims=checksims2,pzerosim=checksims2[0],camb=False,ymin=0.995,ymax=1.005,fn="ckrel2h")
+#         plot_single_redshift_rel_one(sc,psims=checksims,fn="ckrel")
+#         plot_single_redshift_rel_camb(sc)
         plot_nu_single_redshift_rel_camb(sc,ymin=0.95, ymax=1.05)
-        plot_single_redshift(sc)
+#         plot_single_redshift(sc)
     #This will only work with the full simulation data
-    for sc in (0.6667, 0.8333, 1):
-        plot_hmf_rel_one(sc, psims=sims[1:], pzerosim=sims[0])
-    plot_image(zerosim,8,1)
-    plot_image(sims[2],8,1)
-    plot_image(sims[2],8,2, colorbar=True)
-    plot_image(sims[0],8,1)
-    plot_image(sims[0],8,2)
+#     for sc in (0.6667, 0.8333, 1):
+#         plot_hmf_rel_one(sc, psims=sims[1:], pzerosim=sims[0])
+#     plot_image(zerosim,8,1)
+#     plot_image(sims[2],8,1)
+#     plot_image(sims[2],8,2, colorbar=True)
+#     plot_image(sims[0],8,1)
+#     plot_image(sims[0],8,2)
