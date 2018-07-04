@@ -110,7 +110,7 @@ def plot_image(sim,snap, dataset=1, colorbar=False):
     plt.savefig(os.path.join(savedir, "dens-plt-"+munge_scale(sim)+"t"+str(dataset)+".pdf"))
     plt.clf()
 
-def load_genpk(path):
+def load_genpk(path, nu=False):
     """Load a GenPk format power spectum, plotting the DM and the neutrinos (if present)
     Does not plot baryons."""
     #Load DM P(k)
@@ -119,8 +119,9 @@ def load_genpk(path):
     #Adjust Fourier convention to match CAMB.
     simk=matpow[1:,0]*scale
     Pk=matpow[1:,1] /scale**3 #*(2*math.pi)**3
-#     return modecount_rebin(simk, Pk, matpow[1:,2],minmodes=15)
-    return (simk,Pk)
+    ii = np.where(np.isfinite(simk))
+    return modecount_rebin(simk[ii], Pk[ii], matpow[1:,2][ii],minmodes=30, nu=nu)
+#     return (simk,Pk)
 
 def get_nu_power(filename, modes=None):
     """Reads the neutrino power spectrum.
@@ -133,7 +134,7 @@ def get_nu_power(filename, modes=None):
     #Convert fourier convention to CAMB.
     pnu = data[:,1]
     if modes is not None:
-        (k, pnu) = modecount_rebin(k, pnu, modes,minmodes=30)
+        (k, pnu) = modecount_rebin(k, pnu, modes,minmodes=30, nu=True)
     return (k, pnu)
 
 def get_camb_nu_power(matpow, transfer):
@@ -148,28 +149,36 @@ def get_camb_nu_power(matpow, transfer):
     tnufac = (trans[:,5]/trans[:,6])**2
     return matter[:,0], matter[:,1]*tnufac
 
-def modecount_rebin(kk, pk, modes,minmodes=20, ndesired=200):
+
+def modecount_rebin(kk, pk, modes,minmodes=20, ndesired=200, nu=False):
     """Rebins a power spectrum so that there are sufficient modes in each bin"""
     assert np.all(kk) > 0
     logkk=np.log10(kk)
     mdlogk = (np.max(logkk) - np.min(logkk))/ndesired
     istart=iend=1
     count=0
+    if nu:
+        pkc = modecount_rebin.pk_camb_nu
+    else:
+        pkc = modecount_rebin.pk_camb
+    pk_div = pk /pkc(kk)
     k_list=[kk[0]]
-    pk_list=[pk[0]]
+    pk_list=[pk_div[0]]
     targetlogk=mdlogk+logkk[istart]
     while iend < np.size(logkk)-1:
         count+=modes[iend]
         iend+=1
         if count >= minmodes and logkk[iend-1] >= targetlogk:
-            pk1 = np.sum(modes[istart:iend]*pk[istart:iend])/count
+            pk1 = np.sum(modes[istart:iend]*pk_div[istart:iend])/count
             kk1 = np.sum(modes[istart:iend]*kk[istart:iend])/count
             k_list.append(kk1)
             pk_list.append(pk1)
             istart=iend
             targetlogk=mdlogk+logkk[istart]
             count=0
-    return (np.array(k_list), np.array(pk_list))
+    k_list = np.array(k_list)
+    pk_list = np.array(pk_list) * pkc(k_list)
+    return (k_list, pk_list)
 
 def get_camb_power(matpow, rebin=False):
     """Plot the power spectrum from CAMB
@@ -208,7 +217,7 @@ def get_hyb_nu_power(nu_filename, genpk_neutrino, part_prop=0.116826, npart=512,
     ii = np.where(k_sl != 0.)
     if scale < nu_part_time:
         return k_sl[ii], pk_sl[ii], np.zeros_like(pk_sl[ii])
-    (k_part,pk_part)=load_genpk(genpk_neutrino)
+    (k_part,pk_part)=load_genpk(genpk_neutrino, nu=True)
     rebinned=scipy.interpolate.interpolate.interp1d(k_part,pk_part,fill_value='extrapolate')
     pk_part_r = rebinned(k_sl[ii])
     shot=(300/npart)**3*np.ones(np.size(pk_part_r))
@@ -271,7 +280,7 @@ def plot_crosscorr(scale):
         corr_coeff[ii] = smooth(corr_coeff[ii])
         plt.semilogx(k_cross, corr_coeff, ls=lss[ss],label=labels[ss], color=colors[ss])
     plt.axvline(x=1.2, ls="-", color="black")
-    plt.ylim(0.75,1.05)
+    plt.ylim(0.9,1.02)
     plt.xlim(0.01, 10)
     plt.legend(frameon=False, loc='lower left',fontsize=12)
     plt.xlabel(r"k (h/Mpc)")
@@ -337,11 +346,7 @@ def select_nu_power(scale, ss):
             (k, pk_nu) = get_nu_power(matpow[0], modes=modes)
             shot = np.zeros_like(k)
     except IndexError:
-        (k, pk_nu) = load_genpk(genpk_neutrino)
-        #So it matches the binning of the lin resp code.
-        rebinned=scipy.interpolate.interpolate.interp1d(k, pk_nu, fill_value='extrapolate')
-        k = np.concatenate([[2*math.pi/300,], k])
-        pk_nu = rebinned(k)
+        (k, pk_nu) = load_genpk(genpk_neutrino,nu=True)
         #Shot noise
         if re.search("1024",ss):
             shot=(300/1024.)**3*np.ones_like(pk_nu)
@@ -511,9 +516,9 @@ def plot_nu_single_redshift_rel_one(scale, psims=sims[1:], pzerosim=sims[0], ymi
     plt.savefig(os.path.join(savedir, "pks_nu_"+fn+"-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_single_redshift_rel_camb(scale):
+def plot_single_redshift_rel_camb(scale, psims=sims, fn=""):
     """Plot all the simulations at a single redshift"""
-    for ss in sims:
+    for ss in psims:
         cambdir = os.path.join(os.path.join(datadir, ss),"camb_linear")
         camb = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (k, pk) = _get_pk(scale, ss)
@@ -527,38 +532,55 @@ def plot_single_redshift_rel_camb(scale):
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P} / \mathrm{P}^\mathrm{CAMB}(k)$")
     plt.legend(frameon=False, loc=0,fontsize=12)
-    plt.savefig(os.path.join(savedir, "pks_camb-"+munge_scale(scale)+".pdf"))
+    plt.savefig(os.path.join(savedir, "pks_"+fn+"camb-"+munge_scale(scale)+".pdf"))
     plt.clf()
 
-def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True,fn="rel"):
+def plot_single_redshift_rel_one(scale, psims=sims, pzerosim=zerosim, ymin=0.5,ymax=1.1,camb=True,fn="rel", lowercamb=False):
     """Plot all the simulations at a single redshift"""
     (k_div, pk_div) = _get_pk(scale, pzerosim)
     rebinned=scipy.interpolate.interpolate.interp1d(k_div,pk_div,fill_value="extrapolate")
-    if camb:
+    if lowercamb:
+        f, (ax1, ax2) = plt.subplots(2, sharex=True, gridspec_kw={'hspace':0, 'wspace':0,'height_ratios': [3, 1]})
+    else:
+        ax1 = plt.gca()
+        ax2 = plt.gca()
+    if lowercamb or camb:
         zerocambdir = os.path.join(os.path.join(datadir, pzerosim),"camb_linear")
         camb = os.path.join(zerocambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (zero_k, zero_pk_c) = get_camb_power(camb)
-        zero_reb=scipy.interpolate.interpolate.interp1d(zero_k,zero_pk_c, fill_value='extrapolate')
+        zero_reb=scipy.interpolate.interp1d(zero_k,zero_pk_c, fill_value='extrapolate')
         cambdir = os.path.join(os.path.join(datadir, psims[0]),"camb_linear")
         cambpath = os.path.join(cambdir,"ics_matterpow_"+scale_to_camb[scale]+".dat")
         (k_c, pk_c) = get_camb_power(cambpath)
-        plt.semilogx(k_c, pk_c/zero_reb(k_c),ls=":", label="CAMB", color="black")
+        ax1.semilogx(k_c, pk_c/zero_reb(k_c),ls=":", label="CAMB", color="black")
     for ss in psims:
         (k, pk) = _get_pk(scale, ss)
         if np.size(k) == 0:
             continue
-        plt.semilogx(k, pk/rebinned(k),ls=lss[ss], label=labels[ss], color=colors[ss])
-    plt.ylim(ymin,ymax)
-    plt.xlim(0.01,10)
-    plt.xlabel("k (h/Mpc)")
+        ax1.semilogx(k, pk/rebinned(k),ls=lss[ss], label=labels[ss], color=colors[ss])
+        if lowercamb:
+            cambratio = scipy.interpolate.interp1d(k_c, pk_c/zero_reb(k_c))
+            ax2.semilogx(k, pk/rebinned(k)/cambratio(k)-1,ls=lss[ss], label=labels[ss], color=colors[ss])
+    if lowercamb:
+        ax1.tick_params(axis='x',  which='both', bottom=False, top=False, labelbottom=False)
+        ax2.semilogx(k_c, np.zeros_like(k_c),ls=":", color="black")
+    ax1.set_ylim(ymin,ymax)
+    if lowercamb:
+        ax2.set_ylim(-0.005,0.005)
+        ax2.set_yticks([-0.005, 0, 0.005])
+        ax2.set_yticklabels([r'0.5%', '0', r'0.5%'])
+    ax2.set_xlim(0.01,10)
+    ax2.set_xlabel("k (h/Mpc)")
     if len(psims) > 1:
-        plt.text(0.05, 0.95,"z="+str(np.round(1/scale -1,2)))
+        ax1.text(0.05, 0.95,"z="+str(np.round(1/scale -1,2)))
     else:
-        plt.text(0.05, 0.99,"z="+str(np.round(1/scale -1,2)))
-    plt.ylabel(r"$\mathrm{P}(k)$ ratio")
-    plt.legend(frameon=False, loc=0,fontsize=12)
-    plt.tight_layout()
+        ax1.text(0.05, 0.99,"z="+str(np.round(1/scale -1,2)))
+    ax1.set_ylabel(r"$\mathrm{P}(k)$ ratio")
+    ax1.legend(frameon=False, loc='upper right',fontsize=12)
+#     plt.tight_layout()
     plt.savefig(os.path.join(savedir, "pks_"+fn+"-"+munge_scale(scale)+str(pzerosim[-1])+".pdf"))
+    if lowercamb:
+        plt.close(f)
     plt.clf()
 
 def plot_fermi_dirac(Mnu, zz):
@@ -590,16 +612,23 @@ def plot_fermi_dirac(Mnu, zz):
     plt.clf()
 
 if __name__ == "__main__":
+    cambzf = os.path.join(os.path.join(datadir, sims[0]),"camb_linear/ics_matterpow_0.dat")
+    cambztt = os.path.join(os.path.join(datadir, sims[0]),"camb_linear/ics_transfer_0.dat")
+    pkcambzero = np.loadtxt(cambzf)
+    modecount_rebin.pk_camb = scipy.interpolate.interpolate.interp1d(pkcambzero[:,0],pkcambzero[:,1], fill_value='extrapolate')
+    (k_nu_camb, pk_nu_camb) = get_camb_nu_power(cambzf, cambztt)
+    modecount_rebin.pk_camb_nu =scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb,fill_value='extrapolate')
     plot_fermi_dirac([0.15, 0.4],0)
     plot_crosscorr(1)
-    for sc in (0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_nu_single_redshift(sc,checksims2,fn="cknu2")
         plot_single_redshift_rel_one(sc,psims=sims + [checksims2[1],], ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
-        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.92, ymax=1.0)
+        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.93, ymax=1.0, lowercamb=True)
+        plot_single_redshift_rel_camb(sc, psims=lowmass, fn="lowmass-")
         plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
         plot_nu_single_redshift_rel_one(sc,psims=checksims[:],pzerosim=checksims[0],fn="ckrel",ymin=0.89,ymax=1.1)
         plot_nu_single_redshift_rel_one(sc,psims=checksims2[:],pzerosim=checksims2[0],fn="ckrel2",ymin=0.89,ymax=1.1, camb=True)
