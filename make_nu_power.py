@@ -38,8 +38,8 @@ def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = 
     sp2 = sptostr(spec2)
     catnu = BigFileCatalog(output, dataset=str(species)+'/', header='Header')
     outfile = path.join(output,"../power-fast-"+sp+sp2+"-%.4f.txt" % catnu.attrs["Time"][0])
-#     if path.isfile(outfile):
-#         return
+    if path.isfile(outfile):
+        return
     catics = BigFileCatalog(ICS, dataset=str(species)+'/', header='Header')
     fast = (catics['Velocity']**2).sum(axis=1) < vthresh**2/catics.attrs["Time"]**3
     fastids = catics["ID"][fast].compute()
@@ -53,10 +53,10 @@ def compute_fast_power(output, ICS, vthresh=850, Nmesh=1024, species=2, spec2 = 
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
         catcdm.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
-        pkcross = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh,second = catcdm)
+        pkcross = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh,second = catcdm, dk=5.0e-6)
         power = pkcross.power
     else:
-        pknu = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh)
+        pknu = FFTPower(catnu[select], mode='1d', Nmesh=Nmesh, dk=5.0e-6)
         power = pknu.power
     numpy.savetxt(outfile,numpy.array([power['k'], power['power'].real,power['modes']]).T)
     return power
@@ -73,19 +73,20 @@ def compute_power(output, Nmesh=1024, species=2, spec2 = None):
     if spec2 is not None:
         catcdm = BigFileCatalog(output, dataset=str(spec2)+'/', header='Header')
         catcdm.to_mesh(Nmesh=Nmesh, window='cic', compensated=True, interlaced=True)
-        pkcross = FFTPower(catnu, mode='1d', Nmesh=1024,second = catcdm)
+        pkcross = FFTPower(catnu, mode='1d', Nmesh=1024,second = catcdm, dk=5.0e-6)
         power = pkcross.power
     else:
-        pknu = FFTPower(catnu, mode='1d', Nmesh=1024)
+        pknu = FFTPower(catnu, mode='1d', Nmesh=1024, dk=5.0e-6)
         power = pknu.power
     numpy.savetxt(outfile,numpy.array([power['k'], power['power'].real,power['modes']]).T)
     return power
 
 def all_compute(directory):
     """Do computation for all snapshots in a directory"""
-    snaps = glob.glob(path.join(directory, "PART_*"))
+    snaps = glob.glob(path.join(directory, "output/PART_*"))
     for ss in snaps:
         compute_power(ss)
+    for ss in snaps:
         compute_power(ss,species=1)
         compute_power(ss,species=1,spec2=2)
 
@@ -101,4 +102,5 @@ def all_fast_compute(directory):
         compute_fast_power(ss,ics, spec2=1)
 
 if __name__ == "__main__":
-    all_fast_compute(sys.argv[1])
+#     all_fast_compute(sys.argv[1])
+    all_compute(sys.argv[1])
