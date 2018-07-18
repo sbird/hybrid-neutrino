@@ -21,7 +21,7 @@ sims = ["b300p512nu0.4hyb850", "b300p512nu0.4a","b300p512nu0.4p1024"]
 checksims2 = ["b300p512nu0.4hyb850", "b300p512nu0.4p", "b300p512nu0.4p1024", "b300p512nu0.4hyb-nutime"]
 checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4hyb-nutime850", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single850"]
 zerosim = "b300p512nu0"
-lowmass=["b300p512nu0.06a","b300p512nu0.06p"]
+lowmass=["b300p512nu0.06a", "b300p512nu0.06p"]
 lss = {"b300p512nu0.4p1024":"--", "b300p512nu0.4p":"-.","b300p512nu0.4a":"-.","b300p512nu0.4hyb850":"-","b300p512nu0.4hyb":"-.","b300p512nu0.4hyb-single850":"-.","b300p512nu0.4hyb-vcrit":"--","b300p512nu0.4hyb-nutime850":":","b300p512nu0.4hyb-nutime":":","b300p512nu0.06a":"-", "b300p512nu0.06p":"--"}
 alpha = {"b300p512nu0.4p1024":1,"b300p512nu0.4p":1, "b300p512nu0.4a": 0,"b300p512nu0.4hyb":0.5,"b300p512nu0.4hyb850":0.5,"b300p512nu0.4hyb-single850":0.3,"b300p512nu0.4hyb-vcrit":0.3,"b300p512nu0.4hyb-nutime850":0.3,"b300p512nu0.4hyb-nutime":0.3,"b300p512nu0.4hyb-all":0.3,"b300p512nu0.06a":0, "b300p512nu0.06p":0}
 labels = {"b300p512nu0.4p1024":"PARTICLE-1024","b300p512nu0.4p":"PARTICLE",  "b300p512nu0.4a":"LINRESP","b300p512nu0.4hyb850":"HYBRID","b300p512nu0.4hyb-single850":"HYBRID-256","b300p512nu0.4hyb":"HYBRID-v750", "b300p512nu0.4hyb-vcrit":"HYBRID-v1000","b300p512nu0.4hyb-nutime":"HYBRID-v5000","b300p512nu0.4hyb-nutime850":"HYBRID-z4","b300p512nu0.06a":"LINRESP-MINNU", "b300p512nu0.06p":"PARTICLE-MINNU"}
@@ -31,7 +31,7 @@ colors = {"b300p512nu0.4p1024": '#d62728', "b300p512nu0.4p":"#7f7f7f","b300p512n
 #              ,  '#7f7f7f',
 #              '#bcbd22', '#17becf']
 scale_to_snap = {0.02: '0', 0.1: '1', 0.2:'2', 0.3333:'4', 0.5:'5', 0.6667: '6', 0.8333: '7', 1:'8'}
-scale_to_camb = {0.02: '49', 0.1: '9', 0.2:'4', 0.3333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
+scale_to_camb = {0.01: '99', 0.02: '49', 0.1: '9', 0.2:'4', 0.3333:'2', 0.5:'1', 0.6667: '0.5', 0.8333: '0.2', 1:'0'}
 
 def HMFFromFOF(foftable, h0=False, bins='auto'):
     """Print a conventionally normalised halo mass function from the FOF tables.
@@ -527,7 +527,10 @@ def plot_single_redshift_rel_camb(scale, psims=sims, fn=""):
         (k_camb, pk_camb) = get_camb_power(camb)
         rebinned=scipy.interpolate.interpolate.interp1d(k_camb,pk_camb)
         pkfilt = smooth(pk/rebinned(k))
-        plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
+        try:
+            plt.semilogx(k, pkfilt,ls=lss[ss], label=labels[ss], color=colors[ss])
+        except KeyError:
+            plt.semilogx(k, pkfilt,ls="-", color="black")
     plt.ylim(0.94,1.06)
     plt.xlabel("k (h/Mpc)")
     plt.ylabel(r"$\mathrm{P} / \mathrm{P}^\mathrm{CAMB}(k)$")
@@ -620,7 +623,7 @@ if __name__ == "__main__":
     modecount_rebin.pk_camb_nu =scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb,fill_value='extrapolate')
     plot_fermi_dirac([0.15, 0.4],0)
     plot_crosscorr(1)
-    for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.01, 0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
