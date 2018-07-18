@@ -12,3 +12,10 @@ neutrinos.pdf
 *.backup
 *.synctex.gz
 hyb_neu.pdf
+icplots/*
+nuplots/*0_[0-6]*
+nuplots/pks_camb*
+nuplots/pks_nu_camb*
+nuplots/pks-cknu*
+nuplots/pks-ckrel*0.pdf
+__pycache__/
