@@ -18,7 +18,7 @@ plt.style.use('anjalistyle')
 datadir = os.path.expanduser("data")
 savedir = "nuplots/"
 sims = ["b300p512nu0.4hyb850", "b300p512nu0.4a","b300p512nu0.4p1024"]
-checksims2 = ["b300p512nu0.4hyb850", "b300p512nu0.4p", "b300p512nu0.4p1024", "b300p512nu0.4hyb-nutime"]
+checksims2 = ["b300p512nu0.4hyb850", "b300p512nu0.4p", "b300p512nu0.4p1024"] #, "b300p512nu0.4hyb-nutime"]
 checksims = ["b300p512nu0.4hyb850", "b300p512nu0.4hyb", "b300p512nu0.4hyb-nutime850", "b300p512nu0.4hyb-vcrit", "b300p512nu0.4hyb-single850"]
 zerosim = "b300p512nu0"
 lowmass=["b300p512nu0.06a", "b300p512nu0.06p"]
@@ -261,7 +261,7 @@ def plot_crosscorr(scale):
         pksq[np.where(pksq <=0)] = shots[ss] * 0.03
         corr_coeff = pk_cross / np.sqrt(pksq)
         ii = np.where(k_cross > 1)
-        corr_coeff[ii] = smooth(corr_coeff[ii])
+#         corr_coeff[ii] = smooth(corr_coeff[ii])
         plt.semilogx(k_cross, corr_coeff, ls="-.",label="PARTICLE 1024 (fast)", color="blue")
     cc_sims = ["b300p512nu0.4hyb850","b300p512nu0.4p1024"]
     shots = {"b300p512nu0.4p1024":(300/1024)**3, "b300p512nu0.4hyb850":(300/512)**3, "b300p512nu0.4p":(300/512)**3}
@@ -334,11 +334,12 @@ def select_nu_power(scale, ss):
                 nu_part_time = 0.5
                 part_prop = 0.346203
             elif re.search("all",ss) or re.search("nutime",ss):
+                print(ss)
+                if scale > 0.5:
+                    raise IndexError("nutime has no LRA")
                 #vcrit = 5000
                 part_prop = 1.
                 nu_part_time = 0.5
-                if re.search("all",ss):
-                    nu_part_time = 0.25
             (k, pk_nu, shot) = get_hyb_nu_power(matpow[0], genpk_neutrino, part_prop=part_prop, npart=npart, nu_part_time = nu_part_time, scale=scale, modes=modes)
         except (IOError,FileNotFoundError):
             if not re.search("a$",ss):
@@ -623,14 +624,14 @@ if __name__ == "__main__":
     modecount_rebin.pk_camb_nu =scipy.interpolate.interpolate.interp1d(k_nu_camb,pk_nu_camb,fill_value='extrapolate')
     plot_fermi_dirac([0.15, 0.4],0)
     plot_crosscorr(1)
-    for sc in (0.01, 0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
+    for sc in (0.02, 0.100, 0.200, 0.3333, 0.500, 0.6667, 0.8333, 1):
         plot_nu_single_redshift_split(sc, ss="b300p512nu0.4hyb850")
         plot_nu_single_redshift(sc)
         plot_nu_single_redshift(sc,checksims,fn="cknu")
         plot_nu_single_redshift(sc,checksims2,fn="cknu2")
         plot_single_redshift_rel_one(sc,psims=sims + [checksims2[1],], ymin=0.6,ymax=1.)
         plot_nu_single_redshift_rel_one(sc, ymin=0.9, ymax=1.1, camb=True)
-        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.93, ymax=1.0, lowercamb=True)
+        plot_single_redshift_rel_one(sc,psims=lowmass,fn="lowmass",ymin=0.93, ymax=1.0)
         plot_single_redshift_rel_camb(sc, psims=lowmass, fn="lowmass-")
         plot_nu_single_redshift(sc, psims=lowmass, fn="lowmass_nu")
         plot_nu_single_redshift_rel_one(sc,psims=checksims[:],pzerosim=checksims[0],fn="ckrel",ymin=0.89,ymax=1.1)
